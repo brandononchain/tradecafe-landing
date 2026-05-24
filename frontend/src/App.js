@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import gsap from "gsap";
 import {
   ArrowUpRight,
@@ -9,23 +10,15 @@ import {
   Users,
 } from "lucide-react";
 import "@/App.css";
+import Nav from "./components/Nav";
+import { TRUST_METRICS, EXTERNAL } from "./lib/brand";
+import Terminal from "./pages/Terminal";
 
-const NAV_LINKS = ["Terminal", "Signals", "Automation", "Pool", "Partners"];
 const VIDEO_SRC = "/tradecafebackground.mp4";
 
-const TRUST_METRICS = [
-  { label: "24/7 AI Signal Engine", value: null, type: "status" },
-  { label: "Win Rate", value: "81%" },
-  { label: "Trades", value: "20K+" },
-  { label: "Signals", value: "8,782" },
-  { label: "Managed", value: "$3M+" },
-  { label: "Uptime", value: "99.9%" },
-];
-
-function App() {
+function HomePage() {
   const [mounted, setMounted] = useState(false);
   const [framesReady, setFramesReady] = useState(false);
-  const [mobileNavOpen, setMobileNavOpen] = useState(false);
 
   const videoRef = useRef(null);
   const videoBgRef = useRef(null);
@@ -267,129 +260,8 @@ function App() {
         }}
       />
 
-      {/* ===== NAV — inside hero-frame, fluid responsive layout ===== */}
-      <nav
-        data-anim="nav"
-        data-testid="tradecafe-nav"
-        className="absolute top-3 sm:top-4 md:top-5 lg:top-5 left-5 right-5 sm:left-8 sm:right-8 md:left-10 md:right-10 lg:left-12 lg:right-12 z-40 flex items-center justify-between gap-3 sm:gap-6"
-      >
-        {/* Left: TradeCafe logo lockup (SVG includes custom wordmark) */}
-        <a
-          href="https://tradecafe.ai"
-          className="flex items-center shrink-0 relative"
-          data-testid="tradecafe-logo-link"
-          aria-label="TradeCafe"
-        >
-          <img
-            src="/tradecafe-wordmark.svg?v=2"
-            alt="TradeCafe"
-            className="h-10 sm:h-12 lg:h-14 w-auto select-none"
-            draggable={false}
-            style={{
-              filter:
-                "drop-shadow(0 1px 0 rgba(0,0,0,0.4)) drop-shadow(0 2px 14px rgba(0,180,166,0.18))",
-            }}
-          />
-        </a>
-
-        {/* Center: nav links (lg+ only) — absolutely centered within nav */}
-        <div className="hidden lg:flex items-center gap-7 xl:gap-9 absolute left-1/2 -translate-x-1/2">
-          {NAV_LINKS.map((link) => (
-            <a
-              key={link}
-              href={`#${link.toLowerCase()}`}
-              data-testid={`nav-link-${link.toLowerCase()}`}
-              className="nav-link"
-            >
-              {link}
-            </a>
-          ))}
-        </div>
-
-        {/* Right: auth + CTA */}
-        <div className="flex items-center gap-3 sm:gap-4 shrink-0 relative">
-          <a
-            href="https://terminal.tradecafe.ai"
-            className="hidden lg:inline-flex text-[13px] text-white/65 hover:text-white transition-colors"
-            data-testid="nav-signin"
-          >
-            Sign in
-          </a>
-          <a
-            href="https://terminal.tradecafe.ai"
-            data-testid="nav-launch-terminal"
-            className="nav-cta-outline hidden lg:inline-flex"
-          >
-            Launch Terminal
-            <ArrowUpRight className="w-3.5 h-3.5" strokeWidth={2.2} />
-          </a>
-          <button
-            onClick={() => setMobileNavOpen((v) => !v)}
-            className="tc-burger lg:hidden"
-            data-testid="mobile-menu-toggle"
-            aria-label="Toggle menu"
-            aria-expanded={mobileNavOpen}
-          >
-            <span className={`tc-burger-bar ${mobileNavOpen ? "is-open-top" : ""}`} />
-            <span className={`tc-burger-bar ${mobileNavOpen ? "is-open-mid" : ""}`} />
-            <span className={`tc-burger-bar ${mobileNavOpen ? "is-open-bot" : ""}`} />
-          </button>
-        </div>
-      </nav>
-
-      {/* Mobile nav drawer — branded */}
-      <div
-        className={`tc-drawer lg:hidden ${mobileNavOpen ? "is-open" : ""}`}
-        data-testid="mobile-drawer"
-        aria-hidden={!mobileNavOpen}
-      >
-        <div className="tc-drawer-glow" />
-        <div className="tc-drawer-kicker">
-          <span className="trade-pulse-dot inline-block w-1.5 h-1.5 rounded-full bg-tradeTeal" />
-          <span>Navigation</span>
-        </div>
-        <ul className="tc-drawer-list">
-          {NAV_LINKS.map((link, i) => (
-            <li key={link} style={{ "--i": i }}>
-              <a
-                href={`#${link.toLowerCase()}`}
-                className="tc-drawer-link"
-                onClick={() => setMobileNavOpen(false)}
-                data-testid={`mobile-nav-link-${link.toLowerCase()}`}
-              >
-                <span className="tc-drawer-link-num">0{i + 1}</span>
-                <span className="tc-drawer-link-label">{link}</span>
-                <ArrowUpRight className="tc-drawer-link-arrow" strokeWidth={2} />
-              </a>
-            </li>
-          ))}
-        </ul>
-        <div className="tc-drawer-divider" />
-        <div className="tc-drawer-actions">
-          <a
-            href="https://terminal.tradecafe.ai"
-            className="tc-drawer-signin"
-            onClick={() => setMobileNavOpen(false)}
-            data-testid="mobile-signin"
-          >
-            Sign in
-          </a>
-          <a
-            href="https://terminal.tradecafe.ai"
-            className="cta-primary justify-center w-full"
-            onClick={() => setMobileNavOpen(false)}
-            data-testid="mobile-cta-launch"
-          >
-            Launch Terminal
-            <ArrowUpRight className="w-3.5 h-3.5" strokeWidth={2.2} />
-          </a>
-        </div>
-        <div className="tc-drawer-footnote">
-          <span className="font-mono text-[10px] tracking-[0.18em] uppercase text-white/40">
-            TradeCafe • AI Trading Ecosystem
-          </span>
-        </div>
-      </div>
+      {/* ===== NAV (shared component) ===== */}
+      <Nav />
 
       {/* ===== HERO LAYOUT: mobile-first stacked, desktop bottom-left absolute ===== */}
       <main
@@ -540,6 +412,17 @@ function MetricIcon({ i }) {
     <Users key="u" className={cls} strokeWidth={2} />,
   ];
   return icons[((i % icons.length) + icons.length) % icons.length];
+}
+
+function App() {
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/terminal" element={<Terminal />} />
+      </Routes>
+    </BrowserRouter>
+  );
 }
 
 export default App;

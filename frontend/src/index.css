@@ -646,3 +646,248 @@ code {
 .trade-pulse-dot {
     animation: tradeDot 1.8s ease-in-out infinite;
 }
+
+/* ===== Nav link active state ===== */
+.nav-link.is-active {
+    color: #fff;
+}
+.nav-link.is-active::after {
+    width: 110%;
+}
+
+/* ===== Terminal Page — Dashboard ===== */
+.tc-dashboard {
+    position: relative;
+    border-radius: 28px;
+    background:
+        radial-gradient(120% 200% at 50% -10%, rgba(0, 180, 166, 0.10), transparent 55%),
+        linear-gradient(180deg, rgba(5, 12, 16, 0.78), rgba(2, 8, 9, 0.92));
+    border: 1px solid rgba(0, 212, 170, 0.18);
+    backdrop-filter: blur(20px) saturate(135%);
+    -webkit-backdrop-filter: blur(20px) saturate(135%);
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.06),
+        0 30px 90px rgba(0, 0, 0, 0.55),
+        0 0 60px rgba(0, 180, 166, 0.10);
+    overflow: hidden;
+}
+
+.tc-dashboard::before {
+    content: "";
+    position: absolute;
+    inset: -1px;
+    border-radius: inherit;
+    pointer-events: none;
+    background:
+        radial-gradient(circle at 0% 0%, rgba(0, 212, 170, 0.32), transparent 30%),
+        radial-gradient(circle at 100% 100%, rgba(232, 120, 42, 0.18), transparent 32%);
+    opacity: 0.7;
+}
+
+.tc-dashboard-chrome {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 20px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.02), transparent);
+}
+
+.tc-dot {
+    width: 9px;
+    height: 9px;
+    border-radius: 999px;
+    display: inline-block;
+}
+.tc-dot-red    { background: #FF5F57; box-shadow: 0 0 8px rgba(255, 95, 87, 0.5); }
+.tc-dot-amber  { background: #FEBC2E; box-shadow: 0 0 8px rgba(254, 188, 46, 0.5); }
+.tc-dot-green  { background: #28C840; box-shadow: 0 0 8px rgba(40, 200, 64, 0.5); }
+
+.tc-dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(1, 1fr);
+    gap: 12px;
+    padding: 16px;
+}
+
+@media (min-width: 768px) {
+    .tc-dashboard-grid {
+        grid-template-columns: repeat(4, 1fr);
+        grid-auto-flow: dense;
+        gap: 14px;
+        padding: 18px;
+    }
+}
+
+/* ===== Module ===== */
+.tc-module {
+    position: relative;
+    padding: 16px 18px 18px;
+    border-radius: 18px;
+    background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.015)),
+        rgba(4, 10, 14, 0.55);
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.04),
+        0 14px 36px rgba(0, 0, 0, 0.35);
+    transition: border-color 0.35s ease, box-shadow 0.35s ease, transform 0.35s ease;
+    min-height: 0;
+}
+
+.tc-module:hover {
+    border-color: rgba(0, 212, 170, 0.32);
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.06),
+        0 18px 48px rgba(0, 0, 0, 0.42),
+        0 0 26px rgba(0, 180, 166, 0.14);
+    transform: translateY(-1px);
+}
+
+.tc-module-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 12px;
+}
+
+.tc-module-icon {
+    width: 24px;
+    height: 24px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    background: rgba(0, 180, 166, 0.10);
+    border: 1px solid rgba(0, 212, 170, 0.30);
+    color: #00B4A6;
+    flex-shrink: 0;
+}
+
+.tc-module-title {
+    font-family: 'Geist', 'Manrope', sans-serif;
+    font-size: 12.5px;
+    font-weight: 600;
+    letter-spacing: -0.005em;
+    color: rgba(255, 255, 255, 0.92);
+    flex: 1;
+}
+
+.tc-module-status {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9.5px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: rgba(0, 180, 166, 0.95);
+    padding: 3px 8px;
+    background: rgba(0, 180, 166, 0.08);
+    border: 1px solid rgba(0, 212, 170, 0.28);
+    border-radius: 999px;
+}
+
+.tc-module-body { color: rgba(255, 255, 255, 0.85); }
+
+/* ===== Signal Feed rows ===== */
+.tc-signal-row {
+    display: grid;
+    grid-template-columns: 72px 1fr 84px 60px 90px 38px;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 10px;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.04);
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.85);
+}
+
+@media (max-width: 640px) {
+    .tc-signal-row {
+        grid-template-columns: 60px 1fr 72px 56px;
+    }
+    .tc-signal-row .tc-signal-conf,
+    .tc-signal-row .tc-signal-time { display: none; }
+}
+
+.tc-signal-side {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    padding: 3px 8px;
+    border-radius: 999px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    font-weight: 600;
+}
+.tc-signal-side.is-long  {
+    color: #5FE0CF;
+    background: rgba(0, 180, 166, 0.12);
+    border: 1px solid rgba(0, 212, 170, 0.32);
+}
+.tc-signal-side.is-short {
+    color: #FFB68A;
+    background: rgba(232, 120, 42, 0.12);
+    border: 1px solid rgba(232, 120, 42, 0.32);
+}
+
+.tc-signal-sym    { font-weight: 600; color: rgba(255, 255, 255, 0.95); font-size: 12.5px; }
+.tc-signal-price  { color: rgba(255, 255, 255, 0.78); text-align: right; }
+.tc-signal-change { text-align: right; }
+.tc-signal-time   { color: rgba(255, 255, 255, 0.45); text-align: right; font-size: 10.5px; }
+
+.tc-signal-conf {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.tc-conf-bar {
+    flex: 1;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 999px;
+    overflow: hidden;
+}
+.tc-conf-bar > span {
+    display: block;
+    height: 100%;
+    background: linear-gradient(90deg, #00B4A6, #5FE0CF);
+}
+
+/* ===== Position side pill ===== */
+.tc-pos-side {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9.5px;
+    letter-spacing: 0.14em;
+    padding: 2px 6px;
+    border-radius: 999px;
+}
+.tc-pos-side.is-long  { color: #5FE0CF; background: rgba(0, 180, 166, 0.10); border: 1px solid rgba(0, 212, 170, 0.28); }
+.tc-pos-side.is-short { color: #FFB68A; background: rgba(232, 120, 42, 0.10); border: 1px solid rgba(232, 120, 42, 0.28); }
+
+/* ===== Risk meter ===== */
+.tc-risk-track {
+    height: 6px;
+    width: 100%;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 999px;
+    overflow: hidden;
+    position: relative;
+}
+.tc-risk-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #00B4A6 0%, #E8782A 60%, #FF6557 100%);
+    box-shadow: 0 0 12px rgba(0, 180, 166, 0.5);
+    transition: width 0.6s cubic-bezier(.2,.7,.2,1);
+}
+
+/* ===== Proof card ===== */
+.tc-proof {
+    padding: 12px 14px;
+    border-radius: 14px;
+    background: rgba(0, 180, 166, 0.05);
+    border: 1px solid rgba(0, 212, 170, 0.18);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+}
