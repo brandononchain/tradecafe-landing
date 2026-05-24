@@ -280,9 +280,9 @@ function App() {
           aria-label="TradeCafe"
         >
           <img
-            src="/tradecafe-wordmark.svg"
+            src="/tradecafe-wordmark.svg?v=2"
             alt="TradeCafe"
-            className="h-7 sm:h-8 lg:h-9 w-auto select-none"
+            className="h-10 sm:h-12 lg:h-14 w-auto select-none"
             draggable={false}
             style={{
               filter:
