@@ -172,9 +172,10 @@ code {
 
 .video-overlay {
     background:
-        radial-gradient(circle at 50% 22%, rgba(0, 180, 166, 0.12), transparent 36%),
-        radial-gradient(circle at 84% 16%, rgba(232, 120, 42, 0.16), transparent 30%),
-        linear-gradient(180deg, rgba(0, 0, 0, 0.18) 0%, rgba(0, 0, 0, 0.58) 70%, rgba(0, 0, 0, 0.86) 100%);
+        radial-gradient(circle at 18% 90%, rgba(0, 0, 0, 0.78), transparent 48%),
+        radial-gradient(circle at 50% 22%, rgba(0, 180, 166, 0.08), transparent 40%),
+        radial-gradient(circle at 84% 16%, rgba(232, 120, 42, 0.10), transparent 32%),
+        linear-gradient(180deg, rgba(0, 0, 0, 0.18) 0%, rgba(0, 0, 0, 0.12) 50%, rgba(0, 0, 0, 0.55) 100%);
 }
 
 @keyframes tradeDot {

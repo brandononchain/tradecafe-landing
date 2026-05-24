@@ -182,46 +182,7 @@ function App() {
     };
   }, [framesReady]);
 
-  // ===== GSAP parallax =====
-  useEffect(() => {
-    if (!mounted) return;
-    const target = { x: 0, y: 0 };
-    const current = { x: 0, y: 0 };
-    const STRENGTH = 14;
-    let rafId;
-
-    const onMove = (e) => {
-      const cx = window.innerWidth / 2;
-      const cy = window.innerHeight / 2;
-      target.x = ((e.clientX - cx) / cx) * STRENGTH;
-      target.y = ((e.clientY - cy) / cy) * STRENGTH;
-    };
-
-    const tick = () => {
-      rafId = requestAnimationFrame(tick);
-      current.x += (target.x - current.x) * 0.055;
-      current.y += (target.y - current.y) * 0.055;
-      if (heroContentRef.current) {
-        gsap.set(heroContentRef.current, {
-          x: current.x,
-          y: current.y,
-        });
-      }
-      if (videoBgRef.current) {
-        gsap.set(videoBgRef.current, {
-          x: -current.x * 0.4,
-          y: -current.y * 0.4,
-        });
-      }
-    };
-
-    window.addEventListener("mousemove", onMove);
-    rafId = requestAnimationFrame(tick);
-    return () => {
-      window.removeEventListener("mousemove", onMove);
-      cancelAnimationFrame(rafId);
-    };
-  }, [mounted]);
+  // ===== Parallax disabled per user request — screen stays still =====
 
   // ===== Entrance animation =====
   useEffect(() => {
@@ -398,139 +359,148 @@ function App() {
         )}
       </nav>
 
-      {/* ===== HERO CENTER ===== */}
+      {/* ===== HERO LAYOUT: bottom-left content, video stays center stage ===== */}
       <main
         ref={heroContentRef}
-        className="relative z-20 min-h-screen flex flex-col items-center justify-center px-6 text-center pt-28 pb-40"
+        className="relative z-20 min-h-screen"
         data-testid="hero-main"
       >
-        {/* Kicker */}
-        <div
-          data-anim="kicker"
-          data-testid="hero-kicker"
-          className="hero-kicker text-[11px] sm:text-[12px] text-tradeTeal/90 flex items-center gap-2.5 mb-7"
-        >
-          <span className="trade-pulse-dot inline-block w-1.5 h-1.5 rounded-full bg-tradeTeal" />
-          AI Trading Ecosystem
-          <span className="trade-pulse-dot inline-block w-1.5 h-1.5 rounded-full bg-tradeTeal" />
+        {/* Bottom-left content block */}
+        <div className="absolute left-6 sm:left-10 right-6 sm:right-auto bottom-20 sm:bottom-24 max-w-[640px]">
+          {/* Kicker */}
+          <div
+            data-anim="kicker"
+            data-testid="hero-kicker"
+            className="hero-kicker text-[10.5px] sm:text-[11px] text-tradeTeal/95 flex items-center gap-2 mb-4 sm:mb-5"
+          >
+            <span className="trade-pulse-dot inline-block w-1.5 h-1.5 rounded-full bg-tradeTeal" />
+            AI Trading Ecosystem
+          </div>
+
+          {/* Main title — left-aligned, smaller so the coffee cup stays the focal point */}
+          <h1
+            data-anim="title"
+            data-testid="hero-title"
+            className="text-left font-heading font-semibold text-tradeWhite leading-[0.95] tracking-[-0.045em]"
+            style={{ fontSize: "clamp(34px, 4.4vw, 64px)" }}
+          >
+            Enter the{" "}
+            <span className="italic font-light text-white/95">TradeCafe</span>{" "}
+            Economy.
+          </h1>
+
+          {/* Subtitle — small mono line under title */}
+          <p
+            data-anim="subtitle"
+            data-testid="hero-subtitle"
+            className="mt-3.5 sm:mt-4 text-[12.5px] sm:text-[13.5px] text-white/72 font-mono tracking-[0.04em] max-w-[520px]"
+          >
+            Terminal · Signals · Automation · Trading Pool · Partner Network
+          </p>
+
+          {/* Body — short, concise */}
+          <p
+            data-anim="body"
+            data-testid="hero-body"
+            className="mt-3 sm:mt-3.5 text-[13px] sm:text-[13.5px] leading-[1.6] text-white/60 max-w-[480px]"
+          >
+            The full trading loop in one calm, intelligent ecosystem — terminal,
+            AI signals, automation, pooled strategies, and partner network.
+          </p>
+
+          {/* CTAs */}
+          <div
+            data-anim="ctas"
+            data-testid="hero-ctas"
+            className="mt-6 sm:mt-7 flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 sm:gap-3"
+          >
+            <a
+              href="https://terminal.tradecafe.ai"
+              data-testid="cta-launch-terminal"
+              className="liquid-glass-strong rounded-pill inline-flex items-center justify-center gap-2 px-5 sm:px-6 py-3 text-[13px] font-medium text-white transition-transform duration-300 hover:scale-[1.04]"
+            >
+              Launch Terminal
+              <ArrowUpRight className="w-3.5 h-3.5" strokeWidth={2.2} />
+            </a>
+            <a
+              href="https://tradecafe.ai"
+              data-testid="cta-join-ecosystem"
+              className="rounded-pill inline-flex items-center justify-center gap-2 px-5 sm:px-6 py-3 text-[13px] font-medium text-white/85 hover:text-white transition-all duration-300 hover:scale-[1.04]"
+              style={{
+                background: "rgba(15,22,32,0.55)",
+                backdropFilter: "blur(14px)",
+                WebkitBackdropFilter: "blur(14px)",
+                boxShadow:
+                  "inset 0 0 0 1px rgba(255,255,255,0.14), inset 0 1px 1px rgba(255,255,255,0.08), 0 0 22px rgba(232,120,42,0.10)",
+              }}
+            >
+              Join Ecosystem
+              <ArrowUpRight className="w-3.5 h-3.5" strokeWidth={2.2} />
+            </a>
+          </div>
         </div>
 
-        {/* Main title */}
-        <h1
-          data-anim="title"
-          data-testid="hero-title"
-          className="hero-title max-w-[1280px]"
-        >
-          Enter the <span className="italic font-light text-white/95">TradeCafe</span> Economy.
-        </h1>
-
-        {/* Subtitle */}
-        <p
-          data-anim="subtitle"
-          data-testid="hero-subtitle"
-          className="mt-7 sm:mt-9 text-[15px] sm:text-[17px] text-white/82 font-mono tracking-[0.02em] max-w-[820px]"
-        >
-          Terminal. Signals. Automation. Trading Pool. Partner Network.
-        </p>
-
-        {/* Body */}
-        <p
-          data-anim="body"
-          data-testid="hero-body"
-          className="mt-5 sm:mt-6 text-[14.5px] sm:text-[15.5px] leading-[1.65] text-white/65 max-w-[760px]"
-        >
-          TradeCafe connects the full trading loop: live terminal, AI-powered signals,
-          automated execution, pooled strategy access, and partner-driven growth —
-          all inside one calm, intelligent trading ecosystem.
-        </p>
-
-        {/* CTAs */}
+        {/* Bottom-right rail: Live pill + metrics column (desktop only) */}
         <div
-          data-anim="ctas"
-          data-testid="hero-ctas"
-          className="mt-9 sm:mt-11 flex flex-col sm:flex-row items-center gap-3 sm:gap-4"
+          data-anim="bottom"
+          data-testid="hero-right-rail"
+          className="hidden lg:flex absolute right-10 bottom-24 flex-col items-end gap-3 z-20"
         >
-          <a
-            href="https://terminal.tradecafe.ai"
-            data-testid="cta-launch-terminal"
-            className="liquid-glass-strong rounded-pill inline-flex items-center gap-2 px-6 sm:px-7 py-3.5 text-[14px] font-medium text-white transition-transform duration-300 hover:scale-[1.04]"
+          <div className="liquid-glass rounded-pill px-3.5 py-1.5 inline-flex items-center gap-2">
+            <span className="trade-pulse-dot inline-block w-1.5 h-1.5 rounded-full bg-tradeTeal" />
+            <span className="font-mono text-[10.5px] tracking-[0.18em] uppercase text-white/85">
+              Live 24/7 Signal Engine
+            </span>
+          </div>
+
+          <div
+            data-testid="hero-metrics"
+            className="flex flex-col items-end gap-1.5"
           >
-            Launch Terminal
-            <ArrowUpRight className="w-4 h-4" strokeWidth={2.2} />
-          </a>
-          <a
-            href="https://tradecafe.ai"
-            data-testid="cta-join-ecosystem"
-            className="rounded-pill inline-flex items-center gap-2 px-6 sm:px-7 py-3.5 text-[14px] font-medium text-white/85 hover:text-white transition-all duration-300 hover:scale-[1.04]"
-            style={{
-              background: "rgba(15,22,32,0.55)",
-              backdropFilter: "blur(14px)",
-              WebkitBackdropFilter: "blur(14px)",
-              boxShadow:
-                "inset 0 0 0 1px rgba(255,255,255,0.14), inset 0 1px 1px rgba(255,255,255,0.08), 0 0 22px rgba(232,120,42,0.10)",
-            }}
-          >
-            Join Ecosystem
-            <ArrowUpRight className="w-4 h-4" strokeWidth={2.2} />
-          </a>
+            {TRUST_METRICS.map((m, i) => (
+              <div
+                key={m.label}
+                data-anim="metric"
+                data-testid={`metric-${m.label.toLowerCase().replace(/\s+/g, "-")}`}
+                className="liquid-glass rounded-pill px-3 py-1.5 flex items-center gap-2"
+              >
+                <MetricIcon i={i} />
+                <span className="font-mono text-[12px] text-white tracking-tight">
+                  {m.value}
+                </span>
+                <span className="text-[10.5px] text-white/55 uppercase tracking-[0.14em]">
+                  {m.label}
+                </span>
+              </div>
+            ))}
+          </div>
+
+          <p className="mt-1 text-[11px] leading-[1.55] text-white/45 text-right max-w-[220px] font-mono tracking-[0.01em]">
+            Built for active traders, passive participants, and partners growing the network.
+          </p>
         </div>
 
-        {/* Trust metrics */}
-        <div
-          data-testid="hero-metrics"
-          className="mt-10 sm:mt-14 grid grid-cols-2 sm:flex sm:flex-wrap justify-center gap-2.5 sm:gap-3 max-w-[920px]"
-        >
-          {TRUST_METRICS.map((m, i) => (
+        {/* Mobile metrics — compact row below CTAs */}
+        <div className="lg:hidden absolute left-6 right-6 bottom-9 flex flex-wrap gap-1.5 z-20">
+          {TRUST_METRICS.slice(0, 3).map((m, i) => (
             <div
               key={m.label}
-              data-anim="metric"
-              data-testid={`metric-${m.label.toLowerCase().replace(/\s+/g, "-")}`}
-              className="liquid-glass rounded-pill px-4 sm:px-5 py-2 sm:py-2.5 flex items-center gap-2.5"
+              data-testid={`metric-mobile-${m.label.toLowerCase().replace(/\s+/g, "-")}`}
+              className="liquid-glass rounded-pill px-2.5 py-1 flex items-center gap-1.5"
             >
-              <MetricIcon i={i} />
-              <span className="font-mono text-[12.5px] sm:text-[13px] text-white tracking-tight">
-                {m.value}
-              </span>
-              <span className="text-[11.5px] sm:text-[12px] text-white/55 uppercase tracking-[0.12em]">
-                {m.label}
-              </span>
+              <span className="font-mono text-[10.5px] text-white">{m.value}</span>
+              <span className="text-[9.5px] text-white/55 uppercase tracking-[0.12em]">{m.label}</span>
             </div>
           ))}
         </div>
       </main>
-
-      {/* ===== BOTTOM ROW ===== */}
-      <div
-        data-anim="bottom"
-        data-testid="hero-bottom-row"
-        className="fixed bottom-12 left-0 right-0 px-10 hidden md:flex items-end justify-between z-20 pointer-events-none"
-      >
-        <p className="text-[12px] leading-[1.55] text-white/55 max-w-[260px] font-mono tracking-[0.01em]">
-          The terminal is the doorway.<br />
-          The bots are the engine.<br />
-          The pool is the capital layer.
-        </p>
-
-        <div className="liquid-glass rounded-pill px-4 py-2 inline-flex items-center gap-2.5 pointer-events-auto">
-          <span className="trade-pulse-dot inline-block w-1.5 h-1.5 rounded-full bg-tradeTeal" />
-          <span className="font-mono text-[11.5px] tracking-[0.16em] uppercase text-white/85">
-            Live 24/7 Signal Engine
-          </span>
-        </div>
-
-        <p className="text-[12px] leading-[1.55] text-white/55 max-w-[260px] text-right font-mono tracking-[0.01em]">
-          TradeCafe is built for active traders,<br />
-          passive participants, and partners<br />
-          growing the network.
-        </p>
-      </div>
 
       {/* ===== Risk disclaimer ===== */}
       <div
         data-testid="risk-disclaimer"
         className="fixed bottom-3 left-0 right-0 text-center z-20 pointer-events-none px-4"
       >
-        <p className="text-[10.5px] text-white/35 font-mono tracking-[0.06em]">
+        <p className="text-[10px] text-white/30 font-mono tracking-[0.06em]">
           Trading involves risk. Past performance does not guarantee future results.
         </p>
       </div>
