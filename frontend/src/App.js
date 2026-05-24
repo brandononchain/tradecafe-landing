@@ -374,7 +374,7 @@ function App() {
         data-testid="hero-main"
       >
         {/* Bottom-left content block */}
-        <div className="absolute left-8 sm:left-12 right-8 sm:right-auto bottom-32 sm:bottom-44 max-w-[640px]">
+        <div className="absolute left-8 sm:left-12 right-8 sm:right-auto bottom-24 sm:bottom-28 max-w-[640px]">
           {/* Kicker */}
           <div
             data-anim="kicker"
@@ -477,7 +477,7 @@ function App() {
         </div>
 
         {/* Mobile metrics — compact row */}
-        <div className="lg:hidden absolute left-8 right-8 bottom-32 flex flex-wrap gap-1.5 z-20">
+        <div className="lg:hidden absolute left-8 right-8 bottom-16 flex flex-wrap gap-1.5 z-20">
           {TRUST_METRICS.filter((m) => m.type !== "status").slice(0, 3).map((m) => (
             <div
               key={m.label}
@@ -489,29 +489,6 @@ function App() {
             </div>
           ))}
         </div>
-
-        {/* ===== Product Dock (desktop only) ===== */}
-        <nav
-          className="product-dock"
-          data-anim="bottom"
-          data-testid="product-dock"
-          aria-label="Product navigation"
-        >
-          {PRODUCT_DOCK.map(({ key, label, desc, Icon }) => (
-            <a
-              key={key}
-              href={`#${key}`}
-              data-testid={`dock-${key}`}
-              className="dock-tab"
-            >
-              <Icon className="dock-icon" strokeWidth={2} />
-              <div className="flex flex-col">
-                <span className="dock-label">{label}</span>
-                <span className="dock-desc">{desc}</span>
-              </div>
-            </a>
-          ))}
-        </nav>
       </main>
       </section>
       {/* ===== /hero-frame ===== */}
