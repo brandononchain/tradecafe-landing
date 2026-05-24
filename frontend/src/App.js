@@ -14,6 +14,7 @@ import Nav from "./components/Nav";
 import { TRUST_METRICS, EXTERNAL } from "./lib/brand";
 import Terminal from "./pages/Terminal";
 import Signals from "./pages/Signals";
+import Automation from "./pages/Automation";
 
 const VIDEO_SRC = "/tradecafebackground.mp4";
 
@@ -422,6 +423,7 @@ function App() {
         <Route path="/" element={<HomePage />} />
         <Route path="/terminal" element={<Terminal />} />
         <Route path="/signals" element={<Signals />} />
+        <Route path="/automation" element={<Automation />} />
       </Routes>
     </BrowserRouter>
   );

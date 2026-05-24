@@ -1136,3 +1136,245 @@ code {
         padding: 30px 32px;
     }
 }
+
+/* ===== Automation Page ===== */
+.tc-levels {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 16px;
+}
+@media (min-width: 768px) {
+    .tc-levels { grid-template-columns: repeat(3, 1fr); gap: 18px; }
+}
+
+.tc-level {
+    position: relative;
+    padding: 26px 24px 24px;
+    border-radius: 24px;
+    background:
+        radial-gradient(120% 200% at 100% -10%, rgba(0, 180, 166, 0.10), transparent 55%),
+        linear-gradient(180deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.012)),
+        rgba(4, 10, 14, 0.55);
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.05),
+        0 18px 48px rgba(0, 0, 0, 0.4);
+    transition: border-color 0.35s ease, box-shadow 0.35s ease, transform 0.35s ease;
+    overflow: hidden;
+}
+.tc-level:hover {
+    transform: translateY(-2px);
+    border-color: rgba(0, 212, 170, 0.40);
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.08),
+        0 22px 60px rgba(0, 0, 0, 0.48),
+        0 0 32px rgba(0, 180, 166, 0.20);
+}
+.tc-level.is-orange:hover {
+    border-color: rgba(232, 120, 42, 0.40);
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.08),
+        0 22px 60px rgba(0, 0, 0, 0.48),
+        0 0 32px rgba(232, 120, 42, 0.22);
+}
+
+.tc-level-badge {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9.5px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: #042024;
+    padding: 4px 10px;
+    border-radius: 999px;
+    background: linear-gradient(135deg, #F5FFFE, #5FE0CF);
+    box-shadow: 0 6px 18px rgba(0, 180, 166, 0.4);
+}
+
+.tc-level-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 14px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 180, 166, 0.10);
+    border: 1px solid rgba(0, 212, 170, 0.30);
+    color: #5FE0CF;
+    margin-bottom: 18px;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06), 0 0 18px rgba(0, 180, 166, 0.18);
+}
+.tc-level.is-orange .tc-level-icon {
+    background: rgba(232, 120, 42, 0.10);
+    border-color: rgba(232, 120, 42, 0.30);
+    color: #FFB68A;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06), 0 0 18px rgba(232, 120, 42, 0.18);
+}
+
+.tc-level-eyebrow {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: rgba(0, 180, 166, 0.85);
+    margin-bottom: 6px;
+}
+
+.tc-level-title {
+    font-family: 'Geist', 'Manrope', sans-serif;
+    font-size: 24px;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    color: #F5F6F2;
+    line-height: 1.05;
+    margin-bottom: 10px;
+}
+
+.tc-level-tag {
+    font-size: 13.5px;
+    color: rgba(255, 255, 255, 0.78);
+    margin-bottom: 10px;
+}
+
+.tc-level-desc {
+    font-size: 13px;
+    line-height: 1.55;
+    color: rgba(255, 255, 255, 0.55);
+    margin-bottom: 16px;
+}
+
+.tc-level-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+.tc-level-list li {
+    display: flex;
+    gap: 10px;
+    font-size: 12.5px;
+    color: rgba(255, 255, 255, 0.78);
+    line-height: 1.45;
+}
+
+/* ===== Flow ===== */
+.tc-flow {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 22px;
+    border-radius: 22px;
+    background:
+        radial-gradient(120% 220% at 100% 0%, rgba(0, 180, 166, 0.10), transparent 55%),
+        linear-gradient(180deg, rgba(5, 12, 16, 0.82), rgba(2, 8, 9, 0.92));
+    border: 1px solid rgba(0, 212, 170, 0.18);
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.05),
+        0 24px 60px rgba(0, 0, 0, 0.5),
+        0 0 30px rgba(0, 180, 166, 0.10);
+}
+
+@media (min-width: 1024px) {
+    .tc-flow {
+        flex-direction: row;
+        align-items: stretch;
+        gap: 6px;
+        padding: 22px 18px;
+        overflow-x: auto;
+    }
+}
+
+.tc-flow-step {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 14px;
+    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    flex: 1;
+    min-width: 0;
+    transition: background 0.35s ease, border-color 0.35s ease, transform 0.35s ease;
+}
+.tc-flow-step:hover {
+    background: rgba(0, 180, 166, 0.06);
+    border-color: rgba(0, 212, 170, 0.34);
+    transform: translateY(-1px);
+}
+
+@media (min-width: 1024px) {
+    .tc-flow-step {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+        padding: 16px 14px;
+        text-align: left;
+    }
+}
+
+.tc-flow-node {
+    width: 36px;
+    height: 36px;
+    border-radius: 999px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 180, 166, 0.12);
+    border: 1px solid rgba(0, 212, 170, 0.36);
+    color: #5FE0CF;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06), 0 0 14px rgba(0, 180, 166, 0.20);
+    flex-shrink: 0;
+}
+
+.tc-flow-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+}
+
+.tc-flow-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9.5px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: rgba(0, 180, 166, 0.85);
+}
+
+.tc-flow-label {
+    font-family: 'Geist', 'Manrope', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    color: #F5F6F2;
+    letter-spacing: -0.01em;
+}
+
+.tc-flow-arrow {
+    color: rgba(0, 180, 166, 0.55);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    width: 14px;
+    flex-shrink: 0;
+}
+@media (min-width: 1024px) {
+    .tc-flow-arrow {
+        display: inline-flex;
+        margin: 0 -2px;
+    }
+}
+
+.tc-flow-stat {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 14px 16px;
+    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
