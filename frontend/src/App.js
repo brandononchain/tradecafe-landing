@@ -9,18 +9,31 @@ import {
   Users,
   Menu,
   X,
+  Terminal as TerminalIcon,
+  Radio,
+  Zap,
+  Network,
 } from "lucide-react";
 import "@/App.css";
 
-const NAV_LINKS = ["Terminal", "Signals", "Trading Bot", "Trading Pool", "Partners"];
+const NAV_LINKS = ["Terminal", "Signals", "Automation", "Pool", "Partners"];
 const VIDEO_SRC = "/tradecafebackground.mp4";
 
 const TRUST_METRICS = [
+  { label: "24/7 AI Signal Engine", value: null, type: "status" },
   { label: "Win Rate", value: "81%" },
-  { label: "Trades", value: "20k+" },
+  { label: "Trades", value: "20K+" },
   { label: "Signals", value: "8,782" },
-  { label: "Managed", value: "$2M+" },
+  { label: "Managed", value: "$3M+" },
   { label: "Uptime", value: "99.9%" },
+];
+
+const PRODUCT_DOCK = [
+  { key: "terminal",   label: "Terminal",   desc: "Live trading workspace",   Icon: TerminalIcon },
+  { key: "signals",    label: "Signals",    desc: "AI-generated trade calls", Icon: Radio },
+  { key: "automation", label: "Automation", desc: "Hands-free execution",     Icon: Zap },
+  { key: "pool",       label: "Pool",       desc: "Pooled strategy capital",  Icon: Layers },
+  { key: "partners",   label: "Partners",   desc: "Grow the network",         Icon: Network },
 ];
 
 function App() {
@@ -267,74 +280,67 @@ function App() {
         }}
       />
 
-      {/* ===== NAV — floating lens-glass capsule ===== */}
+      {/* ===== NAV — floating lens-glass capsule (3-column premium) ===== */}
       <nav
         data-anim="nav"
         data-testid="tradecafe-nav"
         className="nav-shell"
       >
-        <div className="flex items-center justify-between gap-4 sm:gap-6 w-full">
-          {/* Left: logo + wordmark */}
+        {/* Left: logo + wordmark */}
+        <a
+          href="https://tradecafe.ai"
+          className="flex items-center gap-2.5 relative flex-1"
+          data-testid="tradecafe-logo-link"
+        >
+          <img
+            src="/tradecafe-logo.png"
+            alt="TradeCafe"
+            className="w-7 h-7 sm:w-8 sm:h-8 object-contain"
+          />
+          <span className="trade-wordmark text-lg sm:text-xl text-white">
+            TradeCafe
+          </span>
+        </a>
+
+        {/* Center: nav links (desktop) — absolutely centered */}
+        <div className="hidden lg:flex items-center gap-8 absolute left-1/2 -translate-x-1/2">
+          {NAV_LINKS.map((link) => (
+            <a
+              key={link}
+              href={`#${link.toLowerCase()}`}
+              data-testid={`nav-link-${link.toLowerCase()}`}
+              className="nav-link"
+            >
+              {link}
+            </a>
+          ))}
+        </div>
+
+        {/* Right: auth + CTA */}
+        <div className="flex items-center gap-3 sm:gap-4 relative flex-1 justify-end">
           <a
-            href="https://tradecafe.ai"
-            className="flex items-center gap-2.5 relative"
-            data-testid="tradecafe-logo-link"
+            href="https://terminal.tradecafe.ai"
+            className="hidden sm:inline-flex text-[13px] text-white/65 hover:text-white transition-colors"
+            data-testid="nav-signin"
           >
-            <img
-              src="/tradecafe-logo.png"
-              alt="TradeCafe"
-              className="w-7 h-7 sm:w-8 sm:h-8 object-contain"
-            />
-            <span className="trade-wordmark text-lg sm:text-xl text-white">
-              TradeCafe
-            </span>
+            Sign in
           </a>
-
-          {/* Center: nav links (desktop) */}
-          <div className="hidden lg:flex items-center gap-7 relative">
-            {NAV_LINKS.map((link) => (
-              <a
-                key={link}
-                href={`#${link.toLowerCase().replace(/\s+/g, "-")}`}
-                data-testid={`nav-link-${link.toLowerCase().replace(/\s+/g, "-")}`}
-                className="text-[13px] font-medium hover:text-white transition-colors"
-                style={{ color: "rgba(255,255,255,0.72)" }}
-              >
-                {link}
-              </a>
-            ))}
-          </div>
-
-          {/* Right: actions */}
-          <div className="flex items-center gap-2 sm:gap-3 relative">
-            <a
-              href="https://terminal.tradecafe.ai"
-              className="hidden sm:inline-flex text-[13px] text-white/70 hover:text-white transition-colors px-2 py-1"
-              data-testid="nav-signin"
-            >
-              Sign in
-            </a>
-            <a
-              href="https://terminal.tradecafe.ai"
-              data-testid="nav-launch-terminal"
-              className="liquid-glass-strong rounded-pill inline-flex items-center gap-1.5 px-3.5 sm:px-4 py-1.5 sm:py-2 text-[13px] font-medium text-white transition-transform duration-300 hover:scale-[1.04]"
-            >
-              Launch Terminal
-              <ArrowUpRight className="w-3.5 h-3.5" strokeWidth={2.2} />
-            </a>
-            <button
-              onClick={() => setMobileNavOpen((v) => !v)}
-              className="lg:hidden inline-flex items-center justify-center w-9 h-9 text-white/80 relative"
-              data-testid="mobile-menu-toggle"
-              aria-label="Toggle menu"
-            >
-              {mobileNavOpen ? (
-                <X className="w-4 h-4" />
-              ) : (
-                <Menu className="w-4 h-4" />
-              )}
-            </button>
-          </div>
+          <a
+            href="https://terminal.tradecafe.ai"
+            data-testid="nav-launch-terminal"
+            className="nav-cta-outline"
+          >
+            Launch Terminal
+            <ArrowUpRight className="w-3.5 h-3.5" strokeWidth={2.2} />
+          </a>
+          <button
+            onClick={() => setMobileNavOpen((v) => !v)}
+            className="lg:hidden inline-flex items-center justify-center w-9 h-9 text-white/80 relative"
+            data-testid="mobile-menu-toggle"
+            aria-label="Toggle menu"
+          >
+            {mobileNavOpen ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
+          </button>
         </div>
       </nav>
 
@@ -368,7 +374,7 @@ function App() {
         data-testid="hero-main"
       >
         {/* Bottom-left content block */}
-        <div className="absolute left-8 sm:left-12 right-8 sm:right-auto bottom-24 sm:bottom-28 max-w-[640px]">
+        <div className="absolute left-8 sm:left-12 right-8 sm:right-auto bottom-32 sm:bottom-44 max-w-[640px]">
           {/* Kicker */}
           <div
             data-anim="kicker"
@@ -379,104 +385,133 @@ function App() {
             AI Trading Ecosystem
           </div>
 
-          {/* Main title — calm, restrained, left-aligned */}
+          {/* Main title — two-line premium hero */}
           <h1
             data-anim="title"
             data-testid="hero-title"
-            className="text-left font-heading font-semibold text-tradeWhite leading-[0.98] tracking-[-0.04em]"
-            style={{ fontSize: "clamp(34px, 4.6vw, 64px)" }}
+            className="text-left font-heading font-semibold text-tradeWhite"
+            style={{
+              fontSize: "clamp(40px, 5.6vw, 84px)",
+              lineHeight: "1.02",
+              letterSpacing: "-0.045em",
+            }}
           >
-            The calm way to trade{" "}
-            <span className="italic font-light text-white/95">with AI</span>.
+            <span className="block">The calm way</span>
+            <span className="block">
+              to trade{" "}
+              <span className="italic font-light text-white/95">with AI</span>.
+            </span>
           </h1>
 
           {/* Subtitle — readable, generous spacing */}
           <p
             data-anim="subtitle"
             data-testid="hero-subtitle"
-            className="mt-5 sm:mt-6 text-[14px] sm:text-[15px] leading-[1.65] text-white/72 max-w-[540px] font-body"
+            className="mt-6 sm:mt-7 text-[15px] sm:text-[17px] leading-[1.6] text-white/74 max-w-[560px] font-body"
           >
             A 24/7 trading environment where AI agents scan, signal, execute, and
             help your network grow — while you stay in control.
           </p>
 
-          {/* Single calm CTA + subtle text link */}
+          {/* Premium CTAs */}
           <div
             data-anim="ctas"
             data-testid="hero-ctas"
-            className="mt-8 sm:mt-10 flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6"
+            className="mt-9 sm:mt-11 flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4"
           >
             <a
               href="https://terminal.tradecafe.ai"
               data-testid="cta-launch-terminal"
-              className="liquid-glass-strong rounded-pill inline-flex items-center justify-center gap-2 px-6 sm:px-7 py-3 sm:py-3.5 text-[13px] font-medium text-white transition-transform duration-300 hover:scale-[1.04] self-start"
+              className="cta-primary self-start"
             >
               Launch Terminal
-              <ArrowUpRight className="w-3.5 h-3.5" strokeWidth={2.2} />
+              <ArrowUpRight className="w-4 h-4" strokeWidth={2.4} />
             </a>
             <a
               href="https://tradecafe.ai"
-              data-testid="cta-join-ecosystem"
-              className="inline-flex items-center gap-1.5 text-[13px] text-white/65 hover:text-white transition-colors self-start group"
+              data-testid="cta-explore-ecosystem"
+              className="cta-ghost self-start group"
             >
-              Or join the ecosystem
+              Explore Ecosystem
               <ArrowUpRight
-                className="w-3.5 h-3.5 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+                className="w-4 h-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
                 strokeWidth={2}
               />
             </a>
           </div>
         </div>
 
-        {/* Bottom-right rail: Live pill + compact metrics (desktop only) */}
+        {/* Right-side instrument panel — floating stats (desktop only) */}
         <div
           data-anim="bottom"
           data-testid="hero-right-rail"
-          className="hidden lg:flex absolute right-12 bottom-28 flex-col items-end gap-2.5 z-20"
+          className="hidden lg:flex absolute right-12 top-1/2 -translate-y-1/2 flex-col items-end gap-2.5 z-20"
         >
-          <div className="liquid-glass rounded-pill px-3.5 py-1.5 inline-flex items-center gap-2">
-            <span className="trade-pulse-dot inline-block w-1.5 h-1.5 rounded-full bg-tradeTeal" />
-            <span className="font-mono text-[10.5px] tracking-[0.18em] uppercase text-white/85">
-              Live 24/7 Signal Engine
-            </span>
-          </div>
-
-          <div
-            data-testid="hero-metrics"
-            className="flex flex-col items-end gap-1.5"
-          >
-            {TRUST_METRICS.map((m, i) => (
+          {TRUST_METRICS.map((m, i) => {
+            if (m.type === "status") {
+              return (
+                <div
+                  key={m.label}
+                  data-anim="metric"
+                  data-testid="metric-status"
+                  className="stat-pill is-status"
+                >
+                  <span className="stat-dot" />
+                  <span className="stat-label">{m.label}</span>
+                </div>
+              );
+            }
+            return (
               <div
                 key={m.label}
                 data-anim="metric"
                 data-testid={`metric-${m.label.toLowerCase().replace(/\s+/g, "-")}`}
-                className="liquid-glass rounded-pill px-3 py-1.5 flex items-center gap-2"
+                className="stat-pill"
               >
-                <MetricIcon i={i} />
-                <span className="font-mono text-[12px] text-white tracking-tight">
-                  {m.value}
-                </span>
-                <span className="text-[10.5px] text-white/55 uppercase tracking-[0.14em]">
-                  {m.label}
-                </span>
+                <MetricIcon i={i - 1} />
+                <span className="stat-value">{m.value}</span>
+                <span className="stat-label">{m.label}</span>
               </div>
-            ))}
-          </div>
+            );
+          })}
         </div>
 
         {/* Mobile metrics — compact row */}
-        <div className="lg:hidden absolute left-8 right-8 bottom-10 flex flex-wrap gap-1.5 z-20">
-          {TRUST_METRICS.slice(0, 3).map((m) => (
+        <div className="lg:hidden absolute left-8 right-8 bottom-32 flex flex-wrap gap-1.5 z-20">
+          {TRUST_METRICS.filter((m) => m.type !== "status").slice(0, 3).map((m) => (
             <div
               key={m.label}
               data-testid={`metric-mobile-${m.label.toLowerCase().replace(/\s+/g, "-")}`}
-              className="liquid-glass rounded-pill px-2.5 py-1 flex items-center gap-1.5"
+              className="stat-pill"
             >
-              <span className="font-mono text-[10.5px] text-white">{m.value}</span>
-              <span className="text-[9.5px] text-white/55 uppercase tracking-[0.12em]">{m.label}</span>
+              <span className="stat-value">{m.value}</span>
+              <span className="stat-label">{m.label}</span>
             </div>
           ))}
         </div>
+
+        {/* ===== Product Dock (desktop only) ===== */}
+        <nav
+          className="product-dock"
+          data-anim="bottom"
+          data-testid="product-dock"
+          aria-label="Product navigation"
+        >
+          {PRODUCT_DOCK.map(({ key, label, desc, Icon }) => (
+            <a
+              key={key}
+              href={`#${key}`}
+              data-testid={`dock-${key}`}
+              className="dock-tab"
+            >
+              <Icon className="dock-icon" strokeWidth={2} />
+              <div className="flex flex-col">
+                <span className="dock-label">{label}</span>
+                <span className="dock-desc">{desc}</span>
+              </div>
+            </a>
+          ))}
+        </nav>
       </main>
       </section>
       {/* ===== /hero-frame ===== */}
@@ -484,9 +519,9 @@ function App() {
       {/* ===== Risk disclaimer ===== */}
       <div
         data-testid="risk-disclaimer"
-        className="fixed bottom-2 left-0 right-0 text-center z-30 pointer-events-none px-4"
+        className="fixed bottom-1 left-0 right-0 text-center z-30 pointer-events-none px-4"
       >
-        <p className="text-[10px] text-white/35 font-mono tracking-[0.06em]">
+        <p className="text-[10px] text-white/30 font-mono tracking-[0.06em]">
           Trading involves risk. Past performance does not guarantee future results.
         </p>
       </div>
@@ -495,7 +530,7 @@ function App() {
 }
 
 function MetricIcon({ i }) {
-  const cls = "w-3.5 h-3.5 text-tradeTeal";
+  const cls = "stat-icon";
   const icons = [
     <Activity key="a" className={cls} strokeWidth={2} />,
     <LineChart key="l" className={cls} strokeWidth={2} />,
@@ -503,7 +538,7 @@ function MetricIcon({ i }) {
     <Layers key="ly" className={cls} strokeWidth={2} />,
     <Users key="u" className={cls} strokeWidth={2} />,
   ];
-  return icons[i % icons.length];
+  return icons[((i % icons.length) + icons.length) % icons.length];
 }
 
 export default App;
