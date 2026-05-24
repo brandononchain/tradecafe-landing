@@ -164,6 +164,86 @@ code {
     text-transform: uppercase;
 }
 
+/* ===== Nav glass capsule (lens-style) ===== */
+.nav-shell {
+    position: fixed;
+    top: 24px;
+    left: 36px;
+    right: 36px;
+    height: 60px;
+    z-index: 60;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 12px 0 18px;
+    background: rgba(3, 18, 20, 0.56);
+    border: 1px solid rgba(0, 212, 170, 0.22);
+    backdrop-filter: blur(22px) saturate(140%);
+    -webkit-backdrop-filter: blur(22px) saturate(140%);
+    border-radius: 999px;
+    box-shadow:
+        0 20px 80px rgba(0, 0, 0, 0.35),
+        inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+.nav-shell::before {
+    content: "";
+    position: absolute;
+    inset: -1px;
+    border-radius: inherit;
+    pointer-events: none;
+    background:
+        radial-gradient(circle at 12% 0%, rgba(0, 212, 170, 0.18), transparent 32%),
+        radial-gradient(circle at 88% 100%, rgba(255, 255, 255, 0.10), transparent 28%);
+    opacity: 0.9;
+}
+
+/* ===== Cinematic hero frame with concave bottom ===== */
+.hero-frame {
+    position: relative;
+    min-height: calc(100vh - 40px);
+    margin: 20px;
+    overflow: hidden;
+    border-radius: 42px 42px 120px 120px;
+    background: #020809;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    isolation: isolate;
+}
+
+/* concave "cut" illusion at the bottom-center — uses outer body color so it reads as a notch */
+.hero-frame::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    bottom: -90px;
+    transform: translateX(-50%);
+    width: 46vw;
+    height: 180px;
+    background: #000;
+    border-radius: 999px 999px 0 0;
+    z-index: 5;
+    pointer-events: none;
+}
+
+@media (max-width: 768px) {
+    .nav-shell {
+        left: 16px;
+        right: 16px;
+        height: 54px;
+        padding: 0 8px 0 14px;
+    }
+    .hero-frame {
+        margin: 10px;
+        border-radius: 28px 28px 80px 80px;
+        min-height: calc(100vh - 20px);
+    }
+    .hero-frame::after {
+        width: 70vw;
+        height: 120px;
+        bottom: -60px;
+    }
+}
+
 .trade-wordmark {
     font-family: 'Geist', 'Manrope', sans-serif;
     letter-spacing: -0.055em;

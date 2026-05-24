@@ -221,10 +221,12 @@ function App() {
       className="relative min-h-screen bg-black text-tradeWhite font-body overflow-hidden"
       data-testid="tradecafe-hero"
     >
+      {/* ===== Cinematic hero frame ===== */}
+      <section className="hero-frame" data-testid="hero-frame">
       {/* ===== Video background ===== */}
       <div
         ref={videoBgRef}
-        className="fixed inset-0 z-0 scale-[1.06] origin-center"
+        className="absolute inset-0 z-0 scale-[1.06] origin-center"
         data-testid="video-bg-layer"
       >
         <video
@@ -254,28 +256,28 @@ function App() {
       </div>
 
       {/* Video overlay tint */}
-      <div className="fixed inset-0 z-10 video-overlay pointer-events-none" />
+      <div className="absolute inset-0 z-10 video-overlay pointer-events-none" />
 
       {/* Subtle grain */}
       <div
-        className="fixed inset-0 z-10 opacity-[0.08] pointer-events-none mix-blend-overlay"
+        className="absolute inset-0 z-10 opacity-[0.08] pointer-events-none mix-blend-overlay"
         style={{
           backgroundImage:
             "url('data:image/svg+xml,%3Csvg viewBox=%220 0 256 256%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cfilter id=%22noise%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.9%22 numOctaves=%224%22 stitchTiles=%22stitch%22/%3E%3C/filter%3E%3Crect width=%22100%25%22 height=%22100%25%22 filter=%22url(%23noise)%22/%3E%3C/svg%3E')",
         }}
       />
 
-      {/* ===== NAV ===== */}
+      {/* ===== NAV — floating lens-glass capsule ===== */}
       <nav
         data-anim="nav"
         data-testid="tradecafe-nav"
-        className="fixed top-5 left-1/2 -translate-x-1/2 z-50 w-[min(96vw,1180px)]"
+        className="nav-shell"
       >
-        <div className="liquid-glass rounded-pill flex items-center justify-between gap-4 sm:gap-6 px-3 sm:px-4 py-2 sm:py-2.5">
+        <div className="flex items-center justify-between gap-4 sm:gap-6 w-full">
           {/* Left: logo + wordmark */}
           <a
             href="https://tradecafe.ai"
-            className="flex items-center gap-2.5 pl-1.5 sm:pl-2"
+            className="flex items-center gap-2.5 relative"
             data-testid="tradecafe-logo-link"
           >
             <img
@@ -289,13 +291,13 @@ function App() {
           </a>
 
           {/* Center: nav links (desktop) */}
-          <div className="hidden lg:flex items-center gap-7">
+          <div className="hidden lg:flex items-center gap-7 relative">
             {NAV_LINKS.map((link) => (
               <a
                 key={link}
                 href={`#${link.toLowerCase().replace(/\s+/g, "-")}`}
                 data-testid={`nav-link-${link.toLowerCase().replace(/\s+/g, "-")}`}
-                className="text-[13px] font-medium text-white/72 hover:text-white transition-colors"
+                className="text-[13px] font-medium hover:text-white transition-colors"
                 style={{ color: "rgba(255,255,255,0.72)" }}
               >
                 {link}
@@ -304,10 +306,10 @@ function App() {
           </div>
 
           {/* Right: actions */}
-          <div className="flex items-center gap-2 sm:gap-3">
+          <div className="flex items-center gap-2 sm:gap-3 relative">
             <a
               href="https://terminal.tradecafe.ai"
-              className="hidden sm:inline-flex text-[13px] text-white/72 hover:text-white transition-colors px-2 py-1"
+              className="hidden sm:inline-flex text-[13px] text-white/70 hover:text-white transition-colors px-2 py-1"
               data-testid="nav-signin"
             >
               Sign in
@@ -322,102 +324,92 @@ function App() {
             </a>
             <button
               onClick={() => setMobileNavOpen((v) => !v)}
-              className="lg:hidden inline-flex items-center justify-center w-9 h-9 text-white/80"
+              className="lg:hidden inline-flex items-center justify-center w-9 h-9 text-white/80 relative"
               data-testid="mobile-menu-toggle"
               aria-label="Toggle menu"
             >
               {mobileNavOpen ? (
-                <X className="w-4.5 h-4.5" />
+                <X className="w-4 h-4" />
               ) : (
-                <Menu className="w-4.5 h-4.5" />
+                <Menu className="w-4 h-4" />
               )}
             </button>
           </div>
         </div>
-
-        {/* Mobile nav dropdown */}
-        {mobileNavOpen && (
-          <div className="lg:hidden mt-3 liquid-glass rounded-[28px] px-5 py-5 flex flex-col gap-3.5">
-            {NAV_LINKS.map((link) => (
-              <a
-                key={link}
-                href={`#${link.toLowerCase().replace(/\s+/g, "-")}`}
-                className="text-sm text-white/80 hover:text-white"
-                onClick={() => setMobileNavOpen(false)}
-                data-testid={`mobile-nav-link-${link.toLowerCase().replace(/\s+/g, "-")}`}
-              >
-                {link}
-              </a>
-            ))}
-            <a
-              href="https://terminal.tradecafe.ai"
-              className="text-sm text-white/80 hover:text-white"
-            >
-              Sign in
-            </a>
-          </div>
-        )}
       </nav>
+
+      {/* Mobile nav dropdown */}
+      {mobileNavOpen && (
+        <div className="lg:hidden fixed top-[92px] left-4 right-4 z-[55] liquid-glass rounded-[28px] px-5 py-5 flex flex-col gap-3.5">
+          {NAV_LINKS.map((link) => (
+            <a
+              key={link}
+              href={`#${link.toLowerCase().replace(/\s+/g, "-")}`}
+              className="text-sm text-white/80 hover:text-white"
+              onClick={() => setMobileNavOpen(false)}
+              data-testid={`mobile-nav-link-${link.toLowerCase().replace(/\s+/g, "-")}`}
+            >
+              {link}
+            </a>
+          ))}
+          <a
+            href="https://terminal.tradecafe.ai"
+            className="text-sm text-white/80 hover:text-white"
+          >
+            Sign in
+          </a>
+        </div>
+      )}
 
       {/* ===== HERO LAYOUT: bottom-left content, video stays center stage ===== */}
       <main
         ref={heroContentRef}
-        className="relative z-20 min-h-screen"
+        className="relative z-20 min-h-[calc(100vh-40px)]"
         data-testid="hero-main"
       >
         {/* Bottom-left content block */}
-        <div className="absolute left-6 sm:left-10 right-6 sm:right-auto bottom-20 sm:bottom-24 max-w-[640px]">
+        <div className="absolute left-8 sm:left-12 right-8 sm:right-auto bottom-24 sm:bottom-28 max-w-[640px]">
           {/* Kicker */}
           <div
             data-anim="kicker"
             data-testid="hero-kicker"
-            className="hero-kicker text-[10.5px] sm:text-[11px] text-tradeTeal/95 flex items-center gap-2 mb-4 sm:mb-5"
+            className="hero-kicker text-[10.5px] sm:text-[11px] text-tradeTeal/95 flex items-center gap-2 mb-5 sm:mb-6"
           >
             <span className="trade-pulse-dot inline-block w-1.5 h-1.5 rounded-full bg-tradeTeal" />
             AI Trading Ecosystem
           </div>
 
-          {/* Main title — left-aligned, smaller so the coffee cup stays the focal point */}
+          {/* Main title — calm, restrained, left-aligned */}
           <h1
             data-anim="title"
             data-testid="hero-title"
-            className="text-left font-heading font-semibold text-tradeWhite leading-[0.95] tracking-[-0.045em]"
-            style={{ fontSize: "clamp(34px, 4.4vw, 64px)" }}
+            className="text-left font-heading font-semibold text-tradeWhite leading-[0.98] tracking-[-0.04em]"
+            style={{ fontSize: "clamp(34px, 4.6vw, 64px)" }}
           >
-            Enter the{" "}
-            <span className="italic font-light text-white/95">TradeCafe</span>{" "}
-            Economy.
+            The calm way to trade{" "}
+            <span className="italic font-light text-white/95">with AI</span>.
           </h1>
 
-          {/* Subtitle — small mono line under title */}
+          {/* Subtitle — readable, generous spacing */}
           <p
             data-anim="subtitle"
             data-testid="hero-subtitle"
-            className="mt-3.5 sm:mt-4 text-[12.5px] sm:text-[13.5px] text-white/72 font-mono tracking-[0.04em] max-w-[520px]"
+            className="mt-5 sm:mt-6 text-[14px] sm:text-[15px] leading-[1.65] text-white/72 max-w-[540px] font-body"
           >
-            Terminal · Signals · Automation · Trading Pool · Partner Network
+            A 24/7 trading environment where AI agents scan, signal, execute, and
+            help your network grow — while you stay in control.
           </p>
 
-          {/* Body — short, concise */}
-          <p
-            data-anim="body"
-            data-testid="hero-body"
-            className="mt-3 sm:mt-3.5 text-[13px] sm:text-[13.5px] leading-[1.6] text-white/60 max-w-[480px]"
-          >
-            The full trading loop in one calm, intelligent ecosystem — terminal,
-            AI signals, automation, pooled strategies, and partner network.
-          </p>
-
-          {/* CTAs */}
+          {/* Single calm CTA + subtle text link */}
           <div
             data-anim="ctas"
             data-testid="hero-ctas"
-            className="mt-6 sm:mt-7 flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 sm:gap-3"
+            className="mt-8 sm:mt-10 flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6"
           >
             <a
               href="https://terminal.tradecafe.ai"
               data-testid="cta-launch-terminal"
-              className="liquid-glass-strong rounded-pill inline-flex items-center justify-center gap-2 px-5 sm:px-6 py-3 text-[13px] font-medium text-white transition-transform duration-300 hover:scale-[1.04]"
+              className="liquid-glass-strong rounded-pill inline-flex items-center justify-center gap-2 px-6 sm:px-7 py-3 sm:py-3.5 text-[13px] font-medium text-white transition-transform duration-300 hover:scale-[1.04] self-start"
             >
               Launch Terminal
               <ArrowUpRight className="w-3.5 h-3.5" strokeWidth={2.2} />
@@ -425,26 +417,22 @@ function App() {
             <a
               href="https://tradecafe.ai"
               data-testid="cta-join-ecosystem"
-              className="rounded-pill inline-flex items-center justify-center gap-2 px-5 sm:px-6 py-3 text-[13px] font-medium text-white/85 hover:text-white transition-all duration-300 hover:scale-[1.04]"
-              style={{
-                background: "rgba(15,22,32,0.55)",
-                backdropFilter: "blur(14px)",
-                WebkitBackdropFilter: "blur(14px)",
-                boxShadow:
-                  "inset 0 0 0 1px rgba(255,255,255,0.14), inset 0 1px 1px rgba(255,255,255,0.08), 0 0 22px rgba(232,120,42,0.10)",
-              }}
+              className="inline-flex items-center gap-1.5 text-[13px] text-white/65 hover:text-white transition-colors self-start group"
             >
-              Join Ecosystem
-              <ArrowUpRight className="w-3.5 h-3.5" strokeWidth={2.2} />
+              Or join the ecosystem
+              <ArrowUpRight
+                className="w-3.5 h-3.5 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+                strokeWidth={2}
+              />
             </a>
           </div>
         </div>
 
-        {/* Bottom-right rail: Live pill + metrics column (desktop only) */}
+        {/* Bottom-right rail: Live pill + compact metrics (desktop only) */}
         <div
           data-anim="bottom"
           data-testid="hero-right-rail"
-          className="hidden lg:flex absolute right-10 bottom-24 flex-col items-end gap-3 z-20"
+          className="hidden lg:flex absolute right-12 bottom-28 flex-col items-end gap-2.5 z-20"
         >
           <div className="liquid-glass rounded-pill px-3.5 py-1.5 inline-flex items-center gap-2">
             <span className="trade-pulse-dot inline-block w-1.5 h-1.5 rounded-full bg-tradeTeal" />
@@ -474,15 +462,11 @@ function App() {
               </div>
             ))}
           </div>
-
-          <p className="mt-1 text-[11px] leading-[1.55] text-white/45 text-right max-w-[220px] font-mono tracking-[0.01em]">
-            Built for active traders, passive participants, and partners growing the network.
-          </p>
         </div>
 
-        {/* Mobile metrics — compact row below CTAs */}
-        <div className="lg:hidden absolute left-6 right-6 bottom-9 flex flex-wrap gap-1.5 z-20">
-          {TRUST_METRICS.slice(0, 3).map((m, i) => (
+        {/* Mobile metrics — compact row */}
+        <div className="lg:hidden absolute left-8 right-8 bottom-10 flex flex-wrap gap-1.5 z-20">
+          {TRUST_METRICS.slice(0, 3).map((m) => (
             <div
               key={m.label}
               data-testid={`metric-mobile-${m.label.toLowerCase().replace(/\s+/g, "-")}`}
@@ -494,13 +478,15 @@ function App() {
           ))}
         </div>
       </main>
+      </section>
+      {/* ===== /hero-frame ===== */}
 
       {/* ===== Risk disclaimer ===== */}
       <div
         data-testid="risk-disclaimer"
-        className="fixed bottom-3 left-0 right-0 text-center z-20 pointer-events-none px-4"
+        className="fixed bottom-2 left-0 right-0 text-center z-30 pointer-events-none px-4"
       >
-        <p className="text-[10px] text-white/30 font-mono tracking-[0.06em]">
+        <p className="text-[10px] text-white/35 font-mono tracking-[0.06em]">
           Trading involves risk. Past performance does not guarantee future results.
         </p>
       </div>
