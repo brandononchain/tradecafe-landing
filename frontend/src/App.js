@@ -268,34 +268,34 @@ function App() {
         }}
       />
 
-      {/* ===== NAV — free-floating, centered, max-width capped ===== */}
+      {/* ===== NAV — inside hero-frame, fluid responsive layout ===== */}
       <nav
         data-anim="nav"
         data-testid="tradecafe-nav"
-        className="nav-shell"
+        className="absolute top-7 sm:top-8 md:top-10 left-5 right-5 sm:left-8 sm:right-8 md:left-10 md:right-10 lg:left-12 lg:right-12 z-40 flex items-center justify-between gap-3 sm:gap-6"
       >
-        {/* Left: logo + wordmark (logo sized like the wordmark cap-height) */}
+        {/* Left: logo + wordmark — tight pairing */}
         <a
           href="https://tradecafe.ai"
-          className="flex items-center gap-1.5 sm:gap-2 relative flex-1 min-w-0"
+          className="flex items-center gap-1.5 sm:gap-2 shrink-0 relative"
           data-testid="tradecafe-logo-link"
         >
           <img
             src="/tradecafe-logo.png"
             alt="TradeCafe"
-            className="w-8 h-8 sm:w-9 sm:h-9 object-contain shrink-0"
+            className="w-8 h-8 sm:w-9 sm:h-9 lg:w-10 lg:h-10 object-contain shrink-0"
             style={{ filter: "drop-shadow(0 2px 10px rgba(0,180,166,0.32))" }}
           />
           <span
-            className="trade-wordmark text-[19px] sm:text-[22px] text-white truncate"
+            className="trade-wordmark text-[18px] sm:text-[21px] lg:text-[23px] text-white"
             style={{ textShadow: "0 1px 10px rgba(0,0,0,0.6)" }}
           >
             TradeCafe
           </span>
         </a>
 
-        {/* Center: nav links (lg+ only) — absolutely centered */}
-        <div className="hidden lg:flex items-center gap-7 absolute left-1/2 -translate-x-1/2">
+        {/* Center: nav links (lg+ only) — absolutely centered within nav */}
+        <div className="hidden lg:flex items-center gap-7 xl:gap-9 absolute left-1/2 -translate-x-1/2">
           {NAV_LINKS.map((link) => (
             <a
               key={link}
@@ -309,7 +309,7 @@ function App() {
         </div>
 
         {/* Right: auth + CTA */}
-        <div className="flex items-center gap-2.5 sm:gap-3.5 relative flex-1 justify-end">
+        <div className="flex items-center gap-3 sm:gap-4 shrink-0 relative">
           <a
             href="https://terminal.tradecafe.ai"
             className="hidden md:inline-flex text-[13px] text-white/65 hover:text-white transition-colors"
@@ -327,12 +327,12 @@ function App() {
           </a>
           <button
             onClick={() => setMobileNavOpen((v) => !v)}
-            className="lg:hidden inline-flex items-center justify-center w-9 h-9 rounded-full text-white/85 relative"
+            className="lg:hidden inline-flex items-center justify-center w-10 h-10 rounded-full text-white/90"
             data-testid="mobile-menu-toggle"
             aria-label="Toggle menu"
             style={{
               background: "rgba(8,14,18,0.55)",
-              border: "1px solid rgba(0,212,170,0.25)",
+              border: "1px solid rgba(0,212,170,0.28)",
               backdropFilter: "blur(10px)",
               WebkitBackdropFilter: "blur(10px)",
             }}
@@ -345,9 +345,9 @@ function App() {
       {/* Mobile nav drawer */}
       {mobileNavOpen && (
         <div
-          className="lg:hidden fixed top-[68px] sm:top-[82px] left-3 right-3 z-[55] flex flex-col gap-1 p-3"
+          className="lg:hidden absolute top-[72px] sm:top-[92px] md:top-[104px] left-5 right-5 sm:left-8 sm:right-8 md:left-10 md:right-10 z-50 flex flex-col gap-1 p-3"
           style={{
-            background: "rgba(4,10,14,0.85)",
+            background: "rgba(4,10,14,0.88)",
             border: "1px solid rgba(0,212,170,0.22)",
             borderRadius: "22px",
             backdropFilter: "blur(22px) saturate(140%)",
@@ -366,7 +366,7 @@ function App() {
               {link}
             </a>
           ))}
-          <div className="h-px bg-white/8 mx-3 my-1.5" />
+          <div className="h-px bg-white/10 mx-3 my-1.5" />
           <a
             href="https://terminal.tradecafe.ai"
             className="text-[14px] text-white/75 hover:text-white px-4 py-3 rounded-xl"
