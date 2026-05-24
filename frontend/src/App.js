@@ -13,6 +13,7 @@ import "@/App.css";
 import Nav from "./components/Nav";
 import { TRUST_METRICS, EXTERNAL } from "./lib/brand";
 import Terminal from "./pages/Terminal";
+import Signals from "./pages/Signals";
 
 const VIDEO_SRC = "/tradecafebackground.mp4";
 
@@ -420,6 +421,7 @@ function App() {
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/terminal" element={<Terminal />} />
+        <Route path="/signals" element={<Signals />} />
       </Routes>
     </BrowserRouter>
   );
