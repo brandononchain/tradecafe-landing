@@ -270,7 +270,7 @@ function App() {
       <nav
         data-anim="nav"
         data-testid="tradecafe-nav"
-        className="absolute top-7 sm:top-8 md:top-10 left-5 right-5 sm:left-8 sm:right-8 md:left-10 md:right-10 lg:left-12 lg:right-12 z-40 flex items-center justify-between gap-3 sm:gap-6"
+        className="absolute top-3 sm:top-4 md:top-5 lg:top-5 left-5 right-5 sm:left-8 sm:right-8 md:left-10 md:right-10 lg:left-12 lg:right-12 z-40 flex items-center justify-between gap-3 sm:gap-6"
       >
         {/* Left: TradeCafe logo lockup (SVG includes custom wordmark) */}
         <a
