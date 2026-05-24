@@ -164,51 +164,32 @@ code {
     text-transform: uppercase;
 }
 
-/* ===== Nav glass capsule (lens-style, premium) ===== */
+/* ===== Free-floating nav (no pill background) ===== */
 .nav-shell {
     position: fixed;
-    top: 24px;
-    left: 36px;
-    right: 36px;
-    height: 64px;
+    top: 28px;
+    left: 40px;
+    right: 40px;
     z-index: 60;
     display: flex;
     align-items: center;
-    padding: 0 14px 0 22px;
-    background:
-        radial-gradient(140% 320% at 50% 120%, rgba(0, 180, 166, 0.08) 0%, transparent 60%),
-        rgba(3, 18, 20, 0.62);
-    border: 1px solid rgba(0, 212, 170, 0.28);
-    backdrop-filter: blur(24px) saturate(150%);
-    -webkit-backdrop-filter: blur(24px) saturate(150%);
-    border-radius: 999px;
-    box-shadow:
-        0 24px 80px rgba(0, 0, 0, 0.45),
-        0 0 0 1px rgba(255, 255, 255, 0.02),
-        inset 0 1px 0 rgba(255, 255, 255, 0.10),
-        inset 0 -1px 0 rgba(0, 180, 166, 0.12),
-        0 0 36px rgba(0, 180, 166, 0.12);
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
 }
 
-.nav-shell::before {
-    content: "";
-    position: absolute;
-    inset: -1px;
-    border-radius: inherit;
-    pointer-events: none;
-    background:
-        radial-gradient(circle at 10% -10%, rgba(0, 212, 170, 0.32), transparent 36%),
-        radial-gradient(circle at 92% 110%, rgba(255, 255, 255, 0.12), transparent 30%);
-    opacity: 0.95;
-}
+.nav-shell::before { content: none; }
 
 .nav-link {
     position: relative;
     font-size: 13px;
     font-weight: 500;
-    color: rgba(255, 255, 255, 0.68);
+    color: rgba(255, 255, 255, 0.72);
     padding: 6px 2px;
     transition: color 0.25s ease;
+    text-shadow: 0 1px 8px rgba(0, 0, 0, 0.65);
 }
 
 .nav-link::after {
@@ -225,8 +206,7 @@ code {
 }
 
 .nav-link:hover {
-    color: rgba(255, 255, 255, 0.96);
-    text-shadow: 0 0 14px rgba(0, 180, 166, 0.35);
+    color: rgba(255, 255, 255, 0.98);
 }
 
 .nav-link:hover::after {
@@ -237,58 +217,52 @@ code {
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    padding: 7px 14px;
+    padding: 8px 16px;
     font-size: 12.5px;
     font-weight: 500;
-    color: rgba(255, 255, 255, 0.92);
-    background: rgba(0, 180, 166, 0.06);
-    border: 1px solid rgba(0, 212, 170, 0.38);
+    color: rgba(255, 255, 255, 0.95);
+    background: rgba(0, 180, 166, 0.05);
+    border: 1px solid rgba(0, 212, 170, 0.32);
     border-radius: 999px;
-    box-shadow:
-        inset 0 1px 0 rgba(255, 255, 255, 0.12),
-        0 0 18px rgba(0, 180, 166, 0.18);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
     transition: all 0.3s ease;
 }
 
 .nav-cta-outline:hover {
-    background: rgba(0, 180, 166, 0.14);
-    border-color: rgba(0, 212, 170, 0.65);
-    box-shadow:
-        inset 0 1px 0 rgba(255, 255, 255, 0.18),
-        0 0 28px rgba(0, 180, 166, 0.36);
+    background: rgba(0, 180, 166, 0.10);
+    border-color: rgba(0, 212, 170, 0.55);
     color: #fff;
 }
 
-/* ===== Premium hero CTA buttons ===== */
+/* ===== Premium hero CTA buttons — calm glow ===== */
 .cta-primary {
     display: inline-flex;
     align-items: center;
     gap: 10px;
-    padding: 14px 26px;
+    padding: 13px 24px;
     font-size: 14px;
     font-weight: 600;
     color: #042024;
     letter-spacing: -0.005em;
     background:
         linear-gradient(135deg, #F5FFFE 0%, #BDF1EA 38%, #6FD9C9 72%, #2EBFAC 100%);
-    border: 1px solid rgba(255, 255, 255, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.45);
     border-radius: 999px;
     box-shadow:
-        0 1px 0 rgba(255, 255, 255, 0.8) inset,
-        0 -4px 14px rgba(0, 180, 166, 0.4) inset,
-        0 12px 36px rgba(0, 180, 166, 0.28),
-        0 0 38px rgba(0, 180, 166, 0.22);
+        0 1px 0 rgba(255, 255, 255, 0.65) inset,
+        0 -3px 10px rgba(0, 120, 110, 0.18) inset,
+        0 6px 18px rgba(0, 0, 0, 0.25);
     transition: transform 0.35s cubic-bezier(.2,.7,.2,1), box-shadow 0.35s ease, filter 0.35s ease;
 }
 
 .cta-primary:hover {
-    transform: translateY(-1px) scale(1.02);
+    transform: translateY(-1px);
     filter: brightness(1.04);
     box-shadow:
-        0 1px 0 rgba(255, 255, 255, 0.9) inset,
-        0 -4px 14px rgba(0, 180, 166, 0.5) inset,
-        0 18px 48px rgba(0, 180, 166, 0.4),
-        0 0 56px rgba(0, 180, 166, 0.32);
+        0 1px 0 rgba(255, 255, 255, 0.75) inset,
+        0 -3px 10px rgba(0, 120, 110, 0.22) inset,
+        0 10px 26px rgba(0, 0, 0, 0.32);
 }
 
 .cta-ghost {
@@ -382,49 +356,22 @@ code {
     100% { transform: scale(1.6); opacity: 0; }
 }
 
-/* ===== Cinematic hero frame with concave bottom curve ===== */
+/* ===== Cinematic hero frame ===== */
 .hero-frame {
     position: relative;
     min-height: calc(100vh - 40px);
     margin: 20px;
     overflow: hidden;
-    border-radius: 42px 42px 120px 120px;
+    border-radius: 42px;
     background: #020809;
-    border: 1px solid rgba(255, 255, 255, 0.08);
     isolation: isolate;
 }
 
-/* Concave "cut" illusion at the bottom-center — uses outer body color so it reads as a notch */
-.hero-frame::after {
-    content: "";
-    position: absolute;
-    left: 50%;
-    bottom: -90px;
-    transform: translateX(-50%);
-    width: 46vw;
-    height: 180px;
-    background: #000;
-    border-radius: 999px 999px 0 0;
-    z-index: 5;
-    pointer-events: none;
-}
-
 @media (max-width: 768px) {
-    .nav-shell {
-        left: 16px;
-        right: 16px;
-        height: 56px;
-        padding: 0 8px 0 14px;
-    }
     .hero-frame {
         margin: 10px;
-        border-radius: 28px 28px 80px 80px;
+        border-radius: 24px;
         min-height: calc(100vh - 20px);
-    }
-    .hero-frame::after {
-        width: 70vw;
-        height: 120px;
-        bottom: -60px;
     }
 }
 

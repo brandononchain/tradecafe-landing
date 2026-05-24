@@ -289,15 +289,19 @@ function App() {
         {/* Left: logo + wordmark */}
         <a
           href="https://tradecafe.ai"
-          className="flex items-center gap-2.5 relative flex-1"
+          className="flex items-center gap-3 relative flex-1"
           data-testid="tradecafe-logo-link"
         >
           <img
             src="/tradecafe-logo.png"
             alt="TradeCafe"
-            className="w-7 h-7 sm:w-8 sm:h-8 object-contain"
+            className="w-11 h-11 sm:w-12 sm:h-12 object-contain"
+            style={{ filter: "drop-shadow(0 2px 12px rgba(0,180,166,0.35))" }}
           />
-          <span className="trade-wordmark text-lg sm:text-xl text-white">
+          <span
+            className="trade-wordmark text-xl sm:text-2xl text-white"
+            style={{ textShadow: "0 1px 10px rgba(0,0,0,0.6)" }}
+          >
             TradeCafe
           </span>
         </a>
@@ -441,11 +445,11 @@ function App() {
           </div>
         </div>
 
-        {/* Right-side instrument panel — floating stats (desktop only) */}
+        {/* Right-side instrument panel — floating stats, anchored lower-right */}
         <div
           data-anim="bottom"
           data-testid="hero-right-rail"
-          className="hidden lg:flex absolute right-12 top-1/2 -translate-y-1/2 flex-col items-end gap-2.5 z-20"
+          className="hidden lg:flex absolute right-12 bottom-24 flex-col items-end gap-2.5 z-20"
         >
           {TRUST_METRICS.map((m, i) => {
             if (m.type === "status") {
