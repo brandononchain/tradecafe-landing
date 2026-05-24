@@ -310,7 +310,7 @@ function App() {
         <div className="flex items-center gap-3 sm:gap-4 shrink-0 relative">
           <a
             href="https://terminal.tradecafe.ai"
-            className="hidden md:inline-flex text-[13px] text-white/65 hover:text-white transition-colors"
+            className="hidden lg:inline-flex text-[13px] text-white/65 hover:text-white transition-colors"
             data-testid="nav-signin"
           >
             Sign in
@@ -318,7 +318,7 @@ function App() {
           <a
             href="https://terminal.tradecafe.ai"
             data-testid="nav-launch-terminal"
-            className="nav-cta-outline hidden sm:inline-flex"
+            className="nav-cta-outline hidden lg:inline-flex"
           >
             Launch Terminal
             <ArrowUpRight className="w-3.5 h-3.5" strokeWidth={2.2} />
@@ -399,12 +399,12 @@ function App() {
       >
         {/* Hero content block — flex flow on mobile, absolute bottom-left on sm+ */}
         <div className="flex-1 flex items-end sm:block">
-          <div className="w-full px-6 sm:px-0 pb-20 sm:pb-0 pt-28 sm:pt-0 sm:absolute sm:left-12 sm:right-auto sm:bottom-24 lg:bottom-28 sm:max-w-[560px] lg:max-w-[640px]">
+          <div className="w-full px-6 sm:px-0 pb-10 sm:pb-0 pt-0 sm:absolute sm:left-8 md:left-10 lg:left-12 sm:right-auto sm:bottom-12 md:bottom-16 lg:bottom-28 sm:max-w-[520px] md:max-w-[560px] lg:max-w-[640px]">
             {/* Kicker */}
             <div
               data-anim="kicker"
               data-testid="hero-kicker"
-              className="hero-kicker text-[10.5px] sm:text-[11px] text-tradeTeal/95 flex items-center gap-2 mb-4 sm:mb-6"
+              className="hero-kicker text-[10.5px] sm:text-[11px] text-tradeTeal/95 flex items-center gap-2 mb-3 sm:mb-5"
             >
               <span className="trade-pulse-dot inline-block w-1.5 h-1.5 rounded-full bg-tradeTeal" />
               AI Trading Ecosystem
@@ -416,7 +416,7 @@ function App() {
             data-testid="hero-title"
             className="text-left font-heading font-semibold text-tradeWhite"
             style={{
-              fontSize: "clamp(34px, 7.4vw, 84px)",
+              fontSize: "clamp(30px, 6.6vw, 84px)",
               lineHeight: "1.02",
               letterSpacing: "-0.045em",
             }}
@@ -432,7 +432,7 @@ function App() {
           <p
             data-anim="subtitle"
             data-testid="hero-subtitle"
-            className="mt-4 sm:mt-7 text-[14px] sm:text-[16px] lg:text-[17px] leading-[1.55] sm:leading-[1.6] text-white/74 max-w-[560px] font-body"
+            className="mt-3 sm:mt-5 lg:mt-7 text-[13px] sm:text-[15px] lg:text-[17px] leading-[1.55] sm:leading-[1.6] text-white/74 max-w-[520px] lg:max-w-[560px] font-body"
           >
             A 24/7 trading environment where AI agents scan, signal, execute, and
             help your network grow — while you stay in control.
@@ -442,7 +442,7 @@ function App() {
           <div
             data-anim="ctas"
             data-testid="hero-ctas"
-            className="mt-7 sm:mt-10 flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4"
+            className="mt-5 sm:mt-7 lg:mt-10 flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4"
           >
             <a
               href="https://terminal.tradecafe.ai"
@@ -468,7 +468,7 @@ function App() {
           {/* Inline metric strip on mobile/tablet — replaces absolute floating rail */}
           <div
             data-testid="hero-metrics-inline"
-            className="lg:hidden mt-8 flex flex-wrap gap-2"
+            className="lg:hidden mt-5 sm:mt-6 flex flex-wrap gap-1.5 sm:gap-2"
           >
             <div className="stat-pill is-status">
               <span className="stat-dot" />
