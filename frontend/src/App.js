@@ -15,6 +15,7 @@ import { TRUST_METRICS, EXTERNAL } from "./lib/brand";
 import Terminal from "./pages/Terminal";
 import Signals from "./pages/Signals";
 import Automation from "./pages/Automation";
+import Pool from "./pages/Pool";
 
 const VIDEO_SRC = "/tradecafebackground.mp4";
 
@@ -424,6 +425,7 @@ function App() {
         <Route path="/terminal" element={<Terminal />} />
         <Route path="/signals" element={<Signals />} />
         <Route path="/automation" element={<Automation />} />
+        <Route path="/pool" element={<Pool />} />
       </Routes>
     </BrowserRouter>
   );

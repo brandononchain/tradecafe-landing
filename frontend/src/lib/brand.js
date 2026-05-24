@@ -4,7 +4,7 @@ export const NAV_LINKS = [
   { label: "Terminal",   to: "/terminal" },
   { label: "Signals",    to: "/signals" },
   { label: "Automation", to: "/automation" },
-  { label: "Pool",       to: "/#pool" },
+  { label: "Pool",       to: "/pool" },
   { label: "Partners",   to: "/#partners" },
 ];
 

@@ -1378,3 +1378,158 @@ code {
     background: rgba(255, 255, 255, 0.02);
     border: 1px solid rgba(255, 255, 255, 0.05);
 }
+
+/* ===== Pool Page ===== */
+.tc-pool-snap {
+    position: relative;
+    padding: 22px 22px 24px;
+    border-radius: 24px;
+    background:
+        radial-gradient(120% 220% at 100% 0%, rgba(0, 180, 166, 0.10), transparent 55%),
+        linear-gradient(180deg, rgba(5, 12, 16, 0.82), rgba(2, 8, 9, 0.92));
+    border: 1px solid rgba(0, 212, 170, 0.18);
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.05),
+        0 24px 60px rgba(0, 0, 0, 0.5),
+        0 0 30px rgba(0, 180, 166, 0.10);
+    overflow: hidden;
+}
+
+.tc-pool-snap-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 18px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.tc-pool-snap-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 999px;
+    background: #00B4A6;
+    box-shadow: 0 0 12px rgba(0, 180, 166, 0.65);
+    display: inline-block;
+}
+
+.tc-pool-snap-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+}
+@media (min-width: 768px) {
+    .tc-pool-snap-grid { grid-template-columns: repeat(4, 1fr); gap: 14px; }
+}
+
+.tc-snap-stat {
+    display: flex;
+    flex-direction: column;
+    padding: 14px 16px 16px;
+    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* ===== Comparison table ===== */
+.tc-compare {
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.025), rgba(255, 255, 255, 0.005)), rgba(4, 10, 14, 0.55);
+    overflow: hidden;
+    box-shadow: 0 14px 40px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+
+.tc-compare-row {
+    display: grid;
+    grid-template-columns: 1.2fr 1fr 1fr;
+    align-items: stretch;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+}
+.tc-compare-row:last-child { border-bottom: none; }
+
+@media (max-width: 768px) {
+    .tc-compare-row {
+        grid-template-columns: 1fr 1fr;
+    }
+    .tc-compare-row .tc-compare-cell-label {
+        grid-column: 1 / -1;
+        background: rgba(0, 180, 166, 0.04);
+    }
+}
+
+.tc-compare-cell {
+    padding: 14px 18px;
+    font-size: 12.5px;
+    color: rgba(255, 255, 255, 0.78);
+    line-height: 1.45;
+    border-left: 1px solid rgba(255, 255, 255, 0.04);
+}
+.tc-compare-cell:first-child { border-left: none; }
+
+.tc-compare-cell-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: rgba(255, 255, 255, 0.55);
+}
+
+.tc-compare-cell-pool {
+    color: #5FE0CF;
+    background: rgba(0, 180, 166, 0.04);
+}
+
+.tc-compare-head {
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.03), transparent);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.tc-compare-h {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.tc-compare-h-icon {
+    width: 30px;
+    height: 30px;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    color: rgba(255, 255, 255, 0.85);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+.tc-compare-h-icon.is-teal {
+    background: rgba(0, 180, 166, 0.10);
+    border-color: rgba(0, 212, 170, 0.32);
+    color: #5FE0CF;
+}
+
+.tc-compare-h-eyebrow {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9.5px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.5);
+}
+.tc-compare-h.is-teal .tc-compare-h-eyebrow { color: rgba(0, 180, 166, 0.85); }
+
+.tc-compare-h-title {
+    font-family: 'Geist', 'Manrope', sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    color: #F5F6F2;
+    letter-spacing: -0.01em;
+}
+
+/* ===== Risk disclaimer ===== */
+.tc-risk-disclaimer {
+    padding: 18px 20px;
+    border-radius: 16px;
+    background: rgba(232, 120, 42, 0.04);
+    border: 1px solid rgba(232, 120, 42, 0.20);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03);
+}
