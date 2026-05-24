@@ -9,10 +9,6 @@ import {
   Users,
   Menu,
   X,
-  Terminal as TerminalIcon,
-  Radio,
-  Zap,
-  Network,
 } from "lucide-react";
 import "@/App.css";
 
@@ -26,14 +22,6 @@ const TRUST_METRICS = [
   { label: "Signals", value: "8,782" },
   { label: "Managed", value: "$3M+" },
   { label: "Uptime", value: "99.9%" },
-];
-
-const PRODUCT_DOCK = [
-  { key: "terminal",   label: "Terminal",   desc: "Live trading workspace",   Icon: TerminalIcon },
-  { key: "signals",    label: "Signals",    desc: "AI-generated trade calls", Icon: Radio },
-  { key: "automation", label: "Automation", desc: "Hands-free execution",     Icon: Zap },
-  { key: "pool",       label: "Pool",       desc: "Pooled strategy capital",  Icon: Layers },
-  { key: "partners",   label: "Partners",   desc: "Grow the network",         Icon: Network },
 ];
 
 function App() {
@@ -280,34 +268,34 @@ function App() {
         }}
       />
 
-      {/* ===== NAV — floating lens-glass capsule (3-column premium) ===== */}
+      {/* ===== NAV — free-floating, centered, max-width capped ===== */}
       <nav
         data-anim="nav"
         data-testid="tradecafe-nav"
         className="nav-shell"
       >
-        {/* Left: logo + wordmark */}
+        {/* Left: logo + wordmark (logo sized like the wordmark cap-height) */}
         <a
           href="https://tradecafe.ai"
-          className="flex items-center gap-3 relative flex-1"
+          className="flex items-center gap-1.5 sm:gap-2 relative flex-1 min-w-0"
           data-testid="tradecafe-logo-link"
         >
           <img
             src="/tradecafe-logo.png"
             alt="TradeCafe"
-            className="w-11 h-11 sm:w-12 sm:h-12 object-contain"
-            style={{ filter: "drop-shadow(0 2px 12px rgba(0,180,166,0.35))" }}
+            className="w-8 h-8 sm:w-9 sm:h-9 object-contain shrink-0"
+            style={{ filter: "drop-shadow(0 2px 10px rgba(0,180,166,0.32))" }}
           />
           <span
-            className="trade-wordmark text-xl sm:text-2xl text-white"
+            className="trade-wordmark text-[19px] sm:text-[22px] text-white truncate"
             style={{ textShadow: "0 1px 10px rgba(0,0,0,0.6)" }}
           >
             TradeCafe
           </span>
         </a>
 
-        {/* Center: nav links (desktop) — absolutely centered */}
-        <div className="hidden lg:flex items-center gap-8 absolute left-1/2 -translate-x-1/2">
+        {/* Center: nav links (lg+ only) — absolutely centered */}
+        <div className="hidden lg:flex items-center gap-7 absolute left-1/2 -translate-x-1/2">
           {NAV_LINKS.map((link) => (
             <a
               key={link}
@@ -321,10 +309,10 @@ function App() {
         </div>
 
         {/* Right: auth + CTA */}
-        <div className="flex items-center gap-3 sm:gap-4 relative flex-1 justify-end">
+        <div className="flex items-center gap-2.5 sm:gap-3.5 relative flex-1 justify-end">
           <a
             href="https://terminal.tradecafe.ai"
-            className="hidden sm:inline-flex text-[13px] text-white/65 hover:text-white transition-colors"
+            className="hidden md:inline-flex text-[13px] text-white/65 hover:text-white transition-colors"
             data-testid="nav-signin"
           >
             Sign in
@@ -332,70 +320,96 @@ function App() {
           <a
             href="https://terminal.tradecafe.ai"
             data-testid="nav-launch-terminal"
-            className="nav-cta-outline"
+            className="nav-cta-outline hidden sm:inline-flex"
           >
             Launch Terminal
             <ArrowUpRight className="w-3.5 h-3.5" strokeWidth={2.2} />
           </a>
           <button
             onClick={() => setMobileNavOpen((v) => !v)}
-            className="lg:hidden inline-flex items-center justify-center w-9 h-9 text-white/80 relative"
+            className="lg:hidden inline-flex items-center justify-center w-9 h-9 rounded-full text-white/85 relative"
             data-testid="mobile-menu-toggle"
             aria-label="Toggle menu"
+            style={{
+              background: "rgba(8,14,18,0.55)",
+              border: "1px solid rgba(0,212,170,0.25)",
+              backdropFilter: "blur(10px)",
+              WebkitBackdropFilter: "blur(10px)",
+            }}
           >
             {mobileNavOpen ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
           </button>
         </div>
       </nav>
 
-      {/* Mobile nav dropdown */}
+      {/* Mobile nav drawer */}
       {mobileNavOpen && (
-        <div className="lg:hidden fixed top-[92px] left-4 right-4 z-[55] liquid-glass rounded-[28px] px-5 py-5 flex flex-col gap-3.5">
+        <div
+          className="lg:hidden fixed top-[68px] sm:top-[82px] left-3 right-3 z-[55] flex flex-col gap-1 p-3"
+          style={{
+            background: "rgba(4,10,14,0.85)",
+            border: "1px solid rgba(0,212,170,0.22)",
+            borderRadius: "22px",
+            backdropFilter: "blur(22px) saturate(140%)",
+            WebkitBackdropFilter: "blur(22px) saturate(140%)",
+            boxShadow: "0 18px 60px rgba(0,0,0,0.55)",
+          }}
+        >
           {NAV_LINKS.map((link) => (
             <a
               key={link}
-              href={`#${link.toLowerCase().replace(/\s+/g, "-")}`}
-              className="text-sm text-white/80 hover:text-white"
+              href={`#${link.toLowerCase()}`}
+              className="text-[14px] text-white/85 hover:text-white px-4 py-3 rounded-xl hover:bg-white/[0.04] transition-colors"
               onClick={() => setMobileNavOpen(false)}
-              data-testid={`mobile-nav-link-${link.toLowerCase().replace(/\s+/g, "-")}`}
+              data-testid={`mobile-nav-link-${link.toLowerCase()}`}
             >
               {link}
             </a>
           ))}
+          <div className="h-px bg-white/8 mx-3 my-1.5" />
           <a
             href="https://terminal.tradecafe.ai"
-            className="text-sm text-white/80 hover:text-white"
+            className="text-[14px] text-white/75 hover:text-white px-4 py-3 rounded-xl"
           >
             Sign in
+          </a>
+          <a
+            href="https://terminal.tradecafe.ai"
+            className="cta-primary mx-2 mt-1 justify-center"
+            onClick={() => setMobileNavOpen(false)}
+          >
+            Launch Terminal
+            <ArrowUpRight className="w-3.5 h-3.5" strokeWidth={2.2} />
           </a>
         </div>
       )}
 
-      {/* ===== HERO LAYOUT: bottom-left content, video stays center stage ===== */}
+      {/* ===== HERO LAYOUT: mobile-first stacked, desktop bottom-left absolute ===== */}
       <main
         ref={heroContentRef}
-        className="relative z-20 min-h-[calc(100vh-40px)]"
+        className="relative z-20 min-h-[calc(100vh-40px)] flex flex-col"
         data-testid="hero-main"
       >
-        {/* Bottom-left content block */}
-        <div className="absolute left-8 sm:left-12 right-8 sm:right-auto bottom-24 sm:bottom-28 max-w-[640px]">
-          {/* Kicker */}
-          <div
-            data-anim="kicker"
-            data-testid="hero-kicker"
-            className="hero-kicker text-[10.5px] sm:text-[11px] text-tradeTeal/95 flex items-center gap-2 mb-5 sm:mb-6"
-          >
-            <span className="trade-pulse-dot inline-block w-1.5 h-1.5 rounded-full bg-tradeTeal" />
-            AI Trading Ecosystem
-          </div>
+        {/* Hero content block — flex flow on mobile, absolute bottom-left on sm+ */}
+        <div className="flex-1 flex items-end sm:block">
+          <div className="w-full px-6 sm:px-0 pb-20 sm:pb-0 pt-28 sm:pt-0 sm:absolute sm:left-12 sm:right-auto sm:bottom-24 lg:bottom-28 sm:max-w-[560px] lg:max-w-[640px]">
+            {/* Kicker */}
+            <div
+              data-anim="kicker"
+              data-testid="hero-kicker"
+              className="hero-kicker text-[10.5px] sm:text-[11px] text-tradeTeal/95 flex items-center gap-2 mb-4 sm:mb-6"
+            >
+              <span className="trade-pulse-dot inline-block w-1.5 h-1.5 rounded-full bg-tradeTeal" />
+              AI Trading Ecosystem
+            </div>
 
-          {/* Main title — two-line premium hero */}
+          {/* Main title — two-line premium hero (responsive) */}
           <h1
             data-anim="title"
             data-testid="hero-title"
             className="text-left font-heading font-semibold text-tradeWhite"
             style={{
-              fontSize: "clamp(40px, 5.6vw, 84px)",
+              fontSize: "clamp(34px, 7.4vw, 84px)",
               lineHeight: "1.02",
               letterSpacing: "-0.045em",
             }}
@@ -407,26 +421,26 @@ function App() {
             </span>
           </h1>
 
-          {/* Subtitle — readable, generous spacing */}
+          {/* Subtitle — readable, responsive sizing */}
           <p
             data-anim="subtitle"
             data-testid="hero-subtitle"
-            className="mt-6 sm:mt-7 text-[15px] sm:text-[17px] leading-[1.6] text-white/74 max-w-[560px] font-body"
+            className="mt-4 sm:mt-7 text-[14px] sm:text-[16px] lg:text-[17px] leading-[1.55] sm:leading-[1.6] text-white/74 max-w-[560px] font-body"
           >
             A 24/7 trading environment where AI agents scan, signal, execute, and
             help your network grow — while you stay in control.
           </p>
 
-          {/* Premium CTAs */}
+          {/* Premium CTAs — full-width on mobile */}
           <div
             data-anim="ctas"
             data-testid="hero-ctas"
-            className="mt-9 sm:mt-11 flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4"
+            className="mt-7 sm:mt-10 flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4"
           >
             <a
               href="https://terminal.tradecafe.ai"
               data-testid="cta-launch-terminal"
-              className="cta-primary self-start"
+              className="cta-primary justify-center sm:justify-start sm:self-start"
             >
               Launch Terminal
               <ArrowUpRight className="w-4 h-4" strokeWidth={2.4} />
@@ -434,7 +448,7 @@ function App() {
             <a
               href="https://tradecafe.ai"
               data-testid="cta-explore-ecosystem"
-              className="cta-ghost self-start group"
+              className="cta-ghost justify-center sm:justify-start sm:self-start group"
             >
               Explore Ecosystem
               <ArrowUpRight
@@ -443,9 +457,32 @@ function App() {
               />
             </a>
           </div>
+
+          {/* Inline metric strip on mobile/tablet — replaces absolute floating rail */}
+          <div
+            data-testid="hero-metrics-inline"
+            className="lg:hidden mt-8 flex flex-wrap gap-2"
+          >
+            <div className="stat-pill is-status">
+              <span className="stat-dot" />
+              <span className="stat-label">24/7 AI Signals</span>
+            </div>
+            {TRUST_METRICS.filter((m) => m.type !== "status").slice(0, 3).map((m, i) => (
+              <div
+                key={m.label}
+                data-testid={`metric-mobile-${m.label.toLowerCase().replace(/\s+/g, "-")}`}
+                className="stat-pill"
+              >
+                <MetricIcon i={i} />
+                <span className="stat-value">{m.value}</span>
+                <span className="stat-label">{m.label}</span>
+              </div>
+            ))}
+          </div>
+          </div>
         </div>
 
-        {/* Right-side instrument panel — floating stats, anchored lower-right */}
+        {/* Right-side instrument panel — desktop only, anchored lower-right */}
         <div
           data-anim="bottom"
           data-testid="hero-right-rail"
@@ -479,33 +516,9 @@ function App() {
             );
           })}
         </div>
-
-        {/* Mobile metrics — compact row */}
-        <div className="lg:hidden absolute left-8 right-8 bottom-16 flex flex-wrap gap-1.5 z-20">
-          {TRUST_METRICS.filter((m) => m.type !== "status").slice(0, 3).map((m) => (
-            <div
-              key={m.label}
-              data-testid={`metric-mobile-${m.label.toLowerCase().replace(/\s+/g, "-")}`}
-              className="stat-pill"
-            >
-              <span className="stat-value">{m.value}</span>
-              <span className="stat-label">{m.label}</span>
-            </div>
-          ))}
-        </div>
       </main>
       </section>
       {/* ===== /hero-frame ===== */}
-
-      {/* ===== Risk disclaimer ===== */}
-      <div
-        data-testid="risk-disclaimer"
-        className="fixed bottom-1 left-0 right-0 text-center z-30 pointer-events-none px-4"
-      >
-        <p className="text-[10px] text-white/30 font-mono tracking-[0.06em]">
-          Trading involves risk. Past performance does not guarantee future results.
-        </p>
-      </div>
     </div>
   );
 }
@@ -523,3 +536,4 @@ function MetricIcon({ i }) {
 }
 
 export default App;
+
