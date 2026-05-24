@@ -7,8 +7,6 @@ import {
   LineChart,
   Layers,
   Users,
-  Menu,
-  X,
 } from "lucide-react";
 import "@/App.css";
 
@@ -274,24 +272,23 @@ function App() {
         data-testid="tradecafe-nav"
         className="absolute top-7 sm:top-8 md:top-10 left-5 right-5 sm:left-8 sm:right-8 md:left-10 md:right-10 lg:left-12 lg:right-12 z-40 flex items-center justify-between gap-3 sm:gap-6"
       >
-        {/* Left: logo + wordmark — tight pairing */}
+        {/* Left: TradeCafe logo lockup (SVG includes custom wordmark) */}
         <a
           href="https://tradecafe.ai"
-          className="flex items-center gap-1.5 sm:gap-2 shrink-0 relative"
+          className="flex items-center shrink-0 relative"
           data-testid="tradecafe-logo-link"
+          aria-label="TradeCafe"
         >
           <img
-            src="/tradecafe-logo.png"
+            src="/tradecafe-wordmark.svg"
             alt="TradeCafe"
-            className="w-8 h-8 sm:w-9 sm:h-9 lg:w-10 lg:h-10 object-contain shrink-0"
-            style={{ filter: "drop-shadow(0 2px 10px rgba(0,180,166,0.32))" }}
+            className="h-7 sm:h-8 lg:h-9 w-auto select-none"
+            draggable={false}
+            style={{
+              filter:
+                "drop-shadow(0 1px 0 rgba(0,0,0,0.4)) drop-shadow(0 2px 14px rgba(0,180,166,0.18))",
+            }}
           />
-          <span
-            className="trade-wordmark text-[18px] sm:text-[21px] lg:text-[23px] text-white"
-            style={{ textShadow: "0 1px 10px rgba(0,0,0,0.6)" }}
-          >
-            TradeCafe
-          </span>
         </a>
 
         {/* Center: nav links (lg+ only) — absolutely centered within nav */}
@@ -327,62 +324,71 @@ function App() {
           </a>
           <button
             onClick={() => setMobileNavOpen((v) => !v)}
-            className="lg:hidden inline-flex items-center justify-center w-10 h-10 rounded-full text-white/90"
+            className="tc-burger lg:hidden"
             data-testid="mobile-menu-toggle"
             aria-label="Toggle menu"
-            style={{
-              background: "rgba(8,14,18,0.55)",
-              border: "1px solid rgba(0,212,170,0.28)",
-              backdropFilter: "blur(10px)",
-              WebkitBackdropFilter: "blur(10px)",
-            }}
+            aria-expanded={mobileNavOpen}
           >
-            {mobileNavOpen ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
+            <span className={`tc-burger-bar ${mobileNavOpen ? "is-open-top" : ""}`} />
+            <span className={`tc-burger-bar ${mobileNavOpen ? "is-open-mid" : ""}`} />
+            <span className={`tc-burger-bar ${mobileNavOpen ? "is-open-bot" : ""}`} />
           </button>
         </div>
       </nav>
 
-      {/* Mobile nav drawer */}
-      {mobileNavOpen && (
-        <div
-          className="lg:hidden absolute top-[72px] sm:top-[92px] md:top-[104px] left-5 right-5 sm:left-8 sm:right-8 md:left-10 md:right-10 z-50 flex flex-col gap-1 p-3"
-          style={{
-            background: "rgba(4,10,14,0.88)",
-            border: "1px solid rgba(0,212,170,0.22)",
-            borderRadius: "22px",
-            backdropFilter: "blur(22px) saturate(140%)",
-            WebkitBackdropFilter: "blur(22px) saturate(140%)",
-            boxShadow: "0 18px 60px rgba(0,0,0,0.55)",
-          }}
-        >
-          {NAV_LINKS.map((link) => (
-            <a
-              key={link}
-              href={`#${link.toLowerCase()}`}
-              className="text-[14px] text-white/85 hover:text-white px-4 py-3 rounded-xl hover:bg-white/[0.04] transition-colors"
-              onClick={() => setMobileNavOpen(false)}
-              data-testid={`mobile-nav-link-${link.toLowerCase()}`}
-            >
-              {link}
-            </a>
+      {/* Mobile nav drawer — branded */}
+      <div
+        className={`tc-drawer lg:hidden ${mobileNavOpen ? "is-open" : ""}`}
+        data-testid="mobile-drawer"
+        aria-hidden={!mobileNavOpen}
+      >
+        <div className="tc-drawer-glow" />
+        <div className="tc-drawer-kicker">
+          <span className="trade-pulse-dot inline-block w-1.5 h-1.5 rounded-full bg-tradeTeal" />
+          <span>Navigation</span>
+        </div>
+        <ul className="tc-drawer-list">
+          {NAV_LINKS.map((link, i) => (
+            <li key={link} style={{ "--i": i }}>
+              <a
+                href={`#${link.toLowerCase()}`}
+                className="tc-drawer-link"
+                onClick={() => setMobileNavOpen(false)}
+                data-testid={`mobile-nav-link-${link.toLowerCase()}`}
+              >
+                <span className="tc-drawer-link-num">0{i + 1}</span>
+                <span className="tc-drawer-link-label">{link}</span>
+                <ArrowUpRight className="tc-drawer-link-arrow" strokeWidth={2} />
+              </a>
+            </li>
           ))}
-          <div className="h-px bg-white/10 mx-3 my-1.5" />
+        </ul>
+        <div className="tc-drawer-divider" />
+        <div className="tc-drawer-actions">
           <a
             href="https://terminal.tradecafe.ai"
-            className="text-[14px] text-white/75 hover:text-white px-4 py-3 rounded-xl"
+            className="tc-drawer-signin"
+            onClick={() => setMobileNavOpen(false)}
+            data-testid="mobile-signin"
           >
             Sign in
           </a>
           <a
             href="https://terminal.tradecafe.ai"
-            className="cta-primary mx-2 mt-1 justify-center"
+            className="cta-primary justify-center w-full"
             onClick={() => setMobileNavOpen(false)}
+            data-testid="mobile-cta-launch"
           >
             Launch Terminal
             <ArrowUpRight className="w-3.5 h-3.5" strokeWidth={2.2} />
           </a>
         </div>
-      )}
+        <div className="tc-drawer-footnote">
+          <span className="font-mono text-[10px] tracking-[0.18em] uppercase text-white/40">
+            TradeCafe • AI Trading Ecosystem
+          </span>
+        </div>
+      </div>
 
       {/* ===== HERO LAYOUT: mobile-first stacked, desktop bottom-left absolute ===== */}
       <main
