@@ -231,6 +231,7 @@ function App() {
         <video
           ref={videoRef}
           src={VIDEO_SRC}
+          poster="/tradecafebackground-poster.jpg"
           autoPlay
           muted
           playsInline
