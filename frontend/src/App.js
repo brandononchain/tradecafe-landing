@@ -13,7 +13,7 @@ import {
 import "@/App.css";
 
 const NAV_LINKS = ["Terminal", "Signals", "Trading Bot", "Trading Pool", "Partners"];
-const VIDEO_SRC = "https://tradecafebackground.tiiny.site";
+const VIDEO_SRC = "/tradecafebackground.mp4";
 
 const TRUST_METRICS = [
   { label: "Win Rate", value: "81%" },
@@ -269,10 +269,10 @@ function App() {
         <video
           ref={videoRef}
           src={VIDEO_SRC}
+          autoPlay
           muted
           playsInline
           preload="auto"
-          crossOrigin="anonymous"
           className="w-full h-full object-cover"
           style={{ display: framesReady ? "none" : "block" }}
         />
