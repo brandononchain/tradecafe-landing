@@ -17,6 +17,12 @@ import Signals from "./pages/Signals";
 import Automation from "./pages/Automation";
 import Pool from "./pages/Pool";
 import Partners from "./pages/Partners";
+import { Radio, Settings } from "lucide-react";
+import DashboardLayout from "./dashboard/DashboardLayout";
+import Overview from "./dashboard/pages/Overview";
+import Analytics from "./dashboard/pages/Analytics";
+import AppTerminal from "./dashboard/pages/Terminal";
+import ComingSoon from "./dashboard/pages/ComingSoon";
 
 const VIDEO_SRC = "/tradecafebackground.mp4";
 
@@ -428,6 +434,93 @@ function App() {
         <Route path="/automation" element={<Automation />} />
         <Route path="/pool" element={<Pool />} />
         <Route path="/partners" element={<Partners />} />
+
+        {/* ===== Dashboard app ===== */}
+        <Route path="/app" element={<DashboardLayout />}>
+          <Route index element={<Overview />} />
+          <Route path="analytics" element={<Analytics />} />
+          <Route path="terminal" element={<AppTerminal />} />
+          <Route
+            path="signals"
+            element={
+              <ComingSoon
+                eyebrow="AI Signal Engine"
+                title="Signals"
+                desc="A curated, real-time feed of high-confidence AI trading signals across crypto markets."
+                icon={Radio}
+                points={[
+                  { title: "Live feed", desc: "Streaming signals with confidence scoring and entry context." },
+                  { title: "Filters", desc: "Route by strategy, market, and confidence threshold." },
+                  { title: "Alerts", desc: "Push, email, and webhook delivery for every signal." },
+                ]}
+              />
+            }
+          />
+          <Route
+            path="automation"
+            element={
+              <ComingSoon
+                eyebrow="Trading Bots"
+                title="Automation"
+                desc="Configure analysis and trade bots that execute your strategy 24/7 — while you stay in control."
+                icon={Bot}
+                points={[
+                  { title: "Analysis Bot", desc: "Continuous scanning and signal generation." },
+                  { title: "Trade Bot", desc: "Hands-free execution with risk guardrails." },
+                  { title: "Full Auto", desc: "End-to-end automation across your symbol set." },
+                ]}
+              />
+            }
+          />
+          <Route
+            path="pool"
+            element={
+              <ComingSoon
+                eyebrow="Pooled Strategies"
+                title="Trading Pool"
+                desc="Deposit funds into pooled AI strategies and earn a target yield, managed end-to-end."
+                icon={Layers}
+                points={[
+                  { title: "10% / month", desc: "Target return from pooled AI strategies." },
+                  { title: "Transparent", desc: "Live AUM, performance, and LP breakdown." },
+                  { title: "Flexible", desc: "Deposit and withdraw on your terms." },
+                ]}
+              />
+            }
+          />
+          <Route
+            path="affiliate"
+            element={
+              <ComingSoon
+                eyebrow="Partner Network"
+                title="Affiliate Program"
+                desc="Grow your network and earn from referrals, ranks, and pooled partner rewards."
+                icon={Users}
+                points={[
+                  { title: "Referrals", desc: "Earn on every partner you bring in." },
+                  { title: "Ranks", desc: "Progress through tiers for bigger rewards." },
+                  { title: "Payouts", desc: "Track and withdraw partner earnings." },
+                ]}
+              />
+            }
+          />
+          <Route
+            path="settings"
+            element={
+              <ComingSoon
+                eyebrow="Account & Security"
+                title="Settings"
+                desc="Manage your profile, security, 2FA, API keys, and notification preferences."
+                icon={Settings}
+                points={[
+                  { title: "Security", desc: "Two-factor auth and session management." },
+                  { title: "API Keys", desc: "Connect exchanges for auto-trading." },
+                  { title: "Preferences", desc: "Language, alerts, and display options." },
+                ]}
+              />
+            }
+          />
+        </Route>
       </Routes>
     </BrowserRouter>
   );
