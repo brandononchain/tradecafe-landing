@@ -2,22 +2,38 @@ import { useEffect, useState } from "react";
 import { Outlet, useLocation } from "react-router-dom";
 import Sidebar from "./Sidebar";
 import Topbar from "./Topbar";
+import { ThemeProvider, useTheme } from "./ThemeContext";
 
 const PAGE_META = {
   "/app": { title: "Overview", sub: "My Account" },
   "/app/analytics": { title: "Analytics", sub: "Analysis & Trading" },
+  "/app/journal": { title: "Journal", sub: "Trades & Reports" },
   "/app/terminal": { title: "Terminal", sub: "Live Trading Desk" },
   "/app/signals": { title: "Signals", sub: "AI Signal Engine" },
   "/app/automation": { title: "Automation", sub: "Trading Bots" },
   "/app/pool": { title: "Trading Pool", sub: "Pooled Strategies" },
+  "/app/vitriol": { title: "VITRIOL", sub: "Staking" },
+  "/app/vitchat": { title: "VITchat", sub: "Community" },
+  "/app/vitworld": { title: "VITworld", sub: "Social Globe" },
+  "/app/products": { title: "Products", sub: "Ecosystem" },
   "/app/affiliate": { title: "Affiliate Program", sub: "Partner Network" },
+  "/app/subscriptions": { title: "Subscriptions", sub: "Billing" },
   "/app/settings": { title: "Settings", sub: "Account & Security" },
 };
 
 export default function DashboardLayout() {
+  return (
+    <ThemeProvider>
+      <DashboardShell />
+    </ThemeProvider>
+  );
+}
+
+function DashboardShell() {
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const { pathname } = useLocation();
+  const { theme } = useTheme();
 
   // Close the mobile drawer whenever the route changes.
   useEffect(() => setMobileOpen(false), [pathname]);
@@ -25,7 +41,7 @@ export default function DashboardLayout() {
   const meta = PAGE_META[pathname] || { title: "Dashboard", sub: "TradeCafe" };
 
   return (
-    <div className="tc-app font-body" data-testid="dashboard-app">
+    <div className="tc-app font-body" data-theme={theme} data-testid="dashboard-app">
       <div className="tc-app-bg" aria-hidden />
 
       <Sidebar

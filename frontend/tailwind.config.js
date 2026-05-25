@@ -10,7 +10,8 @@ module.exports = {
         mono: ["JetBrains Mono", "monospace"],
       },
       colors: {
-        tradeTeal: "#00B4A6",
+        tradeTeal: "rgb(var(--tc-accent-rgb, 0 180 166) / <alpha-value>)",
+        tradeTealLight: "rgb(var(--tc-accent-light-rgb, 95 224 207) / <alpha-value>)",
         tradeNavy: "#1B3A5C",
         tradeOrange: "#E8782A",
         tradeBlack: "#05080D",
