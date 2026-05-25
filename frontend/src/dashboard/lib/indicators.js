@@ -6,13 +6,21 @@ export const OVERLAYS = [
   { key: "SMA", label: "SMA", defaults: { period: 20 } },
   { key: "EMA", label: "EMA", defaults: { period: 20 } },
   { key: "WMA", label: "WMA", defaults: { period: 20 } },
+  { key: "HMA", label: "Hull MA", defaults: { period: 20 } },
   { key: "BB", label: "Bollinger Bands", defaults: { period: 20, mult: 2 } },
   { key: "VWAP", label: "VWAP", defaults: {} },
+  { key: "SUPERTREND", label: "Supertrend", defaults: { period: 10, mult: 3 } },
+  { key: "ICHIMOKU", label: "Ichimoku", defaults: {} },
 ];
 
 export const OSCILLATORS = [
   { key: "RSI", label: "RSI", defaults: { period: 14 } },
   { key: "MACD", label: "MACD", defaults: { fast: 12, slow: 26, signal: 9 } },
+  { key: "STOCH", label: "Stochastic", defaults: { k: 14, d: 3 } },
+  { key: "CCI", label: "CCI", defaults: { period: 20 } },
+  { key: "WILLR", label: "Williams %R", defaults: { period: 14 } },
+  { key: "ATR", label: "ATR", defaults: { period: 14 } },
+  { key: "OBV", label: "OBV", defaults: {} },
   { key: "VOL", label: "Volume", defaults: {} },
 ];
 
@@ -136,6 +144,136 @@ function emaSeries(values, period) {
     out.push(i >= period - 1 ? prev : null);
   }
   return out;
+}
+
+// Hull Moving Average: WMA(2*WMA(n/2) - WMA(n), sqrt(n))
+export function hma(candles, period = 20) {
+  const half = Math.max(1, Math.floor(period / 2));
+  const sq = Math.max(1, Math.round(Math.sqrt(period)));
+  const wHalf = wma(candles, half);
+  const wFull = wma(candles, period);
+  const map = new Map(wFull.map((d) => [d.time, d.value]));
+  const raw = wHalf
+    .filter((d) => map.has(d.time))
+    .map((d) => ({ close: 2 * d.value - map.get(d.time), time: d.time }));
+  // WMA over raw values
+  const out = [];
+  const denom = (sq * (sq + 1)) / 2;
+  for (let i = sq - 1; i < raw.length; i++) {
+    let acc = 0;
+    for (let j = 0; j < sq; j++) acc += raw[i - j].close * (sq - j);
+    out.push({ time: raw[i].time, value: round(acc / denom) });
+  }
+  return out;
+}
+
+export function stochastic(candles, k = 14, d = 3) {
+  const kLine = [];
+  for (let i = k - 1; i < candles.length; i++) {
+    const slice = candles.slice(i - k + 1, i + 1);
+    const hh = Math.max(...slice.map((c) => c.high));
+    const ll = Math.min(...slice.map((c) => c.low));
+    const val = hh === ll ? 50 : ((candles[i].close - ll) / (hh - ll)) * 100;
+    kLine.push({ time: candles[i].time, value: round(val) });
+  }
+  const dLine = [];
+  for (let i = d - 1; i < kLine.length; i++) {
+    const avg = kLine.slice(i - d + 1, i + 1).reduce((a, x) => a + x.value, 0) / d;
+    dLine.push({ time: kLine[i].time, value: round(avg) });
+  }
+  return { k: kLine, d: dLine };
+}
+
+export function cci(candles, period = 20) {
+  const out = [];
+  for (let i = period - 1; i < candles.length; i++) {
+    const slice = candles.slice(i - period + 1, i + 1);
+    const tps = slice.map((c) => (c.high + c.low + c.close) / 3);
+    const meanTp = tps.reduce((a, x) => a + x, 0) / period;
+    const md = tps.reduce((a, x) => a + Math.abs(x - meanTp), 0) / period;
+    const tp = (candles[i].high + candles[i].low + candles[i].close) / 3;
+    out.push({ time: candles[i].time, value: round(md === 0 ? 0 : (tp - meanTp) / (0.015 * md)) });
+  }
+  return out;
+}
+
+export function williamsR(candles, period = 14) {
+  const out = [];
+  for (let i = period - 1; i < candles.length; i++) {
+    const slice = candles.slice(i - period + 1, i + 1);
+    const hh = Math.max(...slice.map((c) => c.high));
+    const ll = Math.min(...slice.map((c) => c.low));
+    out.push({ time: candles[i].time, value: round(hh === ll ? -50 : ((hh - candles[i].close) / (hh - ll)) * -100) });
+  }
+  return out;
+}
+
+export function atrSeries(candles, period = 14) {
+  const tr = [];
+  for (let i = 1; i < candles.length; i++) {
+    const c = candles[i];
+    const p = candles[i - 1];
+    tr.push({ time: c.time, value: Math.max(c.high - c.low, Math.abs(c.high - p.close), Math.abs(c.low - p.close)) });
+  }
+  const out = [];
+  let prev;
+  for (let i = 0; i < tr.length; i++) {
+    if (i < period) {
+      prev = (prev || 0) + tr[i].value;
+      if (i === period - 1) { prev /= period; out.push({ time: tr[i].time, value: round(prev) }); }
+    } else {
+      prev = (prev * (period - 1) + tr[i].value) / period;
+      out.push({ time: tr[i].time, value: round(prev) });
+    }
+  }
+  return out;
+}
+
+export function obv(candles) {
+  const out = [];
+  let acc = 0;
+  for (let i = 1; i < candles.length; i++) {
+    const dir = Math.sign(candles[i].close - candles[i - 1].close);
+    acc += dir * (candles[i].volume || 0);
+    out.push({ time: candles[i].time, value: Math.round(acc) });
+  }
+  return out;
+}
+
+export function supertrend(candles, period = 10, mult = 3) {
+  const atr = atrSeries(candles, period);
+  const atrMap = new Map(atr.map((d) => [d.time, d.value]));
+  const out = [];
+  let trendUp = true;
+  let prevST;
+  for (const c of candles) {
+    const a = atrMap.get(c.time);
+    if (a == null) continue;
+    const mid = (c.high + c.low) / 2;
+    const upper = mid + mult * a;
+    const lower = mid - mult * a;
+    if (prevST == null) prevST = lower;
+    if (c.close > prevST) trendUp = true;
+    else if (c.close < prevST) trendUp = false;
+    const st = trendUp ? lower : upper;
+    prevST = st;
+    out.push({ time: c.time, value: round(st), up: trendUp });
+  }
+  return out;
+}
+
+export function ichimoku(candles) {
+  const line = (period) => {
+    const r = [];
+    for (let i = period - 1; i < candles.length; i++) {
+      const slice = candles.slice(i - period + 1, i + 1);
+      const hh = Math.max(...slice.map((c) => c.high));
+      const ll = Math.min(...slice.map((c) => c.low));
+      r.push({ time: candles[i].time, value: round((hh + ll) / 2) });
+    }
+    return r;
+  };
+  return { tenkan: line(9), kijun: line(26) };
 }
 
 export function volumeSeries(candles) {

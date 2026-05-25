@@ -1,8 +1,12 @@
+import { useState } from "react";
 import { Gem, ArrowUpRight, Copy, Lock, Gift } from "lucide-react";
 import { PageHead, Panel } from "../ui";
+import Modal, { ModalField, ModalInput } from "../components/Modal";
 import { VITRIOL } from "../data";
 
 export default function Vitriol() {
+  const [modal, setModal] = useState(null);
+  const [agreed, setAgreed] = useState(false);
   return (
     <div className="tc-fade flex flex-col gap-6">
       <PageHead
@@ -39,8 +43,8 @@ export default function Vitriol() {
           </div>
 
           <div className="flex gap-2.5 mt-4">
-            <button className="tc-btn tc-btn-primary flex-1"><Lock className="w-4 h-4" strokeWidth={2.2} /> Stake</button>
-            <button className="tc-btn tc-btn-ghost flex-1">Unstake</button>
+            <button className="tc-btn tc-btn-primary flex-1" onClick={() => setModal("stake")}><Lock className="w-4 h-4" strokeWidth={2.2} /> Stake</button>
+            <button className="tc-btn tc-btn-ghost flex-1" onClick={() => setModal("unstake")}>Unstake</button>
           </div>
         </Panel>
 
@@ -75,6 +79,31 @@ export default function Vitriol() {
           </table>
         </div>
       </Panel>
+
+      {modal === "stake" && (
+        <Modal title="Stake VITRIOL" sub={`${VITRIOL.apr}% APR · flexible`} onClose={() => setModal(null)}
+          footer={
+            <button className="tc-btn tc-btn-primary flex-1" disabled={!agreed}
+              style={!agreed ? { opacity: 0.5, pointerEvents: "none" } : undefined} onClick={() => setModal(null)}>
+              Stake now
+            </button>
+          }>
+          <ModalField label="Amount (VITRIOL)"><ModalInput type="number" placeholder="0.00" /></ModalField>
+          <div className="flex items-center justify-between font-mono text-[11px] text-white/45 mb-4">
+            <span>Available</span><span className="text-white/80">{VITRIOL.balance.toFixed(2)} VIT</span>
+          </div>
+          <label className="flex items-start gap-2.5 cursor-pointer">
+            <input type="checkbox" checked={agreed} onChange={(e) => setAgreed(e.target.checked)} className="mt-0.5 accent-[color:var(--tc-accent)]" />
+            <span className="text-[12px] text-white/60 leading-[1.5]">I understand staking rewards are variable and subject to the protocol terms.</span>
+          </label>
+        </Modal>
+      )}
+      {modal === "unstake" && (
+        <Modal title="Unstake VITRIOL" sub="Withdraw staked balance" onClose={() => setModal(null)}
+          footer={<button className="tc-btn tc-btn-ghost flex-1" onClick={() => setModal(null)}>Close</button>}>
+          <p className="text-[13px] text-white/65 leading-[1.6]">You have no staked VITRIOL to withdraw. Stake first to start earning {VITRIOL.apr}% APR.</p>
+        </Modal>
+      )}
     </div>
   );
 }

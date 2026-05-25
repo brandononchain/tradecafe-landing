@@ -2,11 +2,12 @@ import { useEffect, useMemo, useRef } from "react";
 import { createChart, ColorType, LineStyle } from "lightweight-charts";
 import { genCandles } from "../lib/candles";
 import {
-  sma, ema, wma, bollinger, vwap, rsi, macd, volumeSeries,
+  sma, ema, wma, hma, bollinger, vwap, supertrend, ichimoku,
+  rsi, macd, stochastic, cci, williamsR, atrSeries, obv, volumeSeries,
   supportResistance, pivotPoints,
 } from "../lib/indicators";
 
-const OVERLAY_COLORS = { SMA: "#F0B90B", EMA: "#9B8AFB", WMA: "#38BDF8", VWAP: "#E8782A" };
+const OVERLAY_COLORS = { SMA: "#F0B90B", EMA: "#9B8AFB", WMA: "#38BDF8", HMA: "#FF7AB6", VWAP: "#E8782A" };
 
 const baseLayout = {
   background: { type: ColorType.Solid, color: "transparent" },
@@ -21,7 +22,7 @@ const grid = {
 
 export default function TradingChart({
   symbol, timeframe, chartType = "candles",
-  overlays = {}, oscillator = null, ai = {}, drawTool = null,
+  overlays = {}, oscillator = null, ai = {}, drawTool = null, logScale = false,
 }) {
   const mainRef = useRef(null);
   const oscRef = useRef(null);
@@ -43,7 +44,7 @@ export default function TradingChart({
         vertLine: { color: "rgba(0,180,166,0.4)", width: 1, style: 2, labelBackgroundColor: "#0B3A48" },
         horzLine: { color: "rgba(0,180,166,0.4)", width: 1, style: 2, labelBackgroundColor: "#0B3A48" },
       },
-      rightPriceScale: { borderColor: "rgba(255,255,255,0.06)" },
+      rightPriceScale: { borderColor: "rgba(255,255,255,0.06)", mode: logScale ? 1 : 0 },
       timeScale: { borderColor: "rgba(255,255,255,0.06)", timeVisible: true, secondsVisible: false },
     });
 
@@ -77,12 +78,19 @@ export default function TradingChart({
       if (k === "SMA") addLine(sma(candles, p.period), OVERLAY_COLORS.SMA);
       else if (k === "EMA") addLine(ema(candles, p.period), OVERLAY_COLORS.EMA);
       else if (k === "WMA") addLine(wma(candles, p.period), OVERLAY_COLORS.WMA);
+      else if (k === "HMA") addLine(hma(candles, p.period), OVERLAY_COLORS.HMA);
       else if (k === "VWAP") addLine(vwap(candles), OVERLAY_COLORS.VWAP);
       else if (k === "BB") {
         const bb = bollinger(candles, p.period, p.mult);
         addLine(bb.upper, "rgba(0,180,166,0.55)", 1);
         addLine(bb.middle, "rgba(0,180,166,0.35)", 1, LineStyle.Dashed);
         addLine(bb.lower, "rgba(0,180,166,0.55)", 1);
+      } else if (k === "SUPERTREND") {
+        addLine(supertrend(candles, p.period, p.mult).map((d) => ({ time: d.time, value: d.value })), "#1FB8A6", 2);
+      } else if (k === "ICHIMOKU") {
+        const ich = ichimoku(candles);
+        addLine(ich.tenkan, "#38BDF8", 1.5);
+        addLine(ich.kijun, "#E8782A", 1.5);
       }
     });
 
@@ -134,7 +142,7 @@ export default function TradingChart({
     ro.observe(el);
 
     return () => { ro.disconnect(); chart.unsubscribeClick(onClick); chart.remove(); };
-  }, [symbol, timeframe, chartType, overlays, ai, candles]);
+  }, [symbol, timeframe, chartType, overlays, ai, candles, logScale]);
 
   // Oscillator pane
   useEffect(() => {
@@ -148,18 +156,32 @@ export default function TradingChart({
       crosshair: { mode: 0 },
     });
 
+    const osc = (color, w = 1.5) => chart.addLineSeries({ color, lineWidth: w, priceLineVisible: false, lastValueVisible: true });
     if (oscillator === "RSI") {
-      const s = chart.addLineSeries({ color: "#9B8AFB", lineWidth: 1.5 });
+      const s = osc("#9B8AFB");
       s.setData(rsi(candles, 14));
       [30, 70].forEach((lvl) => s.createPriceLine({ price: lvl, color: "rgba(255,255,255,0.18)", lineWidth: 1, lineStyle: LineStyle.Dashed }));
     } else if (oscillator === "MACD") {
       const m = macd(candles);
       const hist = chart.addHistogramSeries({ priceLineVisible: false });
       hist.setData(m.histogram.map((d) => ({ time: d.time, value: d.value, color: d.value >= 0 ? "rgba(31,184,166,0.5)" : "rgba(242,54,69,0.5)" })));
-      const ml = chart.addLineSeries({ color: "#38BDF8", lineWidth: 1.5, priceLineVisible: false });
-      ml.setData(m.macd);
-      const sl = chart.addLineSeries({ color: "#E8782A", lineWidth: 1.5, priceLineVisible: false });
-      sl.setData(m.signal);
+      osc("#38BDF8").setData(m.macd);
+      osc("#E8782A").setData(m.signal);
+    } else if (oscillator === "STOCH") {
+      const s = stochastic(candles);
+      const k = osc("#38BDF8"); k.setData(s.k);
+      osc("#E8782A").setData(s.d);
+      [20, 80].forEach((lvl) => k.createPriceLine({ price: lvl, color: "rgba(255,255,255,0.18)", lineWidth: 1, lineStyle: LineStyle.Dashed }));
+    } else if (oscillator === "CCI") {
+      const s = osc("#9B8AFB"); s.setData(cci(candles, 20));
+      [-100, 100].forEach((lvl) => s.createPriceLine({ price: lvl, color: "rgba(255,255,255,0.18)", lineWidth: 1, lineStyle: LineStyle.Dashed }));
+    } else if (oscillator === "WILLR") {
+      const s = osc("#FF7AB6"); s.setData(williamsR(candles, 14));
+      [-20, -80].forEach((lvl) => s.createPriceLine({ price: lvl, color: "rgba(255,255,255,0.18)", lineWidth: 1, lineStyle: LineStyle.Dashed }));
+    } else if (oscillator === "ATR") {
+      osc("#F0B90B").setData(atrSeries(candles, 14));
+    } else if (oscillator === "OBV") {
+      osc("#1FB8A6").setData(obv(candles));
     } else if (oscillator === "VOL") {
       const v = chart.addHistogramSeries({ priceLineVisible: false });
       v.setData(volumeSeries(candles));
