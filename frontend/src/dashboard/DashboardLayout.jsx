@@ -10,7 +10,9 @@ const PAGE_META = {
   "/app/signals": { title: "Signals", sub: "AI Signal Engine" },
   "/app/automation": { title: "Automation", sub: "Trading Bots" },
   "/app/pool": { title: "Trading Pool", sub: "Pooled Strategies" },
+  "/app/vitriol": { title: "VITRIOL", sub: "Staking" },
   "/app/affiliate": { title: "Affiliate Program", sub: "Partner Network" },
+  "/app/subscriptions": { title: "Subscriptions", sub: "Billing" },
   "/app/settings": { title: "Settings", sub: "Account & Security" },
 };
 
