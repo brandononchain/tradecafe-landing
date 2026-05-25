@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Outlet, useLocation } from "react-router-dom";
 import Sidebar from "./Sidebar";
 import Topbar from "./Topbar";
+import { ThemeProvider, useTheme } from "./ThemeContext";
 
 const PAGE_META = {
   "/app": { title: "Overview", sub: "My Account" },
@@ -17,9 +18,18 @@ const PAGE_META = {
 };
 
 export default function DashboardLayout() {
+  return (
+    <ThemeProvider>
+      <DashboardShell />
+    </ThemeProvider>
+  );
+}
+
+function DashboardShell() {
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const { pathname } = useLocation();
+  const { theme } = useTheme();
 
   // Close the mobile drawer whenever the route changes.
   useEffect(() => setMobileOpen(false), [pathname]);
@@ -27,7 +37,7 @@ export default function DashboardLayout() {
   const meta = PAGE_META[pathname] || { title: "Dashboard", sub: "TradeCafe" };
 
   return (
-    <div className="tc-app font-body" data-testid="dashboard-app">
+    <div className="tc-app font-body" data-theme={theme} data-testid="dashboard-app">
       <div className="tc-app-bg" aria-hidden />
 
       <Sidebar

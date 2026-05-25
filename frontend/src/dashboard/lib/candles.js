@@ -46,6 +46,7 @@ export function genCandles(symbol = "BTCUSDT", tf = "1H", count = 160) {
       high: round(high),
       low: round(low),
       close: round(close),
+      volume: Math.round((0.5 + rnd()) * (price > 1000 ? 800 : price > 10 ? 40000 : 2000000)),
     });
     price = close;
   }
