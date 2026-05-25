@@ -302,6 +302,40 @@ export function supportResistance(candles, lookback = 5) {
   return levels.slice(-6);
 }
 
+// Linear-regression trend channel over the last `window` candles.
+export function trendChannel(candles, window = 80) {
+  const data = candles.slice(-window);
+  const n = data.length;
+  if (n < 2) return { mid: [], upper: [], lower: [], slope: 0 };
+  let sx = 0, sy = 0, sxy = 0, sxx = 0;
+  data.forEach((c, i) => {
+    sx += i; sy += c.close; sxy += i * c.close; sxx += i * i;
+  });
+  const slope = (n * sxy - sx * sy) / (n * sxx - sx * sx || 1);
+  const intercept = (sy - slope * sx) / n;
+  const mids = data.map((c, i) => intercept + slope * i);
+  const variance = data.reduce((a, c, i) => a + (c.close - mids[i]) ** 2, 0) / n;
+  const sd = Math.sqrt(variance) * 2;
+  const mid = data.map((c, i) => ({ time: c.time, value: round(mids[i]) }));
+  const upper = data.map((c, i) => ({ time: c.time, value: round(mids[i] + sd) }));
+  const lower = data.map((c, i) => ({ time: c.time, value: round(mids[i] - sd) }));
+  return { mid, upper, lower, slope };
+}
+
+// Detect the most recent broken swing level (break) and its retest zone.
+export function breakRetests(candles, lookback = 6) {
+  const levels = supportResistance(candles, lookback);
+  const last = candles[candles.length - 1].close;
+  const out = [];
+  const res = levels.filter((l) => l.type === "resistance").sort((a, b) => a.price - b.price);
+  const sup = levels.filter((l) => l.type === "support").sort((a, b) => b.price - a.price);
+  const brokenUp = res.find((l) => last > l.price);
+  const brokenDown = sup.find((l) => last < l.price);
+  if (brokenUp) out.push({ price: brokenUp.price, type: "break-up", label: "Break ↑ (retest)" });
+  if (brokenDown) out.push({ price: brokenDown.price, type: "break-down", label: "Break ↓ (retest)" });
+  return out;
+}
+
 export function pivotPoints(candles) {
   const last = candles[candles.length - 1];
   const recent = candles.slice(-24);

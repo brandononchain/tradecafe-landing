@@ -1,8 +1,11 @@
+import { useState } from "react";
 import { Bot, Power, Settings2, Activity } from "lucide-react";
 import { PageHead, Panel } from "../ui";
 import { BOTS, AI_INSIGHTS } from "../data";
+import { SignalConfigModal, TradeConfigModal, MarginSettingsModal } from "../components/ConfigModals";
 
 export default function Automation() {
+  const [modal, setModal] = useState(null);
   return (
     <div className="tc-fade flex flex-col gap-6">
       <PageHead
@@ -10,7 +13,7 @@ export default function Automation() {
         title="Automation"
         desc="Configure analysis and trade bots that run your strategy 24/7 — while you stay in control."
       >
-        <button className="tc-btn tc-btn-ghost"><Settings2 className="w-3.5 h-3.5" strokeWidth={2} /> Manage</button>
+        <button className="tc-btn tc-btn-ghost" onClick={() => setModal("margin")}><Settings2 className="w-3.5 h-3.5" strokeWidth={2} /> Manage</button>
       </PageHead>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
@@ -44,7 +47,9 @@ export default function Automation() {
 
             <div className="flex gap-2.5 mt-5">
               <button className="tc-btn tc-btn-ghost flex-1"><Power className="w-3.5 h-3.5" strokeWidth={2} /> Pause</button>
-              <button className="tc-btn tc-btn-primary flex-1"><Settings2 className="w-3.5 h-3.5" strokeWidth={2} /> Configure</button>
+              <button className="tc-btn tc-btn-primary flex-1" onClick={() => setModal(b.key)} data-testid={`configure-${b.key}`}>
+                <Settings2 className="w-3.5 h-3.5" strokeWidth={2} /> Configure
+              </button>
             </div>
           </Panel>
         ))}
@@ -63,6 +68,10 @@ export default function Automation() {
           ))}
         </ul>
       </Panel>
+
+      {modal === "signal" && <SignalConfigModal onClose={() => setModal(null)} />}
+      {modal === "trade" && <TradeConfigModal onClose={() => setModal(null)} onOpenMargin={() => setModal("margin")} />}
+      {modal === "margin" && <MarginSettingsModal onClose={() => setModal(null)} />}
     </div>
   );
 }

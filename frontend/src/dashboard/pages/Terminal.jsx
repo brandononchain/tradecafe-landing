@@ -35,7 +35,7 @@ export default function Terminal() {
   const [chartType, setChartType] = useState("candles");
   const [overlays, setOverlays] = useState({});
   const [oscillator, setOscillator] = useState(null);
-  const [ai, setAi] = useState({ sr: false, pivots: false });
+  const [ai, setAi] = useState({ sr: false, pivots: false, channel: false, breaks: false });
   const [drawTool, setDrawTool] = useState(null);
   const [magnet, setMagnet] = useState(false);
   const [locked, setLocked] = useState(false);
@@ -167,6 +167,8 @@ export default function Terminal() {
             <Dropdown label="AI" icon={Brain} testid="menu-ai">
               <MenuItem checked={ai.sr} onClick={() => setAi((a) => ({ ...a, sr: !a.sr }))}>Support / Resistance</MenuItem>
               <MenuItem checked={ai.pivots} onClick={() => setAi((a) => ({ ...a, pivots: !a.pivots }))}>Pivot Points</MenuItem>
+              <MenuItem checked={ai.channel} onClick={() => setAi((a) => ({ ...a, channel: !a.channel }))}>Trend Channel</MenuItem>
+              <MenuItem checked={ai.breaks} onClick={() => setAi((a) => ({ ...a, breaks: !a.breaks }))}>Breaks &amp; Retests</MenuItem>
             </Dropdown>
             <button className="tc-iconbtn ml-auto" style={{ width: 32, height: 32 }} onClick={() => setSettingsOpen(true)} title="Chart settings" data-testid="chart-settings">
               <Settings2 className="w-3.5 h-3.5" strokeWidth={2} />
@@ -421,6 +423,8 @@ function AIRail({ ai, setAi }) {
       {[
         { k: "sr", label: "Support / Resistance", desc: "Swing-based zones plotted on the chart." },
         { k: "pivots", label: "Pivot Points", desc: "Classic P / S1–S2 / R1–R2 levels." },
+        { k: "channel", label: "Trend Channel", desc: "Linear-regression channel with ±2σ bands." },
+        { k: "breaks", label: "Breaks & Retests", desc: "Most recent broken level + retest zone." },
       ].map((o) => (
         <button key={o.k} onClick={() => setAi((a) => ({ ...a, [o.k]: !a[o.k] }))}
           className={`flex items-start gap-3 p-3 rounded-xl border text-left transition-colors ${ai[o.k] ? "bg-tradeTeal/8 border-tradeTeal/30" : "bg-white/[0.02] border-white/6"}`}
@@ -435,7 +439,7 @@ function AIRail({ ai, setAi }) {
         </button>
       ))}
       <p className="text-[11px] text-white/40 leading-[1.5] mt-1">
-        More layers (Breaks &amp; Retests, Trend Channels, Inside-Bar BB) port from the AI engine next.
+        Layers compute client-side from the loaded candles and redraw on each symbol or timeframe change.
       </p>
     </div>
   );

@@ -4,7 +4,7 @@ import { genCandles } from "../lib/candles";
 import {
   sma, ema, wma, hma, bollinger, vwap, supertrend, ichimoku,
   rsi, macd, stochastic, cci, williamsR, atrSeries, obv, volumeSeries,
-  supportResistance, pivotPoints,
+  supportResistance, pivotPoints, trendChannel, breakRetests,
 } from "../lib/indicators";
 
 const OVERLAY_COLORS = { SMA: "#F0B90B", EMA: "#9B8AFB", WMA: "#38BDF8", HMA: "#FF7AB6", VWAP: "#E8782A" };
@@ -109,6 +109,20 @@ export default function TradingChart({
           price: lvl.price, color: lvl.type === "support" ? "rgba(31,184,166,0.7)" : "rgba(242,54,69,0.7)",
           lineWidth: 1, lineStyle: LineStyle.Dashed, axisLabelVisible: true,
           title: lvl.type === "support" ? "S" : "R",
+        })
+      );
+    }
+    if (ai.channel) {
+      const ch = trendChannel(candles);
+      addLine(ch.upper, "rgba(155,138,251,0.6)", 1, LineStyle.Dashed);
+      addLine(ch.mid, "rgba(155,138,251,0.9)", 1.5);
+      addLine(ch.lower, "rgba(155,138,251,0.6)", 1, LineStyle.Dashed);
+    }
+    if (ai.breaks) {
+      breakRetests(candles).forEach((lvl) =>
+        series.createPriceLine({
+          price: lvl.price, color: lvl.type === "break-up" ? "#1FB8A6" : "#F23645",
+          lineWidth: 2, lineStyle: LineStyle.Solid, axisLabelVisible: true, title: lvl.label,
         })
       );
     }

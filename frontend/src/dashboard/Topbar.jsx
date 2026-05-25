@@ -1,7 +1,9 @@
 import { useEffect, useRef, useState } from "react";
-import { Menu, Bell, Eye, ArrowUpRight, Palette, Check } from "lucide-react";
-import { ACCOUNT } from "./data";
+import { Menu, Bell, Eye, ArrowUpRight, Palette, Check, Radio, Bot, Layers, ShieldCheck, Users } from "lucide-react";
+import { ACCOUNT, NOTIFICATIONS } from "./data";
 import { useTheme, THEMES } from "./ThemeContext";
+
+const NOTIF_ICON = { signal: Radio, trade: Bot, pool: Layers, system: ShieldCheck, affiliate: Users };
 
 function useClock() {
   const [now, setNow] = useState(() => new Date());
@@ -41,10 +43,7 @@ export default function Topbar({ title, sub, onOpenMobile }) {
         </div>
 
         <ThemeMenu />
-
-        <button className="tc-iconbtn" aria-label="Notifications" data-testid="topbar-notifications">
-          <Bell className="w-4 h-4" strokeWidth={2} />
-        </button>
+        <NotificationsMenu />
         <button className="tc-iconbtn hidden sm:inline-flex" aria-label="Watchlist">
           <Eye className="w-4 h-4" strokeWidth={2} />
         </button>
@@ -60,6 +59,55 @@ export default function Topbar({ title, sub, onOpenMobile }) {
         </a>
       </div>
     </header>
+  );
+}
+
+function NotificationsMenu() {
+  const [open, setOpen] = useState(false);
+  const [items, setItems] = useState(NOTIFICATIONS);
+  const ref = useRef(null);
+  const unread = items.filter((n) => n.unread).length;
+
+  useEffect(() => {
+    const onDoc = (e) => { if (ref.current && !ref.current.contains(e.target)) setOpen(false); };
+    document.addEventListener("mousedown", onDoc);
+    return () => document.removeEventListener("mousedown", onDoc);
+  }, []);
+
+  return (
+    <div className="relative" ref={ref}>
+      <button className="tc-iconbtn relative" aria-label="Notifications" onClick={() => setOpen((v) => !v)} data-testid="topbar-notifications">
+        <Bell className="w-4 h-4" strokeWidth={2} />
+        {unread > 0 && <span className="absolute -top-0.5 -right-0.5 min-w-[15px] h-[15px] px-1 rounded-full bg-tradeTeal text-[#042024] font-mono text-[9px] leading-[15px] text-center">{unread}</span>}
+      </button>
+      {open && (
+        <div className="absolute right-0 mt-2 w-[320px] rounded-xl bg-[#070d12] border border-white/10 shadow-xl z-50 overflow-hidden">
+          <div className="flex items-center justify-between px-4 py-3 border-b border-white/6">
+            <span className="font-mono text-[10px] tracking-[0.16em] uppercase text-white/50">Notifications</span>
+            <button className="font-mono text-[10px] text-tradeTeal hover:opacity-80" onClick={() => setItems((p) => p.map((n) => ({ ...n, unread: false })))}>
+              Mark all read
+            </button>
+          </div>
+          <div className="max-h-[360px] overflow-y-auto">
+            {items.map((n) => {
+              const Icon = NOTIF_ICON[n.type] || Bell;
+              return (
+                <div key={n.id} className={`flex items-start gap-3 px-4 py-3 border-b border-white/4 last:border-0 ${n.unread ? "bg-tradeTeal/[0.04]" : ""}`}>
+                  <span className="w-7 h-7 rounded-lg bg-tradeTeal/10 border border-tradeTeal/20 flex items-center justify-center shrink-0">
+                    <Icon className="w-3.5 h-3.5 text-tradeTeal" strokeWidth={2} />
+                  </span>
+                  <span className="flex-1 min-w-0">
+                    <span className="block text-[12.5px] font-medium text-white/85 leading-snug">{n.title}</span>
+                    <span className="block text-[11.5px] text-white/45 leading-snug mt-0.5">{n.body}</span>
+                  </span>
+                  <span className="font-mono text-[9.5px] text-white/35 shrink-0">{n.time}</span>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+    </div>
   );
 }
 
