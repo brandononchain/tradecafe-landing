@@ -5,7 +5,7 @@ export const NAV_LINKS = [
   { label: "Signals",    to: "/signals" },
   { label: "Automation", to: "/automation" },
   { label: "Pool",       to: "/pool" },
-  { label: "Partners",   to: "/#partners" },
+  { label: "Partners",   to: "/partners" },
 ];
 
 export const TRUST_METRICS = [
