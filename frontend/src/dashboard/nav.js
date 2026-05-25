@@ -9,6 +9,10 @@ import {
   LineChart,
   Gem,
   CreditCard,
+  BookOpen,
+  MessageSquare,
+  Globe,
+  Boxes,
 } from "lucide-react";
 
 export const APP_NAV = [
@@ -17,6 +21,7 @@ export const APP_NAV = [
     items: [
       { label: "Overview", to: "/app", icon: LayoutDashboard, end: true },
       { label: "Analytics", to: "/app/analytics", icon: LineChart },
+      { label: "Journal", to: "/app/journal", icon: BookOpen },
     ],
   },
   {
@@ -35,8 +40,16 @@ export const APP_NAV = [
     ],
   },
   {
+    section: "Community",
+    items: [
+      { label: "VITchat", to: "/app/vitchat", icon: MessageSquare },
+      { label: "VITworld", to: "/app/vitworld", icon: Globe },
+    ],
+  },
+  {
     section: "Account",
     items: [
+      { label: "Products", to: "/app/products", icon: Boxes },
       { label: "Affiliate", to: "/app/affiliate", icon: Users },
       { label: "Subscriptions", to: "/app/subscriptions", icon: CreditCard },
     ],

@@ -29,6 +29,10 @@ const AppVitriol = lazy(() => import("./dashboard/pages/Vitriol"));
 const AppAffiliate = lazy(() => import("./dashboard/pages/Affiliate"));
 const AppSubscriptions = lazy(() => import("./dashboard/pages/Subscriptions"));
 const AppSettings = lazy(() => import("./dashboard/pages/Settings"));
+const AppJournal = lazy(() => import("./dashboard/pages/Journal"));
+const AppVitChat = lazy(() => import("./dashboard/pages/VitChat"));
+const AppVitWorld = lazy(() => import("./dashboard/pages/VitWorld"));
+const AppProducts = lazy(() => import("./dashboard/pages/Products"));
 
 function AppLoader() {
   return (
@@ -460,11 +464,15 @@ function App() {
         >
           <Route index element={<Overview />} />
           <Route path="analytics" element={<Analytics />} />
+          <Route path="journal" element={<AppJournal />} />
           <Route path="terminal" element={<AppTerminal />} />
           <Route path="signals" element={<AppSignals />} />
           <Route path="automation" element={<AppAutomation />} />
           <Route path="pool" element={<AppPool />} />
           <Route path="vitriol" element={<AppVitriol />} />
+          <Route path="vitchat" element={<AppVitChat />} />
+          <Route path="vitworld" element={<AppVitWorld />} />
+          <Route path="products" element={<AppProducts />} />
           <Route path="affiliate" element={<AppAffiliate />} />
           <Route path="subscriptions" element={<AppSubscriptions />} />
           <Route path="settings" element={<AppSettings />} />
