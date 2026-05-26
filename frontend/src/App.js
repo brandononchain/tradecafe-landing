@@ -25,6 +25,7 @@ const AppTerminal = lazy(() => import("./dashboard/pages/Terminal"));
 const AppSignals = lazy(() => import("./dashboard/pages/Signals"));
 const AppAutomation = lazy(() => import("./dashboard/pages/Automation"));
 const AppPool = lazy(() => import("./dashboard/pages/Pool"));
+const AppMining = lazy(() => import("./dashboard/pages/Mining"));
 const AppVitriol = lazy(() => import("./dashboard/pages/Vitriol"));
 const AppAffiliate = lazy(() => import("./dashboard/pages/Affiliate"));
 const AppSubscriptions = lazy(() => import("./dashboard/pages/Subscriptions"));
@@ -470,6 +471,7 @@ function App() {
           <Route path="signals" element={<AppSignals />} />
           <Route path="automation" element={<AppAutomation />} />
           <Route path="pool" element={<AppPool />} />
+          <Route path="mining" element={<AppMining />} />
           <Route path="vitriol" element={<AppVitriol />} />
           <Route path="vitchat" element={<AppVitChat />} />
           <Route path="vitworld" element={<AppVitWorld />} />

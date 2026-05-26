@@ -352,6 +352,26 @@ export const INVOICES = [
   { id: "INV-20471", item: "Trade Bot · 12mo", amount: "$990.00", date: "Apr 26, 2026", status: "Paid" },
 ];
 
+// ===== Mining Pool =====
+// A mining contract is created with each product / Trading Pool purchase.
+// It pays back rewardPercent of productPrice as VIT, accrued over
+// totalRewards daily payouts (currentRewards completed so far).
+export const MINING = {
+  walletAddress: "TVk7Xm2pQ9rLfWcN8aZ3hYbE6sJ1tUd4o",
+  contracts: [
+    { id: "m1", source: "Trade Bot", productPrice: 990, rewardPercent: 1.0, totalRewards: 200, currentRewards: 84, active: true },
+    { id: "m2", source: "Trading Pool deposit", productPrice: 2000, rewardPercent: 0.6, totalRewards: 180, currentRewards: 36, active: true },
+    { id: "m3", source: "Signal Bot", productPrice: 490, rewardPercent: 0.8, totalRewards: 150, currentRewards: 150, active: false },
+  ],
+  payouts: [
+    { date: "May 26, 2026", amountVIT: 9.45, status: "Paid", tx: "0x8f2a…c41d" },
+    { date: "May 25, 2026", amountVIT: 9.45, status: "Paid", tx: "0x71b9…a0e2" },
+    { date: "May 24, 2026", amountVIT: 9.45, status: "Paid", tx: "0x3cd4…77fa" },
+    { date: "May 23, 2026", amountVIT: 9.45, status: "Pending", tx: null },
+    { date: "May 22, 2026", amountVIT: 9.45, status: "Paid", tx: "0x55e1…9b2c" },
+  ],
+};
+
 // ===== Notifications =====
 export const NOTIFICATIONS = [
   { id: "n1", type: "signal", title: "New LONG signal · BTCUSDT", body: "Breakout · 88% confidence", time: "2m", unread: true },

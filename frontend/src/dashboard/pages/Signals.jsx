@@ -1,14 +1,24 @@
 import { useMemo, useState } from "react";
-import { TrendingUp, TrendingDown, Target, ShieldAlert, SlidersHorizontal } from "lucide-react";
+import { TrendingUp, TrendingDown, Target, ShieldAlert, SlidersHorizontal, Share2 } from "lucide-react";
 import { PageHead, Panel } from "../ui";
 import { SignalConfigModal } from "../components/ConfigModals";
+import SharePnlModal from "../components/SharePnlModal";
 import { SIGNALS } from "../data";
 
 const FILTERS = ["All", "Long", "Short", "High conf"];
+const num = (v) => parseFloat(String(v).replace(/,/g, ""));
 
 export default function Signals() {
   const [filter, setFilter] = useState("All");
   const [configOpen, setConfigOpen] = useState(false);
+  const [share, setShare] = useState(null);
+
+  const shareSignal = (s) => {
+    const e = num(s.price), t = num(s.target);
+    const pct = e ? ((t - e) / e) * 100 * (s.dir === "SHORT" ? -1 : 1) : 0;
+    setShare({ source: "signal", sym: s.sym, dir: s.dir, entry: s.price, exit: s.target,
+      pnl: `${pct >= 0 ? "+" : ""}${pct.toFixed(2)}%` });
+  };
 
   const rows = useMemo(() => {
     if (filter === "Long") return SIGNALS.filter((s) => s.dir === "LONG");
@@ -63,7 +73,7 @@ export default function Signals() {
             <thead>
               <tr>
                 <th>Symbol</th><th>Signal</th><th>Strategy</th><th>TF</th>
-                <th>Entry</th><th>Target</th><th>Stop</th><th>Confidence</th><th>Age</th>
+                <th>Entry</th><th>Target</th><th>Stop</th><th>Confidence</th><th>Age</th><th></th>
               </tr>
             </thead>
             <tbody>
@@ -89,6 +99,11 @@ export default function Signals() {
                     </span>
                   </td>
                   <td className="mono text-white/45">{s.time}</td>
+                  <td className="text-right">
+                    <button className="tc-iconbtn" style={{ width: 30, height: 30 }} onClick={() => shareSignal(s)} title="Share PnL" data-testid={`share-signal-${i}`}>
+                      <Share2 className="w-3.5 h-3.5" strokeWidth={2} />
+                    </button>
+                  </td>
                 </tr>
               ))}
             </tbody>
@@ -97,6 +112,7 @@ export default function Signals() {
       </Panel>
 
       {configOpen && <SignalConfigModal onClose={() => setConfigOpen(false)} />}
+      {share && <SharePnlModal data={share} onClose={() => setShare(null)} />}
     </div>
   );
 }
