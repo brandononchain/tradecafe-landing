@@ -14,16 +14,30 @@ export const NETWORKS = [...EVM_CHAINS, SOLANA_NET];
 export const CHAIN_BY_ID = EVM_CHAINS.reduce((a, c) => ({ ...a, [c.id.toLowerCase()]: c }), {});
 
 export const EVM_WALLETS = [
-  { id: "metamask", label: "MetaMask" },
-  { id: "rabby", label: "Rabby" },
-  { id: "coinbase", label: "Coinbase" },
-  { id: "injected", label: "Browser Wallet" },
+  { id: "metamask", label: "MetaMask", brand: "#E2761B", flag: "isMetaMask" },
+  { id: "rabby", label: "Rabby", brand: "#7084FF", flag: "isRabby" },
+  { id: "coinbase", label: "Coinbase", brand: "#2C5FF6", flag: "isCoinbaseWallet" },
+  { id: "injected", label: "Browser Wallet", brand: "#00B4A6", flag: null },
 ];
 export const SOLANA_WALLETS = [
-  { id: "phantom", label: "Phantom" },
-  { id: "solflare", label: "Solflare" },
-  { id: "backpack", label: "Backpack" },
+  { id: "phantom", label: "Phantom", brand: "#AB9FF2", flag: "isPhantom" },
+  { id: "solflare", label: "Solflare", brand: "#FC8E2B", flag: "isSolflare" },
+  { id: "backpack", label: "Backpack", brand: "#E33E3F", flag: "isBackpack" },
 ];
+
+// Which specific wallet brand is the active injected provider.
+export function detectWallet(id) {
+  if (typeof window === "undefined") return false;
+  const eth = window.ethereum;
+  if (id === "metamask") return !!eth?.isMetaMask && !eth?.isRabby;
+  if (id === "rabby") return !!eth?.isRabby;
+  if (id === "coinbase") return !!eth?.isCoinbaseWallet;
+  if (id === "injected") return !!eth;
+  if (id === "phantom") return !!(window.phantom?.solana?.isPhantom || window.solana?.isPhantom);
+  if (id === "solflare") return !!window.solflare?.isSolflare;
+  if (id === "backpack") return !!window.backpack?.isBackpack;
+  return false;
+}
 
 const SOL_RPC = "https://api.mainnet-beta.solana.com";
 
@@ -86,6 +100,11 @@ export async function evmSign(address, message) {
   if (!eth) throw new Error("NO_PROVIDER");
   const hex = "0x" + toHex(new TextEncoder().encode(message));
   return eth.request({ method: "personal_sign", params: [hex, address] });
+}
+export async function evmSignTypedData(address, typedData) {
+  const eth = getEthereum();
+  if (!eth) throw new Error("NO_PROVIDER");
+  return eth.request({ method: "eth_signTypedData_v4", params: [address, JSON.stringify(typedData)] });
 }
 
 /* ============================= Solana ============================= */

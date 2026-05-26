@@ -12,6 +12,7 @@ import TradeAccountModal from "../components/TradeAccountModal";
 import SharePnlModal from "../components/SharePnlModal";
 import { useWallet } from "../WalletContext";
 import { shortAddr } from "../lib/web3";
+import { placeOrder, venueFor } from "../lib/orders";
 import { WATCHLIST, OPEN_POSITIONS, TIMEFRAMES, SIGNALS, EXCHANGES, TRADE_ACCOUNT } from "../data";
 import { OVERLAYS, OSCILLATORS } from "../lib/indicators";
 
@@ -475,11 +476,12 @@ function ToggleRow({ label, on, onClick }) {
 
 /* ===== Order panel ===== */
 function OrderPanel({ active, side, setSide, marginMode, setMarginMode, leverage, setLeverage, onConnectWallet }) {
-  const { address, balance, network, nativeSymbol } = useWallet() || {};
-  const { signMessage } = useWallet() || {};
+  const wallet = useWallet() || {};
+  const { address, balance, network, nativeSymbol } = wallet;
+  const venueObj = venueFor(network);
   const [venue, setVenue] = useState("cex"); // cex | onchain
   const [placed, setPlaced] = useState(false);
-  const [status, setStatus] = useState("idle"); // idle | signing | done | error
+  const [status, setStatus] = useState("idle"); // idle | signing | done | error | rejected
   const [sig, setSig] = useState("");
 
   const submit = () => {
@@ -487,17 +489,17 @@ function OrderPanel({ active, side, setSide, marginMode, setMarginMode, leverage
     setTimeout(() => setPlaced(false), 2400);
   };
 
+  // One unified router for every chain.
   const submitOnchain = async () => {
     if (!address) { onConnectWallet?.(); return; }
     setStatus("signing"); setSig("");
-    try {
-      const msg = `TradeCafe perp order\n${side === "buy" ? "LONG" : "SHORT"} ${active.sym}\nleverage: ${leverage}x\nchain: ${network?.name || network?.short || "—"}\nts: ${Date.now()}`;
-      const signature = await signMessage(msg);
-      setSig(signature ? `${signature.slice(0, 10)}…${signature.slice(-6)}` : "0xsigned");
+    const res = await placeOrder(wallet, { symbol: active.sym, side, leverage, sizeUsd: 1000 });
+    if (res.ok) {
+      setSig(res.signature ? `${res.signature.slice(0, 10)}…${res.signature.slice(-6)}` : "0xsigned");
       setStatus("done");
-      setTimeout(() => setStatus("idle"), 4000);
-    } catch (e) {
-      setStatus("error");
+      setTimeout(() => setStatus("idle"), 5000);
+    } else {
+      setStatus(res.error === "REJECTED" ? "rejected" : "error");
       setTimeout(() => setStatus("idle"), 3000);
     }
   };
@@ -605,21 +607,21 @@ function OrderPanel({ active, side, setSide, marginMode, setMarginMode, leverage
       )}
       {onchain && status === "done" && (
         <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-tradeTeal/10 border border-tradeTeal/25 text-[12px] text-tradeTeal">
-          <Check className="w-3.5 h-3.5" strokeWidth={2.5} /> Order signed & routed · {sig}
+          <Check className="w-3.5 h-3.5 shrink-0" strokeWidth={2.5} /> Signed & routed to {venueObj.name} · {sig}
         </div>
       )}
-      {onchain && status === "error" && (
+      {onchain && (status === "error" || status === "rejected") && (
         <div className="px-3 py-2 rounded-lg bg-[#F23645]/10 border border-[#F23645]/25 text-[12px] text-[#FF8A82]">
-          Signature rejected — order not placed.
+          {status === "rejected" ? "Signature rejected — order not placed." : "Order failed — please try again."}
         </div>
       )}
 
       {onchain ? (
         <div className="grid grid-cols-2 gap-2 font-mono text-[11px] text-white/50">
-          <span>Venue</span><span className="text-right text-white/80">On-chain perp</span>
+          <span>Venue</span><span className="text-right text-tradeTeal">{venueObj.name}</span>
           <span>Network</span><span className="text-right text-white/80">{network?.short || "—"}</span>
           <span>Wallet</span><span className="text-right text-white/80">{balance ? `${balance} ${nativeSymbol}` : "—"}</span>
-          <span>Est. gas</span><span className="text-right text-white/80">~0.0003 ETH</span>
+          <span>Settlement</span><span className="text-right text-white/80">{network?.ecosystem === "solana" ? "Solana tx" : "EIP-712"}</span>
         </div>
       ) : (
         <div className="grid grid-cols-2 gap-2 font-mono text-[11px] text-white/50">

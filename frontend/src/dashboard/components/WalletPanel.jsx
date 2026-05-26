@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Wallet, Copy, Check, LogOut, Loader2, ShieldCheck, ExternalLink } from "lucide-react";
 import { useWallet } from "../WalletContext";
-import { EVM_CHAINS, EVM_WALLETS, SOLANA_WALLETS, shortAddr } from "../lib/web3";
+import { EVM_CHAINS, EVM_WALLETS, SOLANA_WALLETS, shortAddr, detectWallet } from "../lib/web3";
 
 export default function WalletPanel() {
   const { ecosystem, address, chainId, balance, network, nativeSymbol, connecting, error, hasEvm, hasSolana, hasProvider, connect, disconnect, changeChain } = useWallet();
@@ -88,23 +88,30 @@ export default function WalletPanel() {
   }
 
   // Not connected — show both ecosystems
-  const Group = ({ title, eco, wallets, enabled, accent }) => (
+  const Group = ({ title, badge, eco, wallets, enabled }) => (
     <div>
       <div className="flex items-center justify-between mb-2">
         <span className="font-mono text-[9px] tracking-[0.14em] uppercase text-white/45">{title}</span>
-        {!enabled && <span className="font-mono text-[9px] text-white/30">not detected</span>}
+        <span className={`font-mono text-[8.5px] tracking-[0.1em] uppercase px-1.5 py-0.5 rounded ${enabled ? "bg-tradeTeal/12 text-tradeTeal" : "text-white/30"}`}>{enabled ? "available" : "not detected"}</span>
       </div>
       <div className="grid grid-cols-2 gap-2">
-        {wallets.map((w) => (
-          <button key={w.id} onClick={() => connect(eco)} disabled={connecting || !enabled}
-            className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl bg-white/[0.02] border border-white/[0.05] hover:border-tradeTeal/30 transition-colors text-left disabled:opacity-40"
-            data-testid={`wallet-${w.id}`}>
-            <span className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0" style={{ background: `${accent}1f`, border: `1px solid ${accent}40` }}>
-              <Wallet className="w-3.5 h-3.5" strokeWidth={2} style={{ color: accent }} />
-            </span>
-            <span className="text-[12.5px] font-medium text-white/80">{w.label}</span>
-          </button>
-        ))}
+        {wallets.map((w) => {
+          const detected = detectWallet(w.id);
+          return (
+            <button key={w.id} onClick={() => connect(eco)} disabled={connecting || !enabled}
+              className="relative flex items-center gap-2.5 px-3 py-3 rounded-xl bg-white/[0.025] border border-white/[0.06] hover:border-tradeTeal/35 hover:bg-white/[0.04] transition-colors text-left disabled:opacity-40 disabled:hover:border-white/[0.06]"
+              data-testid={`wallet-${w.id}`}>
+              <span className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0 font-heading font-bold text-[14px]"
+                style={{ background: `${w.brand}26`, border: `1px solid ${w.brand}59`, color: w.brand }}>
+                {w.label[0]}
+              </span>
+              <span className="min-w-0">
+                <span className="block text-[12.5px] font-medium text-white/85 truncate">{w.label}</span>
+                {detected && <span className="flex items-center gap-1 text-[9px] font-mono uppercase tracking-[0.08em] text-tradeTeal"><Check className="w-2.5 h-2.5" strokeWidth={3} /> Detected</span>}
+              </span>
+            </button>
+          );
+        })}
       </div>
     </div>
   );
@@ -114,8 +121,8 @@ export default function WalletPanel() {
       <p className="text-[12.5px] text-white/55 leading-[1.5]">
         Connect a non-custodial wallet — <span className="text-white/80">EVM or Solana</span> — to trade on-chain perpetuals from the Terminal.
       </p>
-      <Group title="EVM wallets" eco="evm" wallets={EVM_WALLETS} enabled={hasEvm} accent="#00B4A6" />
-      <Group title="Solana wallets" eco="solana" wallets={SOLANA_WALLETS} enabled={hasSolana} accent="#9B8AFB" />
+      <Group title="EVM wallets" eco="evm" wallets={EVM_WALLETS} enabled={hasEvm} />
+      <Group title="Solana wallets" eco="solana" wallets={SOLANA_WALLETS} enabled={hasSolana} />
       {connecting && <div className="flex items-center justify-center gap-1.5 text-[12px] text-white/55"><Loader2 className="w-3.5 h-3.5 animate-spin" strokeWidth={2} /> Connecting…</div>}
       {error === "REJECTED" && <div className="text-[11.5px] text-[#FF8A82] text-center">Connection request was rejected.</div>}
       {error === "FAILED" && <div className="text-[11.5px] text-[#FF8A82] text-center">Couldn’t connect. Please try again.</div>}
