@@ -3,6 +3,7 @@ import { Bot, Power, Settings2, Activity } from "lucide-react";
 import { PageHead, Panel } from "../ui";
 import { BOTS, AI_INSIGHTS } from "../data";
 import { SignalConfigModal, TradeConfigModal, MarginSettingsModal } from "../components/ConfigModals";
+import TradeAccountModal from "../components/TradeAccountModal";
 
 export default function Automation() {
   const [modal, setModal] = useState(null);
@@ -78,8 +79,9 @@ export default function Automation() {
       </Panel>
 
       {modal === "signal" && <SignalConfigModal onClose={() => setModal(null)} />}
-      {modal === "trade" && <TradeConfigModal onClose={() => setModal(null)} onOpenMargin={() => setModal("margin")} />}
+      {modal === "trade" && <TradeConfigModal onClose={() => setModal(null)} onOpenAccount={() => setModal("account")} />}
       {modal === "margin" && <MarginSettingsModal onClose={() => setModal(null)} />}
+      {modal === "account" && <TradeAccountModal onClose={() => setModal(null)} />}
     </div>
   );
 }

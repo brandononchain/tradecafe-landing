@@ -56,9 +56,27 @@ export default function Terminal() {
   const [favorites, setFavorites] = useState(() => ["BTCUSDT", "ETHUSDT", "SOLUSDT"]);
 
   const [positions, setPositions] = useState(OPEN_POSITIONS);
+  const [activeSignal, setActiveSignal] = useState(null);
 
   const toggleFav = (sym) =>
     setFavorites((prev) => (prev.includes(sym) ? prev.filter((s) => s !== sym) : [...prev, sym]));
+
+  const pickSymbol = (sym) => { setSymbol(sym); setActiveSignal(null); };
+
+  // Click a signal -> AI auto-charts it: switch symbol/timeframe, enable AI
+  // layers, and plot entry / TP / SL on the chart.
+  const num = (v) => parseFloat(String(v).replace(/,/g, ""));
+  const mapTf = (t) => {
+    const u = String(t).toUpperCase();
+    return { "1M": "1m", "5M": "5m", "15M": "15m", "30M": "15m", "1H": "1H", "4H": "4H", "1D": "1D" }[u] || tf;
+  };
+  const chartSignal = (s) => {
+    setSymbol(s.sym);
+    setTf(mapTf(s.tf));
+    setRightTab("signals");
+    setAi((a) => ({ ...a, sr: true, pivots: true }));
+    setActiveSignal({ sym: s.sym, dir: s.dir, entry: num(s.price), target: num(s.target), stop: num(s.stop) });
+  };
 
   // Keyboard shortcuts: 1–6 switch timeframe.
   useEffect(() => {
@@ -178,7 +196,7 @@ export default function Terminal() {
               return (
                 <div
                   key={w.sym}
-                  onClick={() => setSymbol(w.sym)}
+                  onClick={() => pickSymbol(w.sym)}
                   className={`group flex items-center gap-2 px-2.5 py-2 rounded-lg text-left cursor-pointer transition-colors ${
                     w.sym === symbol ? "bg-tradeTeal/10" : "hover:bg-white/[0.03]"
                   }`}
@@ -289,7 +307,7 @@ export default function Terminal() {
               </button>
             </div>
             <div className="flex-1 h-[540px] sm:h-[620px] xl:h-[720px]">
-              <TradingChart symbol={symbol} timeframe={tf} chartType={chartType} overlays={overlays} oscillator={oscillator} ai={ai} drawTool={locked ? null : drawTool} logScale={logScale} />
+              <TradingChart symbol={symbol} timeframe={tf} chartType={chartType} overlays={overlays} oscillator={oscillator} ai={ai} drawTool={locked ? null : drawTool} logScale={logScale} signal={activeSignal && activeSignal.sym === symbol ? activeSignal : null} />
             </div>
           </div>
         </div>
@@ -311,7 +329,7 @@ export default function Terminal() {
               leverage={leverage} setLeverage={setLeverage}
             />
           )}
-          {rightTab === "signals" && <SignalsRail />}
+          {rightTab === "signals" && <SignalsRail onPick={chartSignal} activeSym={activeSignal?.sym} />}
           {rightTab === "ai" && <AIRail ai={ai} setAi={setAi} symbol={symbol} timeframe={tf} />}
         </div>
       </div>
@@ -324,7 +342,7 @@ export default function Terminal() {
         </div>
         <div className="flex gap-2 overflow-x-auto pb-1">
           {SIGNALS.map((s, i) => (
-            <button key={i} onClick={() => setSymbol(s.sym)} className="shrink-0 px-3 py-2 rounded-lg bg-white/[0.02] border border-white/[0.045] hover:border-tradeTeal/30 transition-colors text-left">
+            <button key={i} onClick={() => chartSignal(s)} className="shrink-0 px-3 py-2 rounded-lg bg-white/[0.02] border border-white/[0.045] hover:border-tradeTeal/30 transition-colors text-left">
               <div className="flex items-center gap-2">
                 <span className={s.dir === "LONG" ? "tc-tag-long" : "tc-tag-short"}>{s.dir}</span>
                 <span className="text-[12px] font-medium text-white/85">{s.sym}</span>
@@ -476,11 +494,15 @@ function OrderPanel({ active, side, setSide, marginMode, setMarginMode, leverage
 }
 
 /* ===== Signals rail ===== */
-function SignalsRail() {
+function SignalsRail({ onPick, activeSym }) {
   const [mkt, setMkt] = useState("All");
   const markets = ["All", "Crypto"];
   return (
     <div className="tc-panel flex flex-col gap-3">
+      <div className="flex items-center gap-2">
+        <span className="font-mono text-[9px] tracking-[0.14em] uppercase text-white/40">Tap a signal to chart it</span>
+        <Sparkles className="w-3 h-3 text-tradeTeal" strokeWidth={2} />
+      </div>
       <div className="flex gap-1.5">
         {markets.map((m) => (
           <button key={m} onClick={() => setMkt(m)}
@@ -489,7 +511,9 @@ function SignalsRail() {
       </div>
       <div className="flex flex-col gap-2 max-h-[460px] overflow-y-auto">
         {SIGNALS.map((s, i) => (
-          <div key={i} className="p-3 rounded-xl bg-white/[0.02] border border-white/[0.045]">
+          <button key={i} onClick={() => onPick && onPick(s)}
+            className={`p-3 rounded-xl border text-left transition-colors ${activeSym === s.sym ? "bg-tradeTeal/10 border-tradeTeal/35" : "bg-white/[0.02] border-white/[0.045] hover:border-tradeTeal/25"}`}
+            data-testid={`signal-card-${s.sym}`}>
             <div className="flex items-center justify-between">
               <span className="text-[13px] font-semibold text-white/90">{s.sym}</span>
               <span className={s.dir === "LONG" ? "tc-tag-long" : "tc-tag-short"}>{s.dir}</span>
@@ -504,7 +528,7 @@ function SignalsRail() {
               <span className="flex-1 h-1 rounded-full bg-white/[0.06] overflow-hidden"><span className="block h-full bg-tradeTeal" style={{ width: `${s.conf}%` }} /></span>
               <span className="font-mono text-[9.5px] text-white/50">{s.conf}%</span>
             </div>
-          </div>
+          </button>
         ))}
       </div>
     </div>

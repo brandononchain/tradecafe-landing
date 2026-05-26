@@ -189,6 +189,84 @@ export const SIGNALS = [
   { sym: "DOTUSDT", dir: "SHORT", strat: "Scalp", tf: "15M", price: "6.201", target: "5.880", stop: "6.380", conf: 69, time: "24m" },
 ];
 
+// ===== Bot configuration (Analysis + Trade bots) =====
+export const BOT_MARKETS = [
+  { id: "crypto", title: "Crypto", desc: "Spot & perpetual futures", enabled: true },
+  { id: "forex", title: "Forex", desc: "Major & minor FX pairs", enabled: false },
+  { id: "stocks", title: "Stocks", desc: "US equities & ETFs", enabled: false },
+  { id: "commodities", title: "Commodities", desc: "Metals & energy", enabled: false },
+];
+
+export const STRATEGIES = [
+  { id: "sw-f", name: "Swing", desc: "Multi-day trend continuation entries.", mode: "Futures", market: "Crypto" },
+  { id: "sc-f", name: "Scalping", desc: "Fast intraday momentum scalps.", mode: "Futures", market: "Crypto" },
+  { id: "br-f", name: "Breakout", desc: "Range breakouts with volume confirmation.", mode: "Futures", market: "Crypto" },
+  { id: "mo-f", name: "Momentum", desc: "Trend-following on strong movers.", mode: "Futures", market: "Crypto" },
+  { id: "sw-s", name: "Swing", desc: "Spot accumulation on pullbacks.", mode: "Spot", market: "Crypto" },
+  { id: "mr-s", name: "Mean Reversion", desc: "Buy oversold, sell overbought.", mode: "Spot", market: "Crypto" },
+  { id: "gr-s", name: "Grid", desc: "Automated range grid orders.", mode: "Spot", market: "Crypto" },
+  { id: "dca-s", name: "DCA", desc: "Scheduled dollar-cost averaging.", mode: "Spot", market: "Crypto" },
+];
+
+export const SYMBOL_POOL = [
+  "AAVEUSDT", "ADAUSDT", "ALGOUSDT", "ALICEUSDT", "APTUSDT", "ARBUSDT", "ATOMUSDT", "AVAXUSDT",
+  "AXSUSDT", "BNBUSDT", "BTCUSDT", "COMPUSDT", "DOGEUSDT", "DOTUSDT", "EGLDUSDT", "ENJUSDT",
+  "ETHUSDT", "FILUSDT", "GALAUSDT", "ICPUSDT", "ILVUSDT", "INJUSDT", "LINKUSDT", "LTCUSDT",
+  "MATICUSDT", "NEARUSDT", "NEOUSDT", "OPUSDT", "RUNEUSDT", "SANDUSDT", "SNXUSDT", "SOLUSDT",
+  "SUIUSDT", "UNIUSDT", "XRPUSDT",
+];
+
+export const TRADE_MODES = [
+  { id: "auto", label: "Full Auto", desc: "Bot opens and closes trades automatically." },
+  { id: "semi", label: "Semi-Auto", desc: "Bot prepares trades; you approve each one." },
+  { id: "assist", label: "Assistant", desc: "Bot only marks setups on your chart." },
+];
+
+// ===== Trade account (API connection) =====
+export const API_EXCHANGES = [
+  { id: "binance", label: "Binance", enabled: true, passphrase: false },
+  { id: "bybit", label: "Bybit", enabled: true, passphrase: false },
+  { id: "bitget", label: "BitGet", enabled: true, passphrase: true },
+  { id: "okx", label: "OKX", enabled: true, passphrase: true },
+  { id: "weex", label: "Weex", enabled: true, passphrase: false },
+  { id: "bingx", label: "BingX", enabled: true, passphrase: false },
+  { id: "kucoin", label: "KuCoin", enabled: true, passphrase: true },
+  { id: "ibkr", label: "Interactive Brokers", enabled: false, passphrase: false },
+];
+
+export const ACCOUNT_MARKET_TABS = [
+  { id: "crypto", label: "Crypto", enabled: true },
+  { id: "forex", label: "Forex", enabled: false },
+  { id: "stocks", label: "Stocks", enabled: false },
+  { id: "commodities", label: "Commodities", enabled: false },
+];
+
+export const TRADE_ACCOUNT = {
+  connected: true,
+  status: "Active",
+  exchange: "bybit",
+  apiKey: "bg_8aea6dac3a1f4e2b9c77",
+  apiKeyExpires: "May 16, 2027",
+  wallet: 1210.51,
+  unrealized: -29.04,
+  available: 1111.03,
+};
+
+export const EXCHANGE_GUIDES = {
+  bybit: {
+    title: "How to create a Bybit API key",
+    steps: [
+      'Log in to Bybit and open "API Management".',
+      'Click "Create New Key" → "System Generated".',
+      "Permissions: read + trading only (no withdrawals). Bind an IP if possible.",
+      "Choose the Unified account type.",
+      "Confirm with 2FA, then copy the API Key and Secret once shown.",
+      "Paste both into the form above and save.",
+    ],
+    note: "Bybit shows the API secret only once. If lost, create a new key.",
+  },
+};
+
 // ===== Bots / Automation =====
 export const BOTS = [
   {

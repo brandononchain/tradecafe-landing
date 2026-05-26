@@ -29,7 +29,7 @@ function chartTheme(light) {
 
 export default function TradingChart({
   symbol, timeframe, chartType = "candles",
-  overlays = {}, oscillator = null, ai = {}, drawTool = null, logScale = false,
+  overlays = {}, oscillator = null, ai = {}, drawTool = null, logScale = false, signal = null,
 }) {
   const mainRef = useRef(null);
   const oscRef = useRef(null);
@@ -137,6 +137,16 @@ export default function TradingChart({
       );
     }
 
+    // Active signal — entry / take-profit / stop-loss
+    if (signal) {
+      const sigLine = (price, color, title, style = LineStyle.Solid) =>
+        price != null && !Number.isNaN(price) &&
+        series.createPriceLine({ price, color, lineWidth: 2, lineStyle: style, axisLabelVisible: true, title });
+      sigLine(signal.entry, "#5FE0CF", "Entry", LineStyle.Dashed);
+      sigLine(signal.target, "#1FB8A6", "TP");
+      sigLine(signal.stop, "#F23645", "SL");
+    }
+
     // Re-apply drawn horizontal lines
     drawnLines.current = drawnLines.current.map((d) =>
       series.createPriceLine({ price: d.price, color: "#5FE0CF", lineWidth: 1, lineStyle: LineStyle.Solid, axisLabelVisible: true })
@@ -166,7 +176,7 @@ export default function TradingChart({
     ro.observe(el);
 
     return () => { ro.disconnect(); chart.unsubscribeClick(onClick); chart.remove(); };
-  }, [symbol, timeframe, chartType, overlays, ai, candles, logScale, light]);
+  }, [symbol, timeframe, chartType, overlays, ai, candles, logScale, light, signal]);
 
   // Oscillator pane
   useEffect(() => {
