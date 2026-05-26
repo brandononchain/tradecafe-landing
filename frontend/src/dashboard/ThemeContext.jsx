@@ -1,34 +1,26 @@
 import { createContext, useContext, useEffect, useState } from "react";
 
-export const THEMES = [
-  { key: "tradecafe", label: "TradeCafe", swatch: "#00B4A6" },
-  { key: "slate", label: "Slate", swatch: "#64748B" },
-  { key: "navy", label: "Navy", swatch: "#06B6D4" },
-  { key: "matrix", label: "Matrix", swatch: "#00CC6A" },
-  { key: "charcoal", label: "Charcoal", swatch: "#FF8C00" },
-  { key: "deep-blue", label: "Deep Blue", swatch: "#3B82F6" },
-  { key: "dracula", label: "Dracula", swatch: "#A855F7" },
-];
-
-const ThemeContext = createContext({ theme: "tradecafe", setTheme: () => {} });
+const ThemeContext = createContext({ mode: "dark", toggle: () => {}, setMode: () => {} });
 export const useTheme = () => useContext(ThemeContext);
 
 export function ThemeProvider({ children }) {
-  const [theme, setTheme] = useState(() => {
+  const [mode, setMode] = useState(() => {
     try {
-      return localStorage.getItem("tc-theme") || "tradecafe";
+      return localStorage.getItem("tc-mode") === "light" ? "light" : "dark";
     } catch {
-      return "tradecafe";
+      return "dark";
     }
   });
 
   useEffect(() => {
     try {
-      localStorage.setItem("tc-theme", theme);
+      localStorage.setItem("tc-mode", mode);
     } catch {
       /* ignore */
     }
-  }, [theme]);
+  }, [mode]);
 
-  return <ThemeContext.Provider value={{ theme, setTheme }}>{children}</ThemeContext.Provider>;
+  const toggle = () => setMode((m) => (m === "dark" ? "light" : "dark"));
+
+  return <ThemeContext.Provider value={{ mode, setMode, toggle }}>{children}</ThemeContext.Provider>;
 }

@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef } from "react";
 import { createChart, ColorType, LineStyle } from "lightweight-charts";
 import { genCandles } from "../lib/candles";
+import { useTheme } from "../ThemeContext";
 import {
   sma, ema, wma, hma, bollinger, vwap, supertrend, ichimoku,
   rsi, macd, stochastic, cci, williamsR, atrSeries, obv, volumeSeries,
@@ -9,16 +10,22 @@ import {
 
 const OVERLAY_COLORS = { SMA: "#F0B90B", EMA: "#9B8AFB", WMA: "#38BDF8", HMA: "#FF7AB6", VWAP: "#E8782A" };
 
-const baseLayout = {
-  background: { type: ColorType.Solid, color: "transparent" },
-  textColor: "rgba(245,246,242,0.5)",
-  fontFamily: "'JetBrains Mono', monospace",
-  fontSize: 10,
-};
-const grid = {
-  vertLines: { color: "rgba(255,255,255,0.035)" },
-  horzLines: { color: "rgba(255,255,255,0.035)" },
-};
+function chartTheme(light) {
+  const ink = light ? "16,26,30" : "255,255,255";
+  return {
+    layout: {
+      background: { type: ColorType.Solid, color: "transparent" },
+      textColor: `rgba(${ink},0.55)`,
+      fontFamily: "'JetBrains Mono', monospace",
+      fontSize: 10,
+    },
+    grid: {
+      vertLines: { color: `rgba(${ink},${light ? 0.07 : 0.035})` },
+      horzLines: { color: `rgba(${ink},${light ? 0.07 : 0.035})` },
+    },
+    border: `rgba(${ink},${light ? 0.1 : 0.06})`,
+  };
+}
 
 export default function TradingChart({
   symbol, timeframe, chartType = "candles",
@@ -29,6 +36,8 @@ export default function TradingChart({
   const drawToolRef = useRef(drawTool);
   drawToolRef.current = drawTool;
   const drawnLines = useRef([]);
+  const { mode } = useTheme();
+  const light = mode === "light";
 
   const candles = useMemo(() => genCandles(symbol, timeframe), [symbol, timeframe]);
 
@@ -36,16 +45,17 @@ export default function TradingChart({
   useEffect(() => {
     const el = mainRef.current;
     if (!el) return;
+    const t = chartTheme(light);
     const chart = createChart(el, {
       width: el.clientWidth, height: el.clientHeight,
-      layout: baseLayout, grid,
+      layout: t.layout, grid: t.grid,
       crosshair: {
         mode: 0,
         vertLine: { color: "rgba(0,180,166,0.4)", width: 1, style: 2, labelBackgroundColor: "#0B3A48" },
         horzLine: { color: "rgba(0,180,166,0.4)", width: 1, style: 2, labelBackgroundColor: "#0B3A48" },
       },
-      rightPriceScale: { borderColor: "rgba(255,255,255,0.06)", mode: logScale ? 1 : 0 },
-      timeScale: { borderColor: "rgba(255,255,255,0.06)", timeVisible: true, secondsVisible: false },
+      rightPriceScale: { borderColor: t.border, mode: logScale ? 1 : 0 },
+      timeScale: { borderColor: t.border, timeVisible: true, secondsVisible: false },
     });
 
     let series;
@@ -156,17 +166,18 @@ export default function TradingChart({
     ro.observe(el);
 
     return () => { ro.disconnect(); chart.unsubscribeClick(onClick); chart.remove(); };
-  }, [symbol, timeframe, chartType, overlays, ai, candles, logScale]);
+  }, [symbol, timeframe, chartType, overlays, ai, candles, logScale, light]);
 
   // Oscillator pane
   useEffect(() => {
     const el = oscRef.current;
     if (!el || !oscillator) return;
+    const t = chartTheme(light);
     const chart = createChart(el, {
       width: el.clientWidth, height: el.clientHeight,
-      layout: baseLayout, grid,
-      rightPriceScale: { borderColor: "rgba(255,255,255,0.06)" },
-      timeScale: { borderColor: "rgba(255,255,255,0.06)", timeVisible: true, secondsVisible: false },
+      layout: t.layout, grid: t.grid,
+      rightPriceScale: { borderColor: t.border },
+      timeScale: { borderColor: t.border, timeVisible: true, secondsVisible: false },
       crosshair: { mode: 0 },
     });
 
@@ -205,7 +216,7 @@ export default function TradingChart({
     const ro = new ResizeObserver(() => chart.applyOptions({ width: el.clientWidth, height: el.clientHeight }));
     ro.observe(el);
     return () => { ro.disconnect(); chart.remove(); };
-  }, [symbol, timeframe, oscillator, candles]);
+  }, [symbol, timeframe, oscillator, candles, light]);
 
   return (
     <div className="flex flex-col w-full h-full">

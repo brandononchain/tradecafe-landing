@@ -116,7 +116,7 @@ export default function VitWorld() {
       {showPrivacy && (
         <div className="fixed inset-0 z-[80] flex items-center justify-center px-4">
           <div className="absolute inset-0 bg-black/60" onClick={() => setShowPrivacy(false)} />
-          <div className="relative w-full max-w-[440px] rounded-2xl bg-[#070d12] border border-white/10 p-5">
+          <div className="relative w-full max-w-[440px] rounded-2xl bg-surface border border-white/8 p-5">
             <div className="flex items-center justify-between mb-4">
               <span className="font-mono text-[10px] tracking-[0.16em] uppercase text-white/55">VITworld Settings</span>
               <button className="tc-iconbtn" style={{ width: 30, height: 30 }} onClick={() => setShowPrivacy(false)}><X className="w-3.5 h-3.5" /></button>

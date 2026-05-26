@@ -16,8 +16,10 @@ module.exports = {
         tradeOrange: "#E8782A",
         tradeBlack: "#05080D",
         tradePanel: "#0B111A",
-        tradeWhite: "#F5F6F2",
+        tradeWhite: "rgb(var(--tc-ink-rgb, 245 246 242) / <alpha-value>)",
         tradeGray: "#9BA6B2",
+        white: "rgb(var(--tc-ink-rgb, 255 255 255) / <alpha-value>)",
+        surface: "rgb(var(--tc-surface-rgb, 7 13 18) / <alpha-value>)",
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
         card: {
