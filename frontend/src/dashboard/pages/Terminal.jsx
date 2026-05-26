@@ -4,7 +4,7 @@ import {
   TrendingUp, TrendingDown, Search, Minus, X, ChevronDown, Check,
   CandlestickChart, LineChart as LineIcon, AreaChart as AreaIcon, BarChart3,
   Brain, Sparkles, MousePointer2, MoveUpRight, Type, Square, Magnet, Lock, Eraser, Ruler,
-  Settings2, Keyboard, Star, Plug,
+  Settings2, Keyboard, Star, Plug, Pencil,
 } from "lucide-react";
 import TradingChart from "../components/TradingChart";
 import Modal from "../components/Modal";
@@ -23,6 +23,7 @@ const CHART_TYPES = [
 
 const DRAW_TOOLS = [
   { key: null, icon: MousePointer2, label: "Cursor" },
+  { key: "brush", icon: Pencil, label: "Freehand" },
   { key: "trendline", icon: MoveUpRight, label: "Trend line" },
   { key: "horizontal", icon: Minus, label: "Horizontal line" },
   { key: "ray", icon: TrendingUp, label: "Ray" },
