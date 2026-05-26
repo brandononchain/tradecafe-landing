@@ -1,14 +1,17 @@
 import { useEffect, useMemo, useState } from "react";
+import { createPortal } from "react-dom";
 import {
   TrendingUp, TrendingDown, Search, Minus, X, ChevronDown, Check,
   CandlestickChart, LineChart as LineIcon, AreaChart as AreaIcon, BarChart3,
   Brain, Sparkles, MousePointer2, MoveUpRight, Type, Square, Magnet, Lock, Eraser, Ruler,
-  Settings2, Keyboard,
+  Settings2, Keyboard, Star,
 } from "lucide-react";
 import TradingChart from "../components/TradingChart";
 import Modal from "../components/Modal";
-import { WATCHLIST, OPEN_POSITIONS, TIMEFRAMES, SIGNALS } from "../data";
+import { WATCHLIST, OPEN_POSITIONS, TIMEFRAMES, SIGNALS, EXCHANGES } from "../data";
 import { OVERLAYS, OSCILLATORS } from "../lib/indicators";
+
+const CATEGORIES = ["Favorites", "Spot", "Futures", "Stocks"];
 
 const CHART_TYPES = [
   { key: "candles", icon: CandlestickChart, label: "Candles" },
@@ -47,6 +50,15 @@ export default function Terminal() {
   const [searchOpen, setSearchOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [logScale, setLogScale] = useState(false);
+  const [exchange, setExchange] = useState(EXCHANGES[2]); // BitGet
+  const [exchOpen, setExchOpen] = useState(false);
+  const [category, setCategory] = useState("Spot");
+  const [favorites, setFavorites] = useState(() => ["BTCUSDT", "ETHUSDT", "SOLUSDT"]);
+
+  const [positions, setPositions] = useState(OPEN_POSITIONS);
+
+  const toggleFav = (sym) =>
+    setFavorites((prev) => (prev.includes(sym) ? prev.filter((s) => s !== sym) : [...prev, sym]));
 
   // Keyboard shortcuts: 1–6 switch timeframe.
   useEffect(() => {
@@ -60,10 +72,15 @@ export default function Terminal() {
   }, []);
 
   const active = useMemo(() => WATCHLIST.find((w) => w.sym === symbol) || WATCHLIST[0], [symbol]);
-  const list = useMemo(
-    () => WATCHLIST.filter((w) => w.sym.includes(query.trim().toUpperCase())),
-    [query]
-  );
+  const list = useMemo(() => {
+    const q = query.trim().toUpperCase();
+    return WATCHLIST.filter((w) => {
+      const inCat = category === "Favorites" ? favorites.includes(w.sym) : w.cat === category;
+      if (!inCat) return false;
+      if (!q) return true;
+      return w.sym.includes(q) || w.name.toUpperCase().includes(q);
+    });
+  }, [query, category, favorites]);
 
   const toggleOverlay = (k, defaults) =>
     setOverlays((prev) => {
@@ -79,9 +96,14 @@ export default function Terminal() {
     <div className="tc-fade flex flex-col gap-3">
       {/* Symbol header */}
       <div className="tc-panel flex flex-wrap items-center gap-x-8 gap-y-3 !py-3.5">
-        <button className="flex items-center gap-2 hover:opacity-80" onClick={() => setSearchOpen(true)} data-testid="open-symbol-search">
-          <span className="font-heading text-[19px] font-semibold tracking-[-0.02em] text-tradeWhite">{active.sym}</span>
-          <ChevronDown className="w-4 h-4 text-white/40" />
+        <button className="flex items-center gap-2.5 hover:opacity-80" onClick={() => setSearchOpen(true)} data-testid="open-symbol-search">
+          <span className="text-left">
+            <span className="flex items-center gap-2">
+              <span className="font-heading text-[19px] font-semibold tracking-[-0.02em] text-tradeWhite">{active.sym}</span>
+              <ChevronDown className="w-4 h-4 text-white/40" />
+            </span>
+            <span className="block font-mono text-[10px] tracking-[0.06em] text-white/40 mt-0.5">{active.name} · {exchange.name} · {active.cat}</span>
+          </span>
         </button>
         <div className="flex items-baseline gap-2">
           <span className="font-mono text-[19px] font-semibold text-tradeWhite">{active.last}</span>
@@ -94,58 +116,121 @@ export default function Terminal() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 xl:grid-cols-[230px_1fr_300px] gap-3">
+      <div className="grid grid-cols-1 xl:grid-cols-[250px_1fr_300px] gap-3">
         {/* Watchlist */}
         <div className="tc-panel !p-3 order-2 xl:order-1">
-          <div className="tc-search mb-3">
-            <Search className="w-4 h-4 text-white/35" strokeWidth={2} />
-            <input placeholder="Search market…" value={query} onChange={(e) => setQuery(e.target.value)} />
+          {/* Exchange selector */}
+          <div className="relative mb-2.5">
+            <button
+              onClick={() => setExchOpen((v) => !v)}
+              onBlur={() => setTimeout(() => setExchOpen(false), 150)}
+              className="w-full flex items-center justify-between px-3 py-2 rounded-lg bg-white/[0.03] border border-white/[0.05] hover:border-tradeTeal/30 transition-colors"
+              data-testid="exchange-selector"
+            >
+              <span className="flex items-center gap-2">
+                <span className="font-mono text-[9px] tracking-[0.12em] uppercase text-white/40">Exchange</span>
+                <span className="text-[12.5px] font-semibold text-tradeWhite">{exchange.name}</span>
+              </span>
+              <span className="flex items-center gap-1.5">
+                <span className="font-mono text-[10px] text-tradeTeal">{exchange.count}</span>
+                <ChevronDown className="w-3.5 h-3.5 text-white/40" strokeWidth={2} />
+              </span>
+            </button>
+            {exchOpen && (
+              <div className="absolute left-0 right-0 mt-1.5 p-1.5 rounded-xl bg-surface border border-white/[0.05] shadow-xl z-50">
+                {EXCHANGES.map((ex) => (
+                  <button
+                    key={ex.key}
+                    onMouseDown={(e) => { e.preventDefault(); setExchange(ex); setExchOpen(false); }}
+                    className={`w-full flex items-center justify-between px-2.5 py-2 rounded-lg text-left transition-colors ${ex.key === exchange.key ? "bg-tradeTeal/10" : "hover:bg-white/[0.04]"}`}
+                    data-testid={`exch-${ex.key}`}
+                  >
+                    <span className="text-[12.5px] text-white/85">{ex.name}</span>
+                    <span className="font-mono text-[10px] text-white/40">{ex.count}</span>
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
-          <div className="flex flex-col gap-1 max-h-[560px] xl:max-h-[680px] overflow-y-auto">
-            {list.map((w) => (
+
+          {/* Category tabs */}
+          <div className="flex items-center gap-1 mb-2.5">
+            {CATEGORIES.map((c) => (
               <button
-                key={w.sym}
-                onClick={() => setSymbol(w.sym)}
-                className={`flex items-center justify-between px-3 py-2.5 rounded-lg text-left transition-colors ${
-                  w.sym === symbol ? "bg-tradeTeal/10" : "hover:bg-white/[0.03]"
-                }`}
-                data-testid={`watch-${w.sym}`}
+                key={c}
+                onClick={() => setCategory(c)}
+                className={`flex-1 py-1.5 rounded-md font-mono text-[9.5px] tracking-[0.06em] uppercase transition-colors ${category === c ? "bg-tradeTeal/15 text-tradeTeal" : "text-white/45 hover:text-white/80"}`}
+                data-testid={`cat-${c.toLowerCase()}`}
               >
-                <span className="text-[12.5px] font-medium text-white/85">{w.sym}</span>
-                <span className="text-right">
-                  <span className="block font-mono text-[11.5px] text-white/75">{w.last}</span>
-                  <span className={`block font-mono text-[10px] ${w.up ? "text-tradeTeal" : "text-[#FF8A82]"}`}>{w.chg}</span>
-                </span>
+                {c === "Favorites" ? <Star className="w-3 h-3 inline" strokeWidth={2} /> : c}
               </button>
             ))}
+          </div>
+
+          <div className="tc-search mb-2.5">
+            <Search className="w-4 h-4 text-white/35" strokeWidth={2} />
+            <input placeholder="Search symbol or name…" value={query} onChange={(e) => setQuery(e.target.value)} />
+          </div>
+
+          <div className="flex flex-col gap-0.5 max-h-[520px] xl:max-h-[640px] overflow-y-auto">
+            {list.map((w) => {
+              const fav = favorites.includes(w.sym);
+              return (
+                <div
+                  key={w.sym}
+                  onClick={() => setSymbol(w.sym)}
+                  className={`group flex items-center gap-2 px-2.5 py-2 rounded-lg text-left cursor-pointer transition-colors ${
+                    w.sym === symbol ? "bg-tradeTeal/10" : "hover:bg-white/[0.03]"
+                  }`}
+                  data-testid={`watch-${w.sym}`}
+                >
+                  <button
+                    onClick={(e) => { e.stopPropagation(); toggleFav(w.sym); }}
+                    className="shrink-0"
+                    aria-label={fav ? "Remove favorite" : "Add favorite"}
+                  >
+                    <Star className={`w-3.5 h-3.5 transition-colors ${fav ? "text-tradeTeal fill-tradeTeal" : "text-white/25 group-hover:text-white/45"}`} strokeWidth={2} />
+                  </button>
+                  <span className="min-w-0 flex-1">
+                    <span className="block text-[12.5px] font-medium text-white/85 truncate">{w.sym}</span>
+                    <span className="block text-[10px] text-white/40 truncate">{w.name}</span>
+                  </span>
+                  <span className="text-right shrink-0">
+                    <span className="block font-mono text-[11.5px] text-white/75">{w.last}</span>
+                    <span className={`block font-mono text-[10px] ${w.up ? "text-tradeTeal" : "text-[#FF8A82]"}`}>{w.chg}</span>
+                  </span>
+                </div>
+              );
+            })}
+            {list.length === 0 && (
+              <div className="text-center text-white/35 text-[12px] py-8">No instruments in {category}.</div>
+            )}
           </div>
         </div>
 
         {/* Chart + toolbar + drawing rail */}
         <div className="tc-panel !p-0 overflow-hidden order-1 xl:order-2 flex flex-col">
           {/* Toolbar */}
-          <div className="flex items-center gap-2 px-3 py-2 border-b border-white/5 flex-wrap">
-            <div className="flex items-center gap-0.5">
+          <div className="flex items-center gap-2 px-3 py-2 border-b border-white/[0.04] flex-wrap">
+            <div className="flex items-center gap-0.5 p-0.5 rounded-lg bg-white/[0.025]">
               {CHART_TYPES.map((c) => {
                 const Ic = c.icon;
                 return (
                   <button key={c.key} onClick={() => setChartType(c.key)} title={c.label}
-                    className={`tc-iconbtn ${chartType === c.key ? "!border-tradeTeal/40 !text-tradeTeal" : ""}`}
-                    style={{ width: 32, height: 32 }} data-testid={`charttype-${c.key}`}>
+                    className={`flex items-center justify-center rounded-md transition-colors ${chartType === c.key ? "bg-tradeTeal/15 text-tradeTeal" : "text-white/45 hover:text-white/80"}`}
+                    style={{ width: 30, height: 30 }} data-testid={`charttype-${c.key}`}>
                     <Ic className="w-3.5 h-3.5" strokeWidth={2} />
                   </button>
                 );
               })}
             </div>
-            <span className="w-px h-5 bg-white/8" />
-            <div className="flex items-center gap-0.5">
+            <div className="flex items-center gap-0.5 p-0.5 rounded-lg bg-white/[0.025]">
               {TIMEFRAMES.map((t) => (
                 <button key={t} onClick={() => setTf(t)}
                   className={`px-2.5 py-1.5 rounded-md font-mono text-[11px] transition-colors ${t === tf ? "bg-tradeTeal/15 text-tradeTeal" : "text-white/45 hover:text-white/80"}`}
                   data-testid={`tf-${t}`}>{t}</button>
               ))}
             </div>
-            <span className="w-px h-5 bg-white/8" />
             <Dropdown
               label="Indicators"
               badge={activeIndicatorCount || null}
@@ -177,29 +262,29 @@ export default function Terminal() {
 
           {/* Chart area with drawing rail */}
           <div className="flex flex-1">
-            <div className="flex flex-col items-center gap-1 py-2 px-1.5 border-r border-white/5">
+            <div className="flex flex-col items-center gap-0.5 py-2 px-1.5 border-r border-white/[0.04]">
               {DRAW_TOOLS.map((d) => {
                 const Ic = d.icon;
                 const isActive = drawTool === d.key;
                 return (
                   <button key={d.label} onClick={() => setDrawTool(d.key)} title={d.label}
-                    className={`tc-iconbtn ${isActive ? "!border-tradeTeal/40 !text-tradeTeal" : ""}`}
+                    className={`flex items-center justify-center rounded-md transition-colors ${isActive ? "bg-tradeTeal/15 text-tradeTeal" : "text-white/40 hover:text-white/85 hover:bg-white/[0.04]"}`}
                     style={{ width: 30, height: 30 }} data-testid={`draw-${d.label.replace(/\s+/g, "-").toLowerCase()}`}>
                     <Ic className="w-3.5 h-3.5" strokeWidth={2} />
                   </button>
                 );
               })}
-              <span className="w-5 h-px bg-white/8 my-1" />
+              <span className="w-5 h-px bg-white/[0.06] my-1" />
               <button onClick={() => setMagnet((v) => !v)} title="Magnet"
-                className={`tc-iconbtn ${magnet ? "!border-tradeTeal/40 !text-tradeTeal" : ""}`} style={{ width: 30, height: 30 }}>
+                className={`flex items-center justify-center rounded-md transition-colors ${magnet ? "bg-tradeTeal/15 text-tradeTeal" : "text-white/40 hover:text-white/85 hover:bg-white/[0.04]"}`} style={{ width: 30, height: 30 }}>
                 <Magnet className="w-3.5 h-3.5" strokeWidth={2} />
               </button>
               <button onClick={() => setLocked((v) => !v)} title="Lock"
-                className={`tc-iconbtn ${locked ? "!border-tradeTeal/40 !text-tradeTeal" : ""}`} style={{ width: 30, height: 30 }}>
+                className={`flex items-center justify-center rounded-md transition-colors ${locked ? "bg-tradeTeal/15 text-tradeTeal" : "text-white/40 hover:text-white/85 hover:bg-white/[0.04]"}`} style={{ width: 30, height: 30 }}>
                 <Lock className="w-3.5 h-3.5" strokeWidth={2} />
               </button>
               <button onClick={() => setDrawTool("eraser")} title="Eraser"
-                className={`tc-iconbtn ${drawTool === "eraser" ? "!border-[#FF8A82]/50 !text-[#FF8A82]" : ""}`} style={{ width: 30, height: 30 }}>
+                className={`flex items-center justify-center rounded-md transition-colors ${drawTool === "eraser" ? "bg-[#F23645]/15 text-[#FF8A82]" : "text-white/40 hover:text-white/85 hover:bg-white/[0.04]"}`} style={{ width: 30, height: 30 }}>
                 <Eraser className="w-3.5 h-3.5" strokeWidth={2} />
               </button>
             </div>
@@ -239,7 +324,7 @@ export default function Terminal() {
         </div>
         <div className="flex gap-2 overflow-x-auto pb-1">
           {SIGNALS.map((s, i) => (
-            <button key={i} onClick={() => setSymbol(s.sym)} className="shrink-0 px-3 py-2 rounded-lg bg-white/[0.02] border border-white/6 hover:border-tradeTeal/30 transition-colors text-left">
+            <button key={i} onClick={() => setSymbol(s.sym)} className="shrink-0 px-3 py-2 rounded-lg bg-white/[0.02] border border-white/[0.045] hover:border-tradeTeal/30 transition-colors text-left">
               <div className="flex items-center gap-2">
                 <span className={s.dir === "LONG" ? "tc-tag-long" : "tc-tag-short"}>{s.dir}</span>
                 <span className="text-[12px] font-medium text-white/85">{s.sym}</span>
@@ -254,36 +339,39 @@ export default function Terminal() {
       <div className="tc-panel">
         <div className="tc-panel-head">
           <span className="ttl">Open Positions</span>
-          <span className="tc-chip tc-chip-active"><span className="tc-chip-dot" /> {OPEN_POSITIONS.length} Open</span>
+          <span className="tc-chip tc-chip-active"><span className="tc-chip-dot" /> {positions.length} Open</span>
         </div>
         <div className="tc-table-wrap">
           <table className="tc-table">
             <thead><tr><th>Symbol</th><th>Side</th><th>Size</th><th>Entry</th><th>Mark</th><th>PnL</th><th></th></tr></thead>
             <tbody>
-              {OPEN_POSITIONS.map((p, i) => (
-                <tr key={i} data-testid={`pos-${i}`}>
+              {positions.map((p, i) => (
+                <tr key={p.sym} data-testid={`pos-${i}`}>
                   <td className="sym">{p.sym}</td>
                   <td><span className={p.side === "LONG" ? "tc-tag-long" : "tc-tag-short"}>{p.side === "LONG" ? <TrendingUp className="w-2.5 h-2.5" /> : <TrendingDown className="w-2.5 h-2.5" />} {p.side}</span></td>
                   <td className="mono">{p.size}</td>
                   <td className="mono">{p.entry}</td>
                   <td className="mono">{p.mark}</td>
                   <td><span className="tc-pl-pos">{p.pnl} · {p.pct}</span></td>
-                  <td className="text-right"><button className="tc-iconbtn" style={{ width: 30, height: 30 }} aria-label="Close position"><X className="w-3.5 h-3.5" strokeWidth={2} /></button></td>
+                  <td className="text-right"><button className="tc-iconbtn" style={{ width: 30, height: 30 }} aria-label="Close position" onClick={() => setPositions((ps) => ps.filter((x) => x.sym !== p.sym))}><X className="w-3.5 h-3.5" strokeWidth={2} /></button></td>
                 </tr>
               ))}
+              {positions.length === 0 && (
+                <tr><td colSpan={7} className="text-center text-white/35 py-6">No open positions.</td></tr>
+              )}
             </tbody>
           </table>
         </div>
       </div>
 
-      {searchOpen && <SymbolSearch onClose={() => setSearchOpen(false)} onPick={(s) => { setSymbol(s); setSearchOpen(false); }} />}
+      {searchOpen && <SymbolSearch exchange={exchange} onClose={() => setSearchOpen(false)} onPick={(s) => { setSymbol(s); setSearchOpen(false); }} />}
       {settingsOpen && (
         <Modal title="Terminal settings" sub="Chart preferences" onClose={() => setSettingsOpen(false)}
           footer={<button className="tc-btn tc-btn-primary flex-1" onClick={() => setSettingsOpen(false)}>Done</button>}>
           <ToggleRow label="Logarithmic price scale" on={logScale} onClick={() => setLogScale((v) => !v)} />
           <ToggleRow label="Magnet (snap to price)" on={magnet} onClick={() => setMagnet((v) => !v)} />
           <ToggleRow label="Lock drawings" on={locked} onClick={() => setLocked((v) => !v)} />
-          <div className="mt-4 pt-4 border-t border-white/6">
+          <div className="mt-4 pt-4 border-t border-white/[0.045]">
             <div className="flex items-center gap-2 font-mono text-[10px] tracking-[0.14em] uppercase text-white/45 mb-3">
               <Keyboard className="w-3.5 h-3.5" /> Shortcuts
             </div>
@@ -311,6 +399,11 @@ function ToggleRow({ label, on, onClick }) {
 
 /* ===== Order panel ===== */
 function OrderPanel({ active, side, setSide, marginMode, setMarginMode, leverage, setLeverage }) {
+  const [placed, setPlaced] = useState(false);
+  const submit = () => {
+    setPlaced(true);
+    setTimeout(() => setPlaced(false), 2400);
+  };
   const dca = [
     { lvl: "Entry", mult: "×1" },
     { lvl: "Avg 1", mult: "×1.5" },
@@ -324,7 +417,7 @@ function OrderPanel({ active, side, setSide, marginMode, setMarginMode, leverage
         <div className="tc-segment-btn" style={side === "sell" ? { padding: "9px 0", color: "#042024", background: "linear-gradient(135deg,#FF9B91,#F23645)" } : { padding: "9px 0" }} onClick={() => setSide("sell")}>Short</div>
       </div>
 
-      <div className="flex items-center gap-1.5 p-1 rounded-lg bg-white/[0.025] border border-white/8">
+      <div className="flex items-center gap-1.5 p-1 rounded-lg bg-white/[0.025] border border-white/[0.05]">
         {["percent", "usd"].map((m) => (
           <button key={m} onClick={() => setMarginMode(m)}
             className={`flex-1 py-1.5 rounded-md font-mono text-[10px] tracking-[0.1em] uppercase transition-colors ${marginMode === m ? "bg-tradeTeal/15 text-tradeTeal" : "text-white/50"}`}>
@@ -353,7 +446,7 @@ function OrderPanel({ active, side, setSide, marginMode, setMarginMode, leverage
         <div className="font-mono text-[10px] tracking-[0.1em] uppercase text-white/45 mb-2">DCA / Averaging</div>
         <div className="grid grid-cols-4 gap-1.5">
           {dca.map((d) => (
-            <div key={d.lvl} className="p-2 rounded-lg bg-white/[0.02] border border-white/5 text-center">
+            <div key={d.lvl} className="p-2 rounded-lg bg-white/[0.02] border border-white/[0.04] text-center">
               <div className="font-mono text-[8.5px] tracking-[0.08em] uppercase text-white/40">{d.lvl}</div>
               <div className="font-mono text-[12px] text-tradeTeal mt-0.5">{d.mult}</div>
             </div>
@@ -363,9 +456,15 @@ function OrderPanel({ active, side, setSide, marginMode, setMarginMode, leverage
 
       <button className={`tc-btn w-full ${side === "buy" ? "tc-btn-primary" : ""}`}
         style={side === "sell" ? { color: "#042024", background: "linear-gradient(135deg,#FF9B91,#F23645)" } : undefined}
+        onClick={submit}
         data-testid="order-submit">
         {side === "buy" ? "Buy / Long" : "Sell / Short"} {active.sym}
       </button>
+      {placed && (
+        <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-tradeTeal/10 border border-tradeTeal/25 text-[12px] text-tradeTeal">
+          <Check className="w-3.5 h-3.5" strokeWidth={2.5} /> {side === "buy" ? "Long" : "Short"} order submitted (demo)
+        </div>
+      )}
 
       <div className="grid grid-cols-2 gap-2 font-mono text-[11px] text-white/50">
         <span>Avail.</span><span className="text-right text-white/80">$0.00</span>
@@ -385,12 +484,12 @@ function SignalsRail() {
       <div className="flex gap-1.5">
         {markets.map((m) => (
           <button key={m} onClick={() => setMkt(m)}
-            className={`px-3 py-1.5 rounded-full font-mono text-[9.5px] tracking-[0.1em] uppercase border transition-colors ${mkt === m ? "bg-tradeTeal/15 text-tradeTeal border-tradeTeal/30" : "text-white/50 border-white/8"}`}>{m}</button>
+            className={`px-3 py-1.5 rounded-full font-mono text-[9.5px] tracking-[0.1em] uppercase border transition-colors ${mkt === m ? "bg-tradeTeal/15 text-tradeTeal border-tradeTeal/30" : "text-white/50 border-white/[0.05]"}`}>{m}</button>
         ))}
       </div>
       <div className="flex flex-col gap-2 max-h-[460px] overflow-y-auto">
         {SIGNALS.map((s, i) => (
-          <div key={i} className="p-3 rounded-xl bg-white/[0.02] border border-white/6">
+          <div key={i} className="p-3 rounded-xl bg-white/[0.02] border border-white/[0.045]">
             <div className="flex items-center justify-between">
               <span className="text-[13px] font-semibold text-white/90">{s.sym}</span>
               <span className={s.dir === "LONG" ? "tc-tag-long" : "tc-tag-short"}>{s.dir}</span>
@@ -402,7 +501,7 @@ function SignalsRail() {
               <span className="text-[#FF8A82] text-right">S {s.stop}</span>
             </div>
             <div className="flex items-center gap-2 mt-2">
-              <span className="flex-1 h-1 rounded-full bg-white/8 overflow-hidden"><span className="block h-full bg-tradeTeal" style={{ width: `${s.conf}%` }} /></span>
+              <span className="flex-1 h-1 rounded-full bg-white/[0.06] overflow-hidden"><span className="block h-full bg-tradeTeal" style={{ width: `${s.conf}%` }} /></span>
               <span className="font-mono text-[9.5px] text-white/50">{s.conf}%</span>
             </div>
           </div>
@@ -427,9 +526,9 @@ function AIRail({ ai, setAi }) {
         { k: "breaks", label: "Breaks & Retests", desc: "Most recent broken level + retest zone." },
       ].map((o) => (
         <button key={o.k} onClick={() => setAi((a) => ({ ...a, [o.k]: !a[o.k] }))}
-          className={`flex items-start gap-3 p-3 rounded-xl border text-left transition-colors ${ai[o.k] ? "bg-tradeTeal/8 border-tradeTeal/30" : "bg-white/[0.02] border-white/6"}`}
+          className={`flex items-start gap-3 p-3 rounded-xl border text-left transition-colors ${ai[o.k] ? "bg-tradeTeal/8 border-tradeTeal/30" : "bg-white/[0.02] border-white/[0.045]"}`}
           data-testid={`ai-${o.k}`}>
-          <span className={`mt-0.5 w-4 h-4 rounded flex items-center justify-center shrink-0 ${ai[o.k] ? "bg-tradeTeal text-[#042024]" : "border border-white/15"}`}>
+          <span className={`mt-0.5 w-4 h-4 rounded flex items-center justify-center shrink-0 ${ai[o.k] ? "bg-tradeTeal text-[#042024]" : "border border-white/[0.07]"}`}>
             {ai[o.k] && <Check className="w-3 h-3" strokeWidth={3} />}
           </span>
           <span>
@@ -446,29 +545,52 @@ function AIRail({ ai, setAi }) {
 }
 
 /* ===== Symbol search modal ===== */
-function SymbolSearch({ onClose, onPick }) {
+function SymbolSearch({ onClose, onPick, exchange }) {
   const [q, setQ] = useState("");
-  const results = WATCHLIST.filter((w) => w.sym.includes(q.trim().toUpperCase()));
-  return (
+  const [cat, setCat] = useState("All");
+  const cats = ["All", ...CATEGORIES.filter((c) => c !== "Favorites")];
+  const results = WATCHLIST.filter((w) => {
+    const term = q.trim().toUpperCase();
+    const inCat = cat === "All" || w.cat === cat;
+    const match = !term || w.sym.includes(term) || w.name.toUpperCase().includes(term);
+    return inCat && match;
+  });
+  return createPortal(
     <div className="fixed inset-0 z-[80] flex items-start justify-center pt-[12vh] px-4" data-testid="symbol-search-modal">
-      <div className="absolute inset-0 bg-black/60" onClick={onClose} />
-      <div className="relative w-full max-w-[440px] rounded-2xl bg-surface border border-white/8 overflow-hidden">
-        <div className="tc-search !rounded-none !border-0 border-b border-white/8 px-4 py-3.5">
+      <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={onClose} />
+      <div className="relative w-full max-w-[480px] rounded-2xl bg-surface border border-white/[0.05] overflow-hidden">
+        <div className="tc-search !rounded-none !border-0 border-b border-white/[0.05] px-4 py-3.5">
           <Search className="w-4 h-4 text-white/40" strokeWidth={2} />
-          <input autoFocus placeholder="Search symbol…" value={q} onChange={(e) => setQ(e.target.value)} />
+          <input autoFocus placeholder="Search symbol or name…" value={q} onChange={(e) => setQ(e.target.value)} />
           <button onClick={onClose} className="tc-iconbtn" style={{ width: 28, height: 28 }}><X className="w-3.5 h-3.5" /></button>
+        </div>
+        <div className="flex items-center gap-1.5 px-4 py-2.5 border-b border-white/[0.045]">
+          {exchange && <span className="font-mono text-[9.5px] tracking-[0.1em] uppercase text-white/40 mr-1">{exchange.name}</span>}
+          {cats.map((c) => (
+            <button key={c} onClick={() => setCat(c)}
+              className={`px-2.5 py-1 rounded-full font-mono text-[9.5px] tracking-[0.08em] uppercase border transition-colors ${cat === c ? "bg-tradeTeal/15 text-tradeTeal border-tradeTeal/30" : "text-white/45 border-white/[0.05]"}`}>
+              {c}
+            </button>
+          ))}
         </div>
         <div className="max-h-[340px] overflow-y-auto p-1.5">
           {results.map((w) => (
-            <button key={w.sym} onClick={() => onPick(w.sym)} className="w-full flex items-center justify-between px-3 py-2.5 rounded-lg hover:bg-white/[0.04] transition-colors text-left">
-              <span className="text-[13px] font-medium text-white/85">{w.sym}</span>
-              <span className={`font-mono text-[11px] ${w.up ? "text-tradeTeal" : "text-[#FF8A82]"}`}>{w.chg}</span>
+            <button key={w.sym} onClick={() => onPick(w.sym)} className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-white/[0.04] transition-colors text-left">
+              <span className="min-w-0 flex-1">
+                <span className="block text-[13px] font-medium text-white/85 truncate">{w.sym}</span>
+                <span className="block text-[10.5px] text-white/40 truncate">{w.name} · {w.cat}</span>
+              </span>
+              <span className="text-right shrink-0">
+                <span className="block font-mono text-[11.5px] text-white/75">{w.last}</span>
+                <span className={`block font-mono text-[10px] ${w.up ? "text-tradeTeal" : "text-[#FF8A82]"}`}>{w.chg}</span>
+              </span>
             </button>
           ))}
           {results.length === 0 && <div className="text-center text-white/40 py-8 text-[13px]">No markets found.</div>}
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }
 
@@ -486,7 +608,7 @@ function Field({ label, value, mono }) {
   return (
     <div>
       <div className="font-mono text-[10px] tracking-[0.1em] uppercase text-white/45 mb-2">{label}</div>
-      <div className={`px-3 py-2.5 rounded-lg bg-white/[0.025] border border-white/8 text-[13px] text-white/85 ${mono ? "font-mono" : ""}`}>{value}</div>
+      <div className={`px-3 py-2.5 rounded-lg bg-white/[0.025] border border-white/[0.05] text-[13px] text-white/85 ${mono ? "font-mono" : ""}`}>{value}</div>
     </div>
   );
 }
@@ -504,7 +626,7 @@ function Dropdown({ label, icon: Icon, badge, testid, children }) {
         <ChevronDown className="w-3 h-3 opacity-60" />
       </button>
       {open && (
-        <div className="absolute left-0 mt-1.5 w-56 p-1.5 rounded-xl bg-surface border border-white/8 shadow-xl z-50 max-h-[320px] overflow-y-auto">
+        <div className="absolute left-0 mt-1.5 w-56 p-1.5 rounded-xl bg-surface border border-white/[0.05] shadow-xl z-50 max-h-[320px] overflow-y-auto">
           {children}
         </div>
       )}
@@ -518,7 +640,7 @@ function MenuItem({ checked, onClick, children }) {
   return (
     <button onMouseDown={(e) => { e.preventDefault(); onClick(); }}
       className="w-full flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-left hover:bg-white/[0.04] transition-colors">
-      <span className={`w-4 h-4 rounded flex items-center justify-center shrink-0 ${checked ? "bg-tradeTeal text-[#042024]" : "border border-white/15"}`}>
+      <span className={`w-4 h-4 rounded flex items-center justify-center shrink-0 ${checked ? "bg-tradeTeal text-[#042024]" : "border border-white/[0.07]"}`}>
         {checked && <Check className="w-3 h-3" strokeWidth={3} />}
       </span>
       <span className="flex-1 text-[12.5px] text-white/80">{children}</span>

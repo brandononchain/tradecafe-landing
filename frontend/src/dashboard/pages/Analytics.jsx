@@ -114,7 +114,7 @@ export default function Analytics() {
   return (
     <div className="tc-fade flex flex-col gap-6">
       <PageHead
-        eyebrow={isAnalysis ? "AI Signal Engine" : "Auto-Trading"}
+        eyebrow={isAnalysis ? "Signal Performance" : "Trade Performance"}
         title="Performance Analytics"
         desc="Track positions, PnL, and win rate across your analysis and auto-trading engines."
       />
@@ -160,7 +160,7 @@ export default function Analytics() {
           </div>
         </div>
 
-        <div className="tc-config-grid pt-4 border-t border-white/5">
+        <div className="tc-config-grid pt-4 border-t border-white/[0.04]">
           {isAnalysis && (
             <div className="tc-config-cell">
               <div className="lbl"><Layers3 className="w-3 h-3" /> Markets</div>

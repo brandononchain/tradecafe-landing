@@ -124,7 +124,7 @@ export default function Overview() {
         <Panel icon={Layers} title="Active Subscriptions" data-testid="card-subscriptions">
           <div className="flex flex-col gap-3">
             {SUBSCRIPTIONS.map((s) => (
-              <div key={s.name} className="flex items-center justify-between p-3.5 rounded-xl bg-white/[0.02] border border-white/5">
+              <div key={s.name} className="flex items-center justify-between p-3.5 rounded-xl bg-white/[0.02] border border-white/[0.04]">
                 <div>
                   <div className="flex items-center gap-2">
                     <span className="text-[13.5px] font-semibold text-tradeWhite">{s.name}</span>
@@ -164,14 +164,14 @@ export default function Overview() {
               <div className="font-mono text-[11px] text-white/40 mt-1">≈ $0.00 USD</div>
             </div>
           </div>
-          <div className="mt-4 flex items-center justify-between p-3 rounded-xl bg-white/[0.02] border border-white/5 font-mono text-[11px] text-white/55">
+          <div className="mt-4 flex items-center justify-between p-3 rounded-xl bg-white/[0.02] border border-white/[0.04] font-mono text-[11px] text-white/55">
             <span className="truncate">{ACCOUNT.wallet}</span>
             <ArrowUpRight className="w-3.5 h-3.5 text-tradeTeal shrink-0" strokeWidth={2} />
           </div>
         </Panel>
 
         <Panel icon={Pickaxe} title="Mining Pool" data-testid="card-mining">
-          <div className="flex items-start gap-3 p-4 rounded-xl bg-white/[0.02] border border-white/5">
+          <div className="flex items-start gap-3 p-4 rounded-xl bg-white/[0.02] border border-white/[0.04]">
             <Pickaxe className="w-5 h-5 text-white/40 shrink-0 mt-0.5" strokeWidth={1.8} />
             <p className="text-[13px] leading-[1.55] text-white/55">
               No mining pools yet. Activate the Mining Pool with a 12-month subscription to Analysis Bot,

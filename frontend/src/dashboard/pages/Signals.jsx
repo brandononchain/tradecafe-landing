@@ -46,7 +46,7 @@ export default function Signals() {
               key={f}
               onClick={() => setFilter(f)}
               className={`px-3.5 py-1.5 rounded-full font-mono text-[10.5px] tracking-[0.1em] uppercase transition-colors ${
-                filter === f ? "bg-tradeTeal/15 text-tradeTeal border border-tradeTeal/30" : "text-white/50 border border-white/8 hover:text-white/80"
+                filter === f ? "bg-tradeTeal/15 text-tradeTeal border border-tradeTeal/30" : "text-white/50 border border-white/[0.05] hover:text-white/80"
               }`}
               data-testid={`signal-filter-${f.toLowerCase().replace(/\s+/g, "-")}`}
             >
