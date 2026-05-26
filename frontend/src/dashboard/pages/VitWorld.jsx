@@ -1,20 +1,19 @@
 import { useState } from "react";
-import { Search, Globe, Settings2, MessageSquare, UserPlus, X } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { Search, Globe, Settings2, MessageSquare, UserPlus, X, Check } from "lucide-react";
 import { PageHead, Panel } from "../ui";
+import GlobeCanvas from "../components/GlobeCanvas";
+import { useTheme } from "../ThemeContext";
 import { VITWORLD_USERS } from "../data";
 
 const PRIVACY_FIELDS = ["Location", "Username", "Avatar", "Online status"];
 const PRIVACY_OPTS = ["Everyone", "Friends", "Nobody"];
 
-// Map lat/lng to a position inside the globe circle (simple orthographic-ish).
-function project(lat, lng) {
-  const x = 50 + (lng / 180) * 42;
-  const y = 50 - (lat / 90) * 42;
-  return { left: `${x}%`, top: `${y}%` };
-}
-
 export default function VitWorld() {
+  const navigate = useNavigate();
+  const { mode } = useTheme();
   const [selected, setSelected] = useState(null);
+  const [requested, setRequested] = useState([]);
   const [q, setQ] = useState("");
   const [showPrivacy, setShowPrivacy] = useState(false);
   const [visible, setVisible] = useState(true);
@@ -51,34 +50,10 @@ export default function VitWorld() {
             )}
           </div>
 
-          <div className="relative aspect-square max-h-[460px] mx-auto" style={{ width: "100%", maxWidth: 460 }}>
-            {/* starfield */}
-            <div className="absolute inset-0" style={{ background: "radial-gradient(circle at 50% 50%, rgba(0,180,166,0.05), transparent 70%)" }} />
-            {/* globe sphere */}
-            <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full"
-              style={{
-                width: "80%", height: "80%",
-                background: "radial-gradient(circle at 35% 30%, rgba(0,180,166,0.18), rgba(4,12,16,0.9) 70%)",
-                border: "1px solid rgba(0,180,166,0.25)",
-                boxShadow: "inset 0 0 60px rgba(0,180,166,0.12)",
-              }}
-            >
-              {/* lat/long grid */}
-              <svg viewBox="0 0 100 100" className="absolute inset-0 w-full h-full opacity-40">
-                {[20, 35, 50, 65, 80].map((cy) => <ellipse key={cy} cx="50" cy="50" rx="48" ry={Math.abs(50 - cy) * 0.95 + 4} fill="none" stroke="rgba(0,180,166,0.18)" strokeWidth="0.3" />)}
-                {[20, 35, 50, 65, 80].map((cx) => <ellipse key={cx} cx="50" cy="50" rx={Math.abs(50 - cx) * 0.95 + 4} ry="48" fill="none" stroke="rgba(0,180,166,0.14)" strokeWidth="0.3" />)}
-              </svg>
-              {/* user beams */}
-              {VITWORLD_USERS.map((u) => (
-                <button key={u.id} onClick={() => setSelected(u)} title={u.username}
-                  className="absolute -translate-x-1/2 -translate-y-1/2 group" style={project(u.lat, u.lng)}>
-                  <span className="block w-2.5 h-2.5 rounded-full" style={{
-                    background: u.online ? "#1FB8A6" : "#6B7686",
-                    boxShadow: u.online ? "0 0 10px rgba(31,184,166,0.9)" : "none",
-                  }} />
-                  {u.online && <span className="absolute inset-0 rounded-full animate-ping" style={{ background: "rgba(31,184,166,0.5)" }} />}
-                </button>
-              ))}
+          <div className="relative mx-auto" style={{ width: "100%", maxWidth: 520, aspectRatio: "1 / 1" }}>
+            <GlobeCanvas users={VITWORLD_USERS} selectedId={selected?.id} onSelect={setSelected} light={mode === "light"} />
+            <div className="absolute bottom-2 left-1/2 -translate-x-1/2 font-mono text-[9.5px] tracking-[0.14em] uppercase text-white/30 pointer-events-none">
+              Drag to rotate · tap a beam
             </div>
           </div>
         </Panel>
@@ -100,8 +75,18 @@ export default function VitWorld() {
               <button className="tc-iconbtn" style={{ width: 30, height: 30 }} onClick={() => setSelected(null)}><X className="w-3.5 h-3.5" /></button>
             </div>
             <div className="flex gap-2.5 mt-5">
-              <button className="tc-btn tc-btn-ghost flex-1"><MessageSquare className="w-4 h-4" strokeWidth={2} /> Message</button>
-              <button className="tc-btn tc-btn-primary flex-1"><UserPlus className="w-4 h-4" strokeWidth={2} /> Add</button>
+              <button className="tc-btn tc-btn-ghost flex-1" onClick={() => navigate("/app/vitchat")}>
+                <MessageSquare className="w-4 h-4" strokeWidth={2} /> Message
+              </button>
+              {requested.includes(selected.id) ? (
+                <button className="tc-btn tc-btn-ghost flex-1" disabled style={{ opacity: 0.7 }}>
+                  <Check className="w-4 h-4" strokeWidth={2.4} /> Requested
+                </button>
+              ) : (
+                <button className="tc-btn tc-btn-primary flex-1" onClick={() => setRequested((p) => [...p, selected.id])}>
+                  <UserPlus className="w-4 h-4" strokeWidth={2} /> Add
+                </button>
+              )}
             </div>
           </Panel>
         ) : (

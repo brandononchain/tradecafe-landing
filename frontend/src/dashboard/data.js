@@ -129,14 +129,45 @@ export const AI_INSIGHTS = [
 ];
 
 // ===== Terminal =====
+// ===== Exchanges (integrated) =====
+export const EXCHANGES = [
+  { key: "binance", name: "Binance", count: 612 },
+  { key: "bybit", name: "Bybit", count: 487 },
+  { key: "bitget", name: "BitGet", count: 421 },
+  { key: "okx", name: "OKX", count: 534 },
+  { key: "weex", name: "Weex", count: 198 },
+  { key: "bingx", name: "BingX", count: 356 },
+  { key: "kucoin", name: "KuCoin", count: 503 },
+];
+
+// Trading instruments. `cat`: Spot | Futures | Stocks.
 export const WATCHLIST = [
-  { sym: "BTCUSDT", last: "67,420.50", chg: "+2.41%", up: true },
-  { sym: "ETHUSDT", last: "3,512.18", chg: "+1.83%", up: true },
-  { sym: "SOLUSDT", last: "184.62", chg: "-0.94%", up: false },
-  { sym: "AVAXUSDT", last: "42.81", chg: "+3.22%", up: true },
-  { sym: "ARBUSDT", last: "1.2460", chg: "+0.61%", up: true },
-  { sym: "LINKUSDT", last: "14.91", chg: "+1.12%", up: true },
-  { sym: "DOTUSDT", last: "6.201", chg: "-0.42%", up: false },
+  { sym: "BTCUSDT", name: "Bitcoin", last: "67,420.50", chg: "+2.41%", up: true, cat: "Spot" },
+  { sym: "ETHUSDT", name: "Ethereum", last: "3,512.18", chg: "+1.83%", up: true, cat: "Spot" },
+  { sym: "SOLUSDT", name: "Solana", last: "184.62", chg: "-0.94%", up: false, cat: "Spot" },
+  { sym: "BNBUSDT", name: "BNB", last: "658.06", chg: "+0.03%", up: true, cat: "Spot" },
+  { sym: "XRPUSDT", name: "XRP", last: "1.3399", chg: "-0.81%", up: false, cat: "Spot" },
+  { sym: "ADAUSDT", name: "Cardano", last: "0.4214", chg: "-0.33%", up: false, cat: "Spot" },
+  { sym: "AVAXUSDT", name: "Avalanche", last: "42.81", chg: "+3.22%", up: true, cat: "Spot" },
+  { sym: "DOGEUSDT", name: "Dogecoin", last: "0.10102", chg: "-1.39%", up: false, cat: "Spot" },
+  { sym: "LINKUSDT", name: "Chainlink", last: "14.91", chg: "+1.12%", up: true, cat: "Spot" },
+  { sym: "DOTUSDT", name: "Polkadot", last: "6.201", chg: "-0.42%", up: false, cat: "Spot" },
+  { sym: "ARBUSDT", name: "Arbitrum", last: "1.2460", chg: "+0.61%", up: true, cat: "Spot" },
+  { sym: "MATICUSDT", name: "Polygon", last: "0.7184", chg: "+2.04%", up: true, cat: "Spot" },
+  { sym: "ATOMUSDT", name: "Cosmos", last: "9.842", chg: "-0.58%", up: false, cat: "Spot" },
+  { sym: "NEARUSDT", name: "NEAR", last: "6.731", chg: "+4.11%", up: true, cat: "Spot" },
+  { sym: "OPUSDT", name: "Optimism", last: "2.418", chg: "+1.27%", up: true, cat: "Spot" },
+  { sym: "SUIUSDT", name: "Sui", last: "3.842", chg: "+5.63%", up: true, cat: "Spot" },
+  { sym: "BTCUSDT.P", name: "Bitcoin Perp", last: "67,448.10", chg: "+2.39%", up: true, cat: "Futures" },
+  { sym: "ETHUSDT.P", name: "Ethereum Perp", last: "3,513.40", chg: "+1.81%", up: true, cat: "Futures" },
+  { sym: "SOLUSDT.P", name: "Solana Perp", last: "184.71", chg: "-0.90%", up: false, cat: "Futures" },
+  { sym: "COMPUSDT", name: "Compound", last: "19.29", chg: "-4.08%", up: false, cat: "Futures" },
+  { sym: "INJUSDT.P", name: "Injective Perp", last: "24.18", chg: "+2.92%", up: true, cat: "Futures" },
+  { sym: "AAPL", name: "Apple Inc.", last: "228.52", chg: "+0.74%", up: true, cat: "Stocks" },
+  { sym: "TSLA", name: "Tesla Inc.", last: "344.18", chg: "-1.22%", up: false, cat: "Stocks" },
+  { sym: "NVDA", name: "NVIDIA Corp.", last: "138.07", chg: "+2.18%", up: true, cat: "Stocks" },
+  { sym: "AMZN", name: "Amazon.com", last: "207.89", chg: "+0.41%", up: true, cat: "Stocks" },
+  { sym: "MSFT", name: "Microsoft", last: "428.15", chg: "-0.18%", up: false, cat: "Stocks" },
 ];
 
 export const OPEN_POSITIONS = [

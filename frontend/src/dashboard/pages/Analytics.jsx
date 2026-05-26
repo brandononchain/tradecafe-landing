@@ -114,7 +114,7 @@ export default function Analytics() {
   return (
     <div className="tc-fade flex flex-col gap-6">
       <PageHead
-        eyebrow={isAnalysis ? "AI Signal Engine" : "Auto-Trading"}
+        eyebrow={isAnalysis ? "Signal Performance" : "Trade Performance"}
         title="Performance Analytics"
         desc="Track positions, PnL, and win rate across your analysis and auto-trading engines."
       />
