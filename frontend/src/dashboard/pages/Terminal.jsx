@@ -11,7 +11,7 @@ import Modal from "../components/Modal";
 import TradeAccountModal from "../components/TradeAccountModal";
 import SharePnlModal from "../components/SharePnlModal";
 import { useWallet } from "../WalletContext";
-import { CHAIN_BY_ID, shortAddr } from "../lib/web3";
+import { shortAddr } from "../lib/web3";
 import { WATCHLIST, OPEN_POSITIONS, TIMEFRAMES, SIGNALS, EXCHANGES, TRADE_ACCOUNT } from "../data";
 import { OVERLAYS, OSCILLATORS } from "../lib/indicators";
 
@@ -475,8 +475,8 @@ function ToggleRow({ label, on, onClick }) {
 
 /* ===== Order panel ===== */
 function OrderPanel({ active, side, setSide, marginMode, setMarginMode, leverage, setLeverage, onConnectWallet }) {
-  const { address, chainId, balance, signMessage } = useWallet() || {};
-  const chain = chainId ? CHAIN_BY_ID[String(chainId).toLowerCase()] : null;
+  const { address, balance, network, nativeSymbol } = useWallet() || {};
+  const { signMessage } = useWallet() || {};
   const [venue, setVenue] = useState("cex"); // cex | onchain
   const [placed, setPlaced] = useState(false);
   const [status, setStatus] = useState("idle"); // idle | signing | done | error
@@ -491,7 +491,7 @@ function OrderPanel({ active, side, setSide, marginMode, setMarginMode, leverage
     if (!address) { onConnectWallet?.(); return; }
     setStatus("signing"); setSig("");
     try {
-      const msg = `TradeCafe perp order\n${side === "buy" ? "LONG" : "SHORT"} ${active.sym}\nleverage: ${leverage}x\nchain: ${chain?.name || chainId}\nts: ${Date.now()}`;
+      const msg = `TradeCafe perp order\n${side === "buy" ? "LONG" : "SHORT"} ${active.sym}\nleverage: ${leverage}x\nchain: ${network?.name || network?.short || "—"}\nts: ${Date.now()}`;
       const signature = await signMessage(msg);
       setSig(signature ? `${signature.slice(0, 10)}…${signature.slice(-6)}` : "0xsigned");
       setStatus("done");
@@ -527,8 +527,8 @@ function OrderPanel({ active, side, setSide, marginMode, setMarginMode, leverage
         <div className="flex items-center justify-between px-3 py-2 rounded-lg bg-white/[0.02] border border-white/[0.045] text-[11px]">
           {address ? (
             <>
-              <span className="text-white/65">{chain?.short || "Unknown"} · {shortAddr(address)}</span>
-              <span className="font-mono text-tradeTeal">{balance ?? "…"} {chain?.native || "ETH"}</span>
+              <span className="text-white/65">{network?.short || "Unknown"} · {shortAddr(address)}</span>
+              <span className="font-mono text-tradeTeal">{balance ?? "…"} {nativeSymbol}</span>
             </>
           ) : (
             <span className="text-white/50">Wallet not connected</span>
@@ -617,8 +617,8 @@ function OrderPanel({ active, side, setSide, marginMode, setMarginMode, leverage
       {onchain ? (
         <div className="grid grid-cols-2 gap-2 font-mono text-[11px] text-white/50">
           <span>Venue</span><span className="text-right text-white/80">On-chain perp</span>
-          <span>Network</span><span className="text-right text-white/80">{chain?.short || "—"}</span>
-          <span>Wallet</span><span className="text-right text-white/80">{balance ? `${balance} ${chain?.native || "ETH"}` : "—"}</span>
+          <span>Network</span><span className="text-right text-white/80">{network?.short || "—"}</span>
+          <span>Wallet</span><span className="text-right text-white/80">{balance ? `${balance} ${nativeSymbol}` : "—"}</span>
           <span>Est. gas</span><span className="text-right text-white/80">~0.0003 ETH</span>
         </div>
       ) : (
@@ -677,8 +677,7 @@ function SignalsRail({ onPick, activeSym }) {
 /* ===== Connect rail ===== */
 function ConnectPanel({ onManage, onConnectWallet }) {
   const connected = TRADE_ACCOUNT.connected;
-  const { address, balance, chainId } = useWallet() || {};
-  const chain = chainId ? CHAIN_BY_ID[String(chainId).toLowerCase()] : null;
+  const { address, balance, network, nativeSymbol, ecosystem } = useWallet() || {};
   return (
     <div className="tc-panel flex flex-col gap-4">
       {/* CEX */}
@@ -706,15 +705,15 @@ function ConnectPanel({ onManage, onConnectWallet }) {
       <div className="flex flex-col gap-2.5">
         <div className="flex items-center justify-between">
           <span className="font-mono text-[10px] tracking-[0.14em] uppercase text-white/55">Web3 · On-chain perps</span>
-          <span className={`tc-chip ${address ? "tc-chip-active" : ""}`}>{address && <span className="tc-chip-dot" />} {address ? "Connected" : "Off"}</span>
+          <span className={`tc-chip ${address ? "tc-chip-active" : ""}`}>{address && <span className="tc-chip-dot" />} {address ? (ecosystem === "solana" ? "Solana" : "EVM") : "Off"}</span>
         </div>
         {address ? (
           <div className="flex items-center justify-between p-3 rounded-xl bg-white/[0.02] border border-white/[0.045]">
-            <span className="text-[12.5px] text-white/70">{shortAddr(address)} · {chain?.short || "Unknown"}</span>
-            <span className="font-mono text-[11px] text-tradeTeal">{balance ?? "…"} {chain?.native || "ETH"}</span>
+            <span className="text-[12.5px] text-white/70">{shortAddr(address)} · {network?.short || "Unknown"}</span>
+            <span className="font-mono text-[11px] text-tradeTeal">{balance ?? "…"} {nativeSymbol}</span>
           </div>
         ) : (
-          <p className="text-[12px] text-white/50">Connect a wallet to trade on-chain perpetuals.</p>
+          <p className="text-[12px] text-white/50">Connect EVM or Solana to trade on-chain perpetuals.</p>
         )}
         <button className="tc-btn tc-btn-primary w-full" onClick={onConnectWallet} data-testid="connect-wallet">
           <Wallet className="w-3.5 h-3.5" strokeWidth={2} /> {address ? "Manage wallet" : "Connect wallet"}
