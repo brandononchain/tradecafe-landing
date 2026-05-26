@@ -21,6 +21,7 @@ import {
   Network,
 } from "lucide-react";
 import Nav from "../components/Nav";
+import PoolPerformanceCard from "../components/PoolPerformanceCard";
 import { EXTERNAL } from "../lib/brand";
 
 const POOL_STEPS = [
@@ -131,6 +132,15 @@ export default function Pool() {
             </p>
           </div>
         </header>
+
+        {/* ===== Live pool performance (real component) ===== */}
+        <div className="relative z-20 px-4 sm:px-6 md:px-10 lg:px-14 max-w-[1280px] mx-auto mb-16 sm:mb-20">
+          <div className="flex items-center gap-2 mb-3">
+            <span className="trade-pulse-dot inline-block w-1.5 h-1.5 rounded-full bg-tradeTeal" />
+            <span className="font-mono text-[10px] tracking-[0.18em] uppercase text-white/50">Pool performance · live</span>
+          </div>
+          <PoolPerformanceCard />
+        </div>
 
         {/* ===== Pool Snapshot ===== */}
         <div className="relative z-20 px-4 sm:px-6 md:px-10 lg:px-14 max-w-[1280px] mx-auto">

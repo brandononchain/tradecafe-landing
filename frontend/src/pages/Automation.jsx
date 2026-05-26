@@ -22,6 +22,7 @@ import {
   Sparkles,
 } from "lucide-react";
 import Nav from "../components/Nav";
+import LiveTerminalPreview from "../components/LiveTerminalPreview";
 import { EXTERNAL } from "../lib/brand";
 
 const LEVELS = [
@@ -176,6 +177,19 @@ export default function Automation() {
             </p>
           </div>
         </header>
+
+        {/* ===== Live auto-execution (real component) ===== */}
+        <div className="relative z-20 px-4 sm:px-6 md:px-10 lg:px-14 max-w-[1280px] mx-auto mb-16 sm:mb-20">
+          <div className="flex items-center gap-2 mb-3">
+            <span className="trade-pulse-dot inline-block w-1.5 h-1.5 rounded-full bg-tradeTeal" />
+            <span className="font-mono text-[10px] tracking-[0.18em] uppercase text-white/50">Trade Bot · live auto-execution</span>
+          </div>
+          <LiveTerminalPreview
+            symbol="SOLUSDT"
+            label="SOLUSDT · Trade Bot · automated entry"
+            signal={{ entry: 184.62, target: 196.4, stop: 178.2, dir: "LONG" }}
+          />
+        </div>
 
         {/* ===== Levels of control ===== */}
         <div className="relative z-20 px-4 sm:px-6 md:px-10 lg:px-14 max-w-[1280px] mx-auto">
