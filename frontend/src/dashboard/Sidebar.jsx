@@ -45,19 +45,21 @@ export default function Sidebar({ collapsed, mobileOpen, onToggleCollapse, onClo
               </span>
             )}
           </NavLink>
-          <button
-            className="tc-iconbtn ml-auto hidden lg:inline-flex"
-            onClick={onToggleCollapse}
-            aria-label="Collapse sidebar"
-            data-testid="sidebar-collapse"
-            style={{ width: 30, height: 30 }}
-          >
-            <ChevronsLeft
-              className="w-4 h-4 transition-transform"
-              style={{ transform: collapsed ? "rotate(180deg)" : "none" }}
-              strokeWidth={2}
-            />
-          </button>
+          <span className="ml-auto hidden lg:inline-flex">
+            <button
+              className="tc-iconbtn"
+              onClick={onToggleCollapse}
+              aria-label="Collapse sidebar"
+              data-testid="sidebar-collapse"
+              style={{ width: 30, height: 30 }}
+            >
+              <ChevronsLeft
+                className="w-4 h-4 transition-transform"
+                style={{ transform: collapsed ? "rotate(180deg)" : "none" }}
+                strokeWidth={2}
+              />
+            </button>
+          </span>
         </div>
 
         <nav className="tc-sidebar-scroll">

@@ -321,7 +321,7 @@ export default function Terminal() {
 
           {/* Chart area with drawing rail */}
           <div className="flex flex-1">
-            <div className="flex flex-col items-center gap-0.5 py-2 px-1.5 border-r border-white/[0.04]">
+            <div className="hidden sm:flex flex-col items-center gap-0.5 py-2 px-1.5 border-r border-white/[0.04]">
               {DRAW_TOOLS.map((d) => {
                 const Ic = d.icon;
                 const isActive = drawTool === d.key;
