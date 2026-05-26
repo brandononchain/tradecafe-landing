@@ -38,7 +38,7 @@ export default function Sidebar({ collapsed, mobileOpen, onToggleCollapse, onClo
       >
         <div className="tc-sidebar-head">
           <NavLink to="/" className="flex items-center gap-2 overflow-hidden" aria-label="TradeCafe home">
-            <img src="/tradecafe-logo.svg" alt="TradeCafe" className="tc-sidebar-logo" draggable={false} />
+            <img src="/tradecafe-logo.png" alt="TradeCafe" className="tc-sidebar-logo" draggable={false} />
             {!collapsed && (
               <span className="trade-wordmark text-[17px] text-tradeWhite hidden lg:inline whitespace-nowrap">
                 TradeCafe
