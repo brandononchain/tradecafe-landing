@@ -1,5 +1,5 @@
 import { createContext, useCallback, useContext, useEffect, useState } from "react";
-import { getEthereum, getAccounts, requestAccounts, getBalance, switchChain } from "./lib/web3";
+import { getEthereum, getAccounts, requestAccounts, getBalance, switchChain, personalSign } from "./lib/web3";
 
 const WalletContext = createContext(null);
 export const useWallet = () => useContext(WalletContext);
@@ -70,6 +70,11 @@ export function WalletProvider({ children }) {
     setError(null);
   }, []);
 
+  const signMessage = useCallback(async (msg) => {
+    if (!address) throw new Error("NOT_CONNECTED");
+    return personalSign(address, msg);
+  }, [address]);
+
   const changeChain = useCallback(async (idHex) => {
     try {
       await switchChain(idHex);
@@ -81,7 +86,7 @@ export function WalletProvider({ children }) {
   }, [address, refreshBalance]);
 
   return (
-    <WalletContext.Provider value={{ address, chainId, balance, connecting, error, hasProvider, connect, disconnect, changeChain, refreshBalance }}>
+    <WalletContext.Provider value={{ address, chainId, balance, connecting, error, hasProvider, connect, disconnect, changeChain, refreshBalance, signMessage }}>
       {children}
     </WalletContext.Provider>
   );

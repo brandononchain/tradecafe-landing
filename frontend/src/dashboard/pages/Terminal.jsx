@@ -4,7 +4,7 @@ import {
   TrendingUp, TrendingDown, Search, Minus, X, ChevronDown, Check,
   CandlestickChart, LineChart as LineIcon, AreaChart as AreaIcon, BarChart3,
   Brain, Sparkles, MousePointer2, MoveUpRight, Type, Square, Magnet, Lock, Eraser, Ruler,
-  Settings2, Keyboard, Star, Plug, Pencil, Share2, Wallet,
+  Settings2, Keyboard, Star, Plug, Pencil, Share2, Wallet, Loader2,
 } from "lucide-react";
 import TradingChart from "../components/TradingChart";
 import Modal from "../components/Modal";
@@ -373,6 +373,7 @@ export default function Terminal() {
               active={active} side={side} setSide={setSide}
               marginMode={marginMode} setMarginMode={setMarginMode}
               leverage={leverage} setLeverage={setLeverage}
+              onConnectWallet={() => { setAccountMode("web3"); setAccountOpen(true); }}
             />
           )}
           {rightTab === "signals" && <SignalsRail onPick={chartSignal} activeSym={activeSignal?.sym} />}
@@ -473,20 +474,68 @@ function ToggleRow({ label, on, onClick }) {
 }
 
 /* ===== Order panel ===== */
-function OrderPanel({ active, side, setSide, marginMode, setMarginMode, leverage, setLeverage }) {
+function OrderPanel({ active, side, setSide, marginMode, setMarginMode, leverage, setLeverage, onConnectWallet }) {
+  const { address, chainId, balance, signMessage } = useWallet() || {};
+  const chain = chainId ? CHAIN_BY_ID[String(chainId).toLowerCase()] : null;
+  const [venue, setVenue] = useState("cex"); // cex | onchain
   const [placed, setPlaced] = useState(false);
+  const [status, setStatus] = useState("idle"); // idle | signing | done | error
+  const [sig, setSig] = useState("");
+
   const submit = () => {
     setPlaced(true);
     setTimeout(() => setPlaced(false), 2400);
   };
+
+  const submitOnchain = async () => {
+    if (!address) { onConnectWallet?.(); return; }
+    setStatus("signing"); setSig("");
+    try {
+      const msg = `TradeCafe perp order\n${side === "buy" ? "LONG" : "SHORT"} ${active.sym}\nleverage: ${leverage}x\nchain: ${chain?.name || chainId}\nts: ${Date.now()}`;
+      const signature = await signMessage(msg);
+      setSig(signature ? `${signature.slice(0, 10)}…${signature.slice(-6)}` : "0xsigned");
+      setStatus("done");
+      setTimeout(() => setStatus("idle"), 4000);
+    } catch (e) {
+      setStatus("error");
+      setTimeout(() => setStatus("idle"), 3000);
+    }
+  };
+
   const dca = [
     { lvl: "Entry", mult: "×1" },
     { lvl: "Avg 1", mult: "×1.5" },
     { lvl: "Avg 2", mult: "×2" },
     { lvl: "Avg 3", mult: "×3" },
   ];
+  const onchain = venue === "onchain";
+
   return (
     <div className="tc-panel flex flex-col gap-4">
+      {/* Venue */}
+      <div className="flex items-center gap-1 p-1 rounded-lg bg-white/[0.025] border border-white/[0.05]">
+        {[["cex", "CEX"], ["onchain", "On-chain"]].map(([v, lbl]) => (
+          <button key={v} onClick={() => setVenue(v)}
+            className={`flex-1 py-1.5 rounded-md font-mono text-[10px] tracking-[0.08em] uppercase transition-colors flex items-center justify-center gap-1.5 ${venue === v ? "bg-tradeTeal/15 text-tradeTeal" : "text-white/50"}`}
+            data-testid={`venue-${v}`}>
+            {v === "onchain" && <Wallet className="w-3 h-3" strokeWidth={2} />}{lbl}
+          </button>
+        ))}
+      </div>
+
+      {onchain && (
+        <div className="flex items-center justify-between px-3 py-2 rounded-lg bg-white/[0.02] border border-white/[0.045] text-[11px]">
+          {address ? (
+            <>
+              <span className="text-white/65">{chain?.short || "Unknown"} · {shortAddr(address)}</span>
+              <span className="font-mono text-tradeTeal">{balance ?? "…"} {chain?.native || "ETH"}</span>
+            </>
+          ) : (
+            <span className="text-white/50">Wallet not connected</span>
+          )}
+        </div>
+      )}
+
       <div className="tc-segment">
         <div className={`tc-segment-btn ${side === "buy" ? "is-active" : ""}`} style={{ padding: "9px 0" }} onClick={() => setSide("buy")}>Long</div>
         <div className="tc-segment-btn" style={side === "sell" ? { padding: "9px 0", color: "#042024", background: "linear-gradient(135deg,#FF9B91,#F23645)" } : { padding: "9px 0" }} onClick={() => setSide("sell")}>Short</div>
@@ -529,23 +578,56 @@ function OrderPanel({ active, side, setSide, marginMode, setMarginMode, leverage
         </div>
       </div>
 
-      <button className={`tc-btn w-full ${side === "buy" ? "tc-btn-primary" : ""}`}
-        style={side === "sell" ? { color: "#042024", background: "linear-gradient(135deg,#FF9B91,#F23645)" } : undefined}
-        onClick={submit}
-        data-testid="order-submit">
-        {side === "buy" ? "Buy / Long" : "Sell / Short"} {active.sym}
-      </button>
-      {placed && (
+      {onchain ? (
+        <button className={`tc-btn w-full ${side === "buy" ? "tc-btn-primary" : ""}`}
+          style={side === "sell" ? { color: "#042024", background: "linear-gradient(135deg,#FF9B91,#F23645)" } : undefined}
+          onClick={submitOnchain} disabled={status === "signing"}
+          data-testid="order-submit-onchain">
+          {status === "signing"
+            ? <><Loader2 className="w-3.5 h-3.5 animate-spin" strokeWidth={2} /> Sign in wallet…</>
+            : !address
+              ? <><Wallet className="w-3.5 h-3.5" strokeWidth={2} /> Connect wallet to trade</>
+              : <><Wallet className="w-3.5 h-3.5" strokeWidth={2} /> Sign &amp; {side === "buy" ? "Long" : "Short"} {active.sym}</>}
+        </button>
+      ) : (
+        <button className={`tc-btn w-full ${side === "buy" ? "tc-btn-primary" : ""}`}
+          style={side === "sell" ? { color: "#042024", background: "linear-gradient(135deg,#FF9B91,#F23645)" } : undefined}
+          onClick={submit}
+          data-testid="order-submit">
+          {side === "buy" ? "Buy / Long" : "Sell / Short"} {active.sym}
+        </button>
+      )}
+
+      {!onchain && placed && (
         <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-tradeTeal/10 border border-tradeTeal/25 text-[12px] text-tradeTeal">
           <Check className="w-3.5 h-3.5" strokeWidth={2.5} /> {side === "buy" ? "Long" : "Short"} order submitted (demo)
         </div>
       )}
+      {onchain && status === "done" && (
+        <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-tradeTeal/10 border border-tradeTeal/25 text-[12px] text-tradeTeal">
+          <Check className="w-3.5 h-3.5" strokeWidth={2.5} /> Order signed & routed · {sig}
+        </div>
+      )}
+      {onchain && status === "error" && (
+        <div className="px-3 py-2 rounded-lg bg-[#F23645]/10 border border-[#F23645]/25 text-[12px] text-[#FF8A82]">
+          Signature rejected — order not placed.
+        </div>
+      )}
 
-      <div className="grid grid-cols-2 gap-2 font-mono text-[11px] text-white/50">
-        <span>Avail.</span><span className="text-right text-white/80">$0.00</span>
-        <span>Cost</span><span className="text-right text-white/80">$0.00</span>
-        <span>Fees</span><span className="text-right text-white/80">0.04%</span>
-      </div>
+      {onchain ? (
+        <div className="grid grid-cols-2 gap-2 font-mono text-[11px] text-white/50">
+          <span>Venue</span><span className="text-right text-white/80">On-chain perp</span>
+          <span>Network</span><span className="text-right text-white/80">{chain?.short || "—"}</span>
+          <span>Wallet</span><span className="text-right text-white/80">{balance ? `${balance} ${chain?.native || "ETH"}` : "—"}</span>
+          <span>Est. gas</span><span className="text-right text-white/80">~0.0003 ETH</span>
+        </div>
+      ) : (
+        <div className="grid grid-cols-2 gap-2 font-mono text-[11px] text-white/50">
+          <span>Avail.</span><span className="text-right text-white/80">$0.00</span>
+          <span>Cost</span><span className="text-right text-white/80">$0.00</span>
+          <span>Fees</span><span className="text-right text-white/80">0.04%</span>
+        </div>
+      )}
     </div>
   );
 }

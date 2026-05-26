@@ -78,3 +78,12 @@ export async function switchChain(chainIdHex) {
   if (!eth) throw new Error("NO_PROVIDER");
   await eth.request({ method: "wallet_switchEthereumChain", params: [{ chainId: chainIdHex }] });
 }
+
+// Sign an order intent in the user's wallet (on-chain perps flow:
+// sign intent -> relayer submits). Returns the signature hex.
+export async function personalSign(address, message) {
+  const eth = getEthereum();
+  if (!eth) throw new Error("NO_PROVIDER");
+  const hex = "0x" + Array.from(new TextEncoder().encode(message)).map((b) => b.toString(16).padStart(2, "0")).join("");
+  return eth.request({ method: "personal_sign", params: [hex, address] });
+}
