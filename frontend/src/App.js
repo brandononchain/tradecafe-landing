@@ -33,6 +33,7 @@ const AppJournal = lazy(() => import("./dashboard/pages/Journal"));
 const AppVitChat = lazy(() => import("./dashboard/pages/VitChat"));
 const AppVitWorld = lazy(() => import("./dashboard/pages/VitWorld"));
 const AppProducts = lazy(() => import("./dashboard/pages/Products"));
+const AppCard = lazy(() => import("./dashboard/pages/Card"));
 
 function AppLoader() {
   return (
@@ -473,6 +474,7 @@ function App() {
           <Route path="vitchat" element={<AppVitChat />} />
           <Route path="vitworld" element={<AppVitWorld />} />
           <Route path="products" element={<AppProducts />} />
+          <Route path="card" element={<AppCard />} />
           <Route path="affiliate" element={<AppAffiliate />} />
           <Route path="subscriptions" element={<AppSubscriptions />} />
           <Route path="settings" element={<AppSettings />} />

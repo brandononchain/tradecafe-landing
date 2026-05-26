@@ -20,6 +20,7 @@ import {
   Network,
 } from "lucide-react";
 import Nav from "../components/Nav";
+import ProofCard from "../components/ProofCard";
 import { EXTERNAL } from "../lib/brand";
 
 const GROW_WAYS = [
@@ -152,6 +153,18 @@ export default function Partners() {
             <NetworkViz />
           </div>
         </header>
+
+        {/* ===== Proof cards (real component) ===== */}
+        <div className="relative z-20 px-4 sm:px-6 md:px-10 lg:px-14 max-w-[1280px] mx-auto mb-16 sm:mb-20">
+          <div className="flex items-center gap-2 mb-4">
+            <span className="trade-pulse-dot inline-block w-1.5 h-1.5 rounded-full bg-tradeTeal" />
+            <span className="font-mono text-[10px] tracking-[0.18em] uppercase text-white/50">Proof cards · shareable, referral-embedded</span>
+          </div>
+          <div className="flex flex-wrap gap-5 justify-center sm:justify-start">
+            <ProofCard sym="BTCUSDT" dir="LONG" pnl="+412.8%" entry="61,240" exit="84,910" />
+            <ProofCard sym="SOLUSDT" dir="LONG" pnl="+128.4%" entry="142.10" exit="184.62" handle="@mira.trades" code="MIRA5" />
+          </div>
+        </div>
 
         {/* ===== Four ways partners grow ===== */}
         <div id="plan" className="relative z-20 px-4 sm:px-6 md:px-10 lg:px-14 max-w-[1280px] mx-auto mt-4 sm:mt-6">

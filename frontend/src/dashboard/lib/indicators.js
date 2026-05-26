@@ -336,6 +336,48 @@ export function breakRetests(candles, lookback = 6) {
   return out;
 }
 
+// Trend Finder: fit a line through the last two significant swing lows
+// (uptrend) or swing highs (downtrend) and project it forward.
+export function trendFinder(candles, lookback = 5) {
+  const lows = [];
+  const highs = [];
+  for (let i = lookback; i < candles.length - lookback; i++) {
+    let isLow = true, isHigh = true;
+    for (let j = 1; j <= lookback; j++) {
+      if (candles[i - j].low <= candles[i].low || candles[i + j].low <= candles[i].low) isLow = false;
+      if (candles[i - j].high >= candles[i].high || candles[i + j].high >= candles[i].high) isHigh = false;
+    }
+    if (isLow) lows.push(i);
+    if (isHigh) highs.push(i);
+  }
+  const last = candles[candles.length - 1].close;
+  const first = candles[0].close;
+  const useLows = last >= first; // uptrend -> support line on lows
+  const piv = useLows ? lows : highs;
+  if (piv.length < 2) return { line: [], up: useLows };
+  const a = piv[piv.length - 2];
+  const b = piv[piv.length - 1];
+  const va = useLows ? candles[a].low : candles[a].high;
+  const vb = useLows ? candles[b].low : candles[b].high;
+  const slope = (vb - va) / (b - a || 1);
+  const line = [];
+  for (let i = a; i < candles.length; i++) {
+    line.push({ time: candles[i].time, value: round(va + slope * (i - a)) });
+  }
+  return { line, up: useLows };
+}
+
+// Inside bars: a bar fully contained within the previous bar's range.
+export function insideBars(candles) {
+  const marks = [];
+  for (let i = 1; i < candles.length; i++) {
+    if (candles[i].high < candles[i - 1].high && candles[i].low > candles[i - 1].low) {
+      marks.push({ time: candles[i].time, position: "aboveBar", color: "#9B8AFB", shape: "circle", text: "IB" });
+    }
+  }
+  return marks.slice(-12);
+}
+
 export function pivotPoints(candles) {
   const last = candles[candles.length - 1];
   const recent = candles.slice(-24);

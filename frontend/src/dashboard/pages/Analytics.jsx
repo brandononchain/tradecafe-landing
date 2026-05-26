@@ -21,6 +21,8 @@ import {
   Download,
 } from "lucide-react";
 import { PageHead, Panel } from "../ui";
+import { SignalConfigModal, TradeConfigModal, MarginSettingsModal } from "../components/ConfigModals";
+import TradeAccountModal from "../components/TradeAccountModal";
 import {
   ANALYSIS,
   TRADING,
@@ -96,6 +98,7 @@ export default function Analytics() {
   const [tab, setTab] = useState("analysis");
   const [subTab, setSubTab] = useState("History");
   const [query, setQuery] = useState("");
+  const [modal, setModal] = useState(null);
 
   const isAnalysis = tab === "analysis";
   const cfg = isAnalysis ? ANALYSIS : TRADING;
@@ -150,10 +153,10 @@ export default function Analytics() {
             </div>
           </div>
           <div className="flex items-center gap-2.5">
-            <button className="tc-btn tc-btn-ghost" style={{ padding: "9px 14px", fontSize: 12 }}>
+            <button className="tc-btn tc-btn-ghost" style={{ padding: "9px 14px", fontSize: 12 }} onClick={() => setModal("config")} data-testid="change-config">
               <Settings2 className="w-3.5 h-3.5" strokeWidth={2} /> Change Config
             </button>
-            <button className="tc-btn tc-btn-ghost" style={{ padding: "9px 14px", fontSize: 12 }}>
+            <button className="tc-btn tc-btn-ghost" style={{ padding: "9px 14px", fontSize: 12 }} onClick={() => setModal(isAnalysis ? "margin" : "account")} data-testid="config-secondary">
               <DollarSign className="w-3.5 h-3.5" strokeWidth={2} />
               {isAnalysis ? "Margin Settings" : "Configure API"}
             </button>
@@ -289,6 +292,12 @@ export default function Analytics() {
           </div>
         )}
       </Panel>
+
+      {modal === "config" && (isAnalysis
+        ? <SignalConfigModal onClose={() => setModal(null)} />
+        : <TradeConfigModal onClose={() => setModal(null)} onOpenAccount={() => setModal("account")} />)}
+      {modal === "margin" && <MarginSettingsModal onClose={() => setModal(null)} />}
+      {modal === "account" && <TradeAccountModal onClose={() => setModal(null)} />}
     </div>
   );
 }

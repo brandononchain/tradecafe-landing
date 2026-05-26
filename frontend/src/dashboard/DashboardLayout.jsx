@@ -3,6 +3,8 @@ import { Outlet, useLocation } from "react-router-dom";
 import Sidebar from "./Sidebar";
 import Topbar from "./Topbar";
 import { ThemeProvider, useTheme } from "./ThemeContext";
+import ChatWidget from "./components/ChatWidget";
+import WelcomeModal from "./components/WelcomeModal";
 
 const PAGE_META = {
   "/app": { title: "Overview", sub: "My Account" },
@@ -16,6 +18,7 @@ const PAGE_META = {
   "/app/vitchat": { title: "VITchat", sub: "Community" },
   "/app/vitworld": { title: "VITworld", sub: "Social Globe" },
   "/app/products": { title: "Products", sub: "Ecosystem" },
+  "/app/card": { title: "TradeCafe Card", sub: "Spend" },
   "/app/affiliate": { title: "Affiliate Program", sub: "Partner Network" },
   "/app/subscriptions": { title: "Subscriptions", sub: "Billing" },
   "/app/settings": { title: "Settings", sub: "Account & Security" },
@@ -34,6 +37,13 @@ function DashboardShell() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const { pathname } = useLocation();
   const { mode } = useTheme();
+  const [welcome, setWelcome] = useState(() => {
+    try { return !localStorage.getItem("tc-onboarded"); } catch { return false; }
+  });
+  const dismissWelcome = () => {
+    try { localStorage.setItem("tc-onboarded", "1"); } catch { /* ignore */ }
+    setWelcome(false);
+  };
 
   // Close the mobile drawer whenever the route changes.
   useEffect(() => setMobileOpen(false), [pathname]);
@@ -57,6 +67,9 @@ function DashboardShell() {
           <Outlet />
         </main>
       </div>
+
+      <ChatWidget />
+      {welcome && <WelcomeModal onClose={dismissWelcome} />}
     </div>
   );
 }
