@@ -243,6 +243,15 @@ export const INVOICES = [
   { id: "INV-20471", item: "Trade Bot · 12mo", amount: "$990.00", date: "Apr 26, 2026", status: "Paid" },
 ];
 
+// ===== Notifications =====
+export const NOTIFICATIONS = [
+  { id: "n1", type: "signal", title: "New LONG signal · BTCUSDT", body: "Breakout · 88% confidence", time: "2m", unread: true },
+  { id: "n2", type: "trade", title: "Trade Bot opened ETHUSDT", body: "Semi-Auto · awaiting your approval", time: "14m", unread: true },
+  { id: "n3", type: "pool", title: "Pool payout received", body: "+42.18 USDT distributed to your balance", time: "1h", unread: true },
+  { id: "n4", type: "system", title: "2FA reminder", body: "Enable two-factor auth to secure withdrawals", time: "3h", unread: false },
+  { id: "n5", type: "affiliate", title: "New referral joined", body: "kofi signed up with your code", time: "1d", unread: false },
+];
+
 // ===== Journal / Reports =====
 export const JOURNAL = {
   globalMetrics: [

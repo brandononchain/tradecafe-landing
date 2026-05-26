@@ -1,10 +1,12 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
-  TrendingUp, TrendingDown, Search, Plus, Minus, X, ChevronDown, Check,
+  TrendingUp, TrendingDown, Search, Minus, X, ChevronDown, Check,
   CandlestickChart, LineChart as LineIcon, AreaChart as AreaIcon, BarChart3,
   Brain, Sparkles, MousePointer2, MoveUpRight, Type, Square, Magnet, Lock, Eraser, Ruler,
+  Settings2, Keyboard,
 } from "lucide-react";
 import TradingChart from "../components/TradingChart";
+import Modal from "../components/Modal";
 import { WATCHLIST, OPEN_POSITIONS, TIMEFRAMES, SIGNALS } from "../data";
 import { OVERLAYS, OSCILLATORS } from "../lib/indicators";
 
@@ -33,7 +35,7 @@ export default function Terminal() {
   const [chartType, setChartType] = useState("candles");
   const [overlays, setOverlays] = useState({});
   const [oscillator, setOscillator] = useState(null);
-  const [ai, setAi] = useState({ sr: false, pivots: false });
+  const [ai, setAi] = useState({ sr: false, pivots: false, channel: false, breaks: false });
   const [drawTool, setDrawTool] = useState(null);
   const [magnet, setMagnet] = useState(false);
   const [locked, setLocked] = useState(false);
@@ -43,6 +45,19 @@ export default function Terminal() {
   const [leverage, setLeverage] = useState(10);
   const [query, setQuery] = useState("");
   const [searchOpen, setSearchOpen] = useState(false);
+  const [settingsOpen, setSettingsOpen] = useState(false);
+  const [logScale, setLogScale] = useState(false);
+
+  // Keyboard shortcuts: 1–6 switch timeframe.
+  useEffect(() => {
+    const onKey = (e) => {
+      if (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA") return;
+      const idx = parseInt(e.key, 10) - 1;
+      if (idx >= 0 && idx < TIMEFRAMES.length) setTf(TIMEFRAMES[idx]);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, []);
 
   const active = useMemo(() => WATCHLIST.find((w) => w.sym === symbol) || WATCHLIST[0], [symbol]);
   const list = useMemo(
@@ -152,7 +167,12 @@ export default function Terminal() {
             <Dropdown label="AI" icon={Brain} testid="menu-ai">
               <MenuItem checked={ai.sr} onClick={() => setAi((a) => ({ ...a, sr: !a.sr }))}>Support / Resistance</MenuItem>
               <MenuItem checked={ai.pivots} onClick={() => setAi((a) => ({ ...a, pivots: !a.pivots }))}>Pivot Points</MenuItem>
+              <MenuItem checked={ai.channel} onClick={() => setAi((a) => ({ ...a, channel: !a.channel }))}>Trend Channel</MenuItem>
+              <MenuItem checked={ai.breaks} onClick={() => setAi((a) => ({ ...a, breaks: !a.breaks }))}>Breaks &amp; Retests</MenuItem>
             </Dropdown>
+            <button className="tc-iconbtn ml-auto" style={{ width: 32, height: 32 }} onClick={() => setSettingsOpen(true)} title="Chart settings" data-testid="chart-settings">
+              <Settings2 className="w-3.5 h-3.5" strokeWidth={2} />
+            </button>
           </div>
 
           {/* Chart area with drawing rail */}
@@ -184,7 +204,7 @@ export default function Terminal() {
               </button>
             </div>
             <div className="flex-1 h-[400px] sm:h-[460px]">
-              <TradingChart symbol={symbol} timeframe={tf} chartType={chartType} overlays={overlays} oscillator={oscillator} ai={ai} drawTool={locked ? null : drawTool} />
+              <TradingChart symbol={symbol} timeframe={tf} chartType={chartType} overlays={overlays} oscillator={oscillator} ai={ai} drawTool={locked ? null : drawTool} logScale={logScale} />
             </div>
           </div>
         </div>
@@ -257,6 +277,34 @@ export default function Terminal() {
       </div>
 
       {searchOpen && <SymbolSearch onClose={() => setSearchOpen(false)} onPick={(s) => { setSymbol(s); setSearchOpen(false); }} />}
+      {settingsOpen && (
+        <Modal title="Terminal settings" sub="Chart preferences" onClose={() => setSettingsOpen(false)}
+          footer={<button className="tc-btn tc-btn-primary flex-1" onClick={() => setSettingsOpen(false)}>Done</button>}>
+          <ToggleRow label="Logarithmic price scale" on={logScale} onClick={() => setLogScale((v) => !v)} />
+          <ToggleRow label="Magnet (snap to price)" on={magnet} onClick={() => setMagnet((v) => !v)} />
+          <ToggleRow label="Lock drawings" on={locked} onClick={() => setLocked((v) => !v)} />
+          <div className="mt-4 pt-4 border-t border-white/6">
+            <div className="flex items-center gap-2 font-mono text-[10px] tracking-[0.14em] uppercase text-white/45 mb-3">
+              <Keyboard className="w-3.5 h-3.5" /> Shortcuts
+            </div>
+            <div className="grid grid-cols-2 gap-2 font-mono text-[11px] text-white/55">
+              <span>1 – 6</span><span className="text-right text-white/80">Timeframe</span>
+              <span>Esc</span><span className="text-right text-white/80">Close dialog</span>
+            </div>
+          </div>
+        </Modal>
+      )}
+    </div>
+  );
+}
+
+function ToggleRow({ label, on, onClick }) {
+  return (
+    <div className="flex items-center justify-between py-2.5">
+      <span className="text-[13px] text-white/75">{label}</span>
+      <button onClick={onClick} className={`relative w-11 h-6 rounded-full transition-colors ${on ? "bg-tradeTeal" : "bg-white/12"}`}>
+        <span className="absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white transition-transform" style={{ transform: on ? "translateX(20px)" : "none" }} />
+      </button>
     </div>
   );
 }
@@ -375,6 +423,8 @@ function AIRail({ ai, setAi }) {
       {[
         { k: "sr", label: "Support / Resistance", desc: "Swing-based zones plotted on the chart." },
         { k: "pivots", label: "Pivot Points", desc: "Classic P / S1–S2 / R1–R2 levels." },
+        { k: "channel", label: "Trend Channel", desc: "Linear-regression channel with ±2σ bands." },
+        { k: "breaks", label: "Breaks & Retests", desc: "Most recent broken level + retest zone." },
       ].map((o) => (
         <button key={o.k} onClick={() => setAi((a) => ({ ...a, [o.k]: !a[o.k] }))}
           className={`flex items-start gap-3 p-3 rounded-xl border text-left transition-colors ${ai[o.k] ? "bg-tradeTeal/8 border-tradeTeal/30" : "bg-white/[0.02] border-white/6"}`}
@@ -389,7 +439,7 @@ function AIRail({ ai, setAi }) {
         </button>
       ))}
       <p className="text-[11px] text-white/40 leading-[1.5] mt-1">
-        More layers (Breaks &amp; Retests, Trend Channels, Inside-Bar BB) port from the AI engine next.
+        Layers compute client-side from the loaded candles and redraw on each symbol or timeframe change.
       </p>
     </div>
   );

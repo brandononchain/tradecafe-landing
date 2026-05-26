@@ -1,12 +1,14 @@
 import { useMemo, useState } from "react";
-import { TrendingUp, TrendingDown, Target, ShieldAlert } from "lucide-react";
+import { TrendingUp, TrendingDown, Target, ShieldAlert, SlidersHorizontal } from "lucide-react";
 import { PageHead, Panel } from "../ui";
+import { SignalConfigModal } from "../components/ConfigModals";
 import { SIGNALS } from "../data";
 
 const FILTERS = ["All", "Long", "Short", "High conf"];
 
 export default function Signals() {
   const [filter, setFilter] = useState("All");
+  const [configOpen, setConfigOpen] = useState(false);
 
   const rows = useMemo(() => {
     if (filter === "Long") return SIGNALS.filter((s) => s.dir === "LONG");
@@ -24,7 +26,11 @@ export default function Signals() {
         eyebrow="AI Signal Engine"
         title="Live Signals"
         desc="High-confidence entries streamed 24/7 across crypto markets, with targets and stops."
-      />
+      >
+        <button className="tc-btn tc-btn-ghost" onClick={() => setConfigOpen(true)} data-testid="signal-config">
+          <SlidersHorizontal className="w-3.5 h-3.5" strokeWidth={2} /> Configure
+        </button>
+      </PageHead>
 
       <div className="tc-statgrid">
         <Stat label="Active Signals" value={SIGNALS.length} />
@@ -89,6 +95,8 @@ export default function Signals() {
           </table>
         </div>
       </Panel>
+
+      {configOpen && <SignalConfigModal onClose={() => setConfigOpen(false)} />}
     </div>
   );
 }

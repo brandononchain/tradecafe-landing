@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import {
   Mail,
@@ -17,15 +18,17 @@ import {
 } from "lucide-react";
 import { PageHead, Panel } from "../ui";
 import { ACCOUNT, STATS, SUBSCRIPTIONS } from "../data";
+import { WithdrawModal, SupportModal, TwoFAModal, ReferralModal, ConfirmModal } from "../components/AccountModals";
 
 const ACTIONS = [
-  { icon: ShieldCheck, title: "2FA", sub: ACCOUNT.twoFA ? "Enabled" : "Disabled" },
-  { icon: MessageSquare, title: "Support Request", sub: "Send a request to our team" },
-  { icon: UserPlus, title: "Referrer", sub: ACCOUNT.referrer || "Not set — tap to bind" },
-  { icon: Trash2, title: "Delete Account", sub: "Request permanent deletion", danger: true },
+  { key: "twofa", icon: ShieldCheck, title: "2FA", sub: ACCOUNT.twoFA ? "Enabled" : "Disabled" },
+  { key: "support", icon: MessageSquare, title: "Support Request", sub: "Send a request to our team" },
+  { key: "referrer", icon: UserPlus, title: "Referrer", sub: ACCOUNT.referrer || "Not set — tap to bind" },
+  { key: "delete", icon: Trash2, title: "Delete Account", sub: "Request permanent deletion", danger: true },
 ];
 
 export default function Overview() {
+  const [modal, setModal] = useState(null);
   return (
     <div className="tc-fade flex flex-col gap-6">
       <PageHead
@@ -74,10 +77,10 @@ export default function Overview() {
             </span>
           </div>
           <div className="mt-auto pt-5 flex gap-2.5">
-            <button className="tc-btn tc-btn-primary flex-1" data-testid="btn-withdraw">
+            <button className="tc-btn tc-btn-primary flex-1" data-testid="btn-withdraw" onClick={() => setModal("withdraw")}>
               <ArrowDownToLine className="w-4 h-4" strokeWidth={2.2} /> Withdraw
             </button>
-            <button className="tc-btn tc-btn-ghost">
+            <button className="tc-btn tc-btn-ghost" onClick={() => setModal("history")}>
               <History className="w-4 h-4" strokeWidth={2} /> History
             </button>
           </div>
@@ -89,7 +92,7 @@ export default function Overview() {
         {ACTIONS.map((a) => {
           const Icon = a.icon;
           return (
-            <div key={a.title} className={`tc-action ${a.danger ? "is-danger" : ""}`} data-testid={`action-${a.title.toLowerCase().replace(/\s+/g, "-")}`}>
+            <div key={a.title} onClick={() => setModal(a.key)} className={`tc-action ${a.danger ? "is-danger" : ""}`} data-testid={`action-${a.title.toLowerCase().replace(/\s+/g, "-")}`}>
               <span className="tc-action-ico"><Icon className="w-4 h-4" strokeWidth={2} /></span>
               <div className="min-w-0 flex-1">
                 <div className="tc-action-title">{a.title}</div>
@@ -180,6 +183,21 @@ export default function Overview() {
           </Link>
         </Panel>
       </div>
+
+      {modal === "withdraw" && <WithdrawModal balance={ACCOUNT.balance} onClose={() => setModal(null)} />}
+      {modal === "support" && <SupportModal onClose={() => setModal(null)} />}
+      {modal === "twofa" && <TwoFAModal onClose={() => setModal(null)} />}
+      {modal === "referrer" && <ReferralModal onClose={() => setModal(null)} />}
+      {modal === "history" && (
+        <ConfirmModal title="Withdrawal history" sub="No withdrawals yet"
+          body="You haven't made any withdrawals. Completed withdrawals will appear here with date, amount, and status."
+          confirmLabel="Close" onClose={() => setModal(null)} />
+      )}
+      {modal === "delete" && (
+        <ConfirmModal title="Delete account" sub="This cannot be undone" danger confirmLabel="Request deletion"
+          body="Requesting deletion will close your account and forfeit any active subscriptions, pool deposits, and rewards. Are you sure?"
+          onClose={() => setModal(null)} />
+      )}
     </div>
   );
 }
