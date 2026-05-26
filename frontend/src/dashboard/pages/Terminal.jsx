@@ -4,12 +4,14 @@ import {
   TrendingUp, TrendingDown, Search, Minus, X, ChevronDown, Check,
   CandlestickChart, LineChart as LineIcon, AreaChart as AreaIcon, BarChart3,
   Brain, Sparkles, MousePointer2, MoveUpRight, Type, Square, Magnet, Lock, Eraser, Ruler,
-  Settings2, Keyboard, Star, Plug, Pencil, Share2,
+  Settings2, Keyboard, Star, Plug, Pencil, Share2, Wallet,
 } from "lucide-react";
 import TradingChart from "../components/TradingChart";
 import Modal from "../components/Modal";
 import TradeAccountModal from "../components/TradeAccountModal";
 import SharePnlModal from "../components/SharePnlModal";
+import { useWallet } from "../WalletContext";
+import { CHAIN_BY_ID, shortAddr } from "../lib/web3";
 import { WATCHLIST, OPEN_POSITIONS, TIMEFRAMES, SIGNALS, EXCHANGES, TRADE_ACCOUNT } from "../data";
 import { OVERLAYS, OSCILLATORS } from "../lib/indicators";
 
@@ -62,6 +64,7 @@ export default function Terminal() {
   const [activeSignal, setActiveSignal] = useState(null);
   const [openTabs, setOpenTabs] = useState(["BTCUSDT", "ETHUSDT", "SOLUSDT"]);
   const [accountOpen, setAccountOpen] = useState(false);
+  const [accountMode, setAccountMode] = useState("api");
   const [sharePnl, setSharePnl] = useState(null);
 
   const toggleFav = (sym) =>
@@ -373,7 +376,7 @@ export default function Terminal() {
             />
           )}
           {rightTab === "signals" && <SignalsRail onPick={chartSignal} activeSym={activeSignal?.sym} />}
-          {rightTab === "connect" && <ConnectPanel onManage={() => setAccountOpen(true)} />}
+          {rightTab === "connect" && <ConnectPanel onManage={() => { setAccountMode("api"); setAccountOpen(true); }} onConnectWallet={() => { setAccountMode("web3"); setAccountOpen(true); }} />}
           {rightTab === "ai" && <AIRail ai={ai} setAi={setAi} symbol={symbol} timeframe={tf} />}
         </div>
       </div>
@@ -435,7 +438,7 @@ export default function Terminal() {
       </div>
 
       {searchOpen && <SymbolSearch exchange={exchange} onClose={() => setSearchOpen(false)} onPick={(s) => { pickSymbol(s); setSearchOpen(false); }} />}
-      {accountOpen && <TradeAccountModal onClose={() => setAccountOpen(false)} />}
+      {accountOpen && <TradeAccountModal initialMode={accountMode} onClose={() => setAccountOpen(false)} />}
       {sharePnl && <SharePnlModal data={sharePnl} onClose={() => setSharePnl(null)} />}
       {settingsOpen && (
         <Modal title="Terminal settings" sub="Chart preferences" onClose={() => setSettingsOpen(false)}
@@ -590,31 +593,51 @@ function SignalsRail({ onPick, activeSym }) {
 }
 
 /* ===== Connect rail ===== */
-function ConnectPanel({ onManage }) {
+function ConnectPanel({ onManage, onConnectWallet }) {
   const connected = TRADE_ACCOUNT.connected;
+  const { address, balance, chainId } = useWallet() || {};
+  const chain = chainId ? CHAIN_BY_ID[String(chainId).toLowerCase()] : null;
   return (
-    <div className="tc-panel flex flex-col gap-3">
-      <div className="flex items-center justify-between">
-        <span className="font-mono text-[10px] tracking-[0.14em] uppercase text-white/55">Exchange connection</span>
-        <span className={`tc-chip ${connected ? "tc-chip-active" : ""}`}>{connected && <span className="tc-chip-dot" />} {connected ? "Active" : "Off"}</span>
-      </div>
-      {connected ? (
-        <div className="flex flex-col gap-2">
+    <div className="tc-panel flex flex-col gap-4">
+      {/* CEX */}
+      <div className="flex flex-col gap-2.5">
+        <div className="flex items-center justify-between">
+          <span className="font-mono text-[10px] tracking-[0.14em] uppercase text-white/55">Exchange (CEX)</span>
+          <span className={`tc-chip ${connected ? "tc-chip-active" : ""}`}>{connected && <span className="tc-chip-dot" />} {connected ? "Active" : "Off"}</span>
+        </div>
+        {connected ? (
           <div className="flex items-center justify-between p-3 rounded-xl bg-white/[0.02] border border-white/[0.045]">
             <span className="text-[12.5px] text-white/70">Bybit · Unified</span>
             <span className="font-mono text-[11px] text-tradeTeal">${TRADE_ACCOUNT.available.toLocaleString()}</span>
           </div>
-          <div className="grid grid-cols-2 gap-2 font-mono text-[11px]">
-            <div className="p-2.5 rounded-lg bg-white/[0.02] border border-white/[0.045]"><div className="text-[8.5px] tracking-[0.1em] uppercase text-white/40 mb-1">Wallet</div><div className="text-white/85">${TRADE_ACCOUNT.wallet.toLocaleString()}</div></div>
-            <div className="p-2.5 rounded-lg bg-white/[0.02] border border-white/[0.045]"><div className="text-[8.5px] tracking-[0.1em] uppercase text-white/40 mb-1">Unrealized</div><div className="text-[#FF8A82]">{TRADE_ACCOUNT.unrealized}</div></div>
-          </div>
+        ) : (
+          <p className="text-[12px] text-white/50">No exchange connected.</p>
+        )}
+        <button className="tc-btn tc-btn-ghost w-full" onClick={onManage} data-testid="connect-manage">
+          <Plug className="w-3.5 h-3.5" strokeWidth={2} /> {connected ? "Manage exchange" : "Connect exchange"}
+        </button>
+      </div>
+
+      <div className="h-px bg-white/[0.05]" />
+
+      {/* Web3 */}
+      <div className="flex flex-col gap-2.5">
+        <div className="flex items-center justify-between">
+          <span className="font-mono text-[10px] tracking-[0.14em] uppercase text-white/55">Web3 · On-chain perps</span>
+          <span className={`tc-chip ${address ? "tc-chip-active" : ""}`}>{address && <span className="tc-chip-dot" />} {address ? "Connected" : "Off"}</span>
         </div>
-      ) : (
-        <p className="text-[12.5px] text-white/50">No exchange connected. Link an API key to place live orders from the terminal.</p>
-      )}
-      <button className="tc-btn tc-btn-primary w-full" onClick={onManage} data-testid="connect-manage">
-        <Plug className="w-3.5 h-3.5" strokeWidth={2} /> {connected ? "Manage connection" : "Connect exchange"}
-      </button>
+        {address ? (
+          <div className="flex items-center justify-between p-3 rounded-xl bg-white/[0.02] border border-white/[0.045]">
+            <span className="text-[12.5px] text-white/70">{shortAddr(address)} · {chain?.short || "Unknown"}</span>
+            <span className="font-mono text-[11px] text-tradeTeal">{balance ?? "…"} {chain?.native || "ETH"}</span>
+          </div>
+        ) : (
+          <p className="text-[12px] text-white/50">Connect a wallet to trade on-chain perpetuals.</p>
+        )}
+        <button className="tc-btn tc-btn-primary w-full" onClick={onConnectWallet} data-testid="connect-wallet">
+          <Wallet className="w-3.5 h-3.5" strokeWidth={2} /> {address ? "Manage wallet" : "Connect wallet"}
+        </button>
+      </div>
     </div>
   );
 }

@@ -3,6 +3,7 @@ import { Outlet, useLocation } from "react-router-dom";
 import Sidebar from "./Sidebar";
 import Topbar from "./Topbar";
 import { ThemeProvider, useTheme } from "./ThemeContext";
+import { WalletProvider } from "./WalletContext";
 import ChatWidget from "./components/ChatWidget";
 import WelcomeModal from "./components/WelcomeModal";
 
@@ -28,7 +29,9 @@ const PAGE_META = {
 export default function DashboardLayout() {
   return (
     <ThemeProvider>
-      <DashboardShell />
+      <WalletProvider>
+        <DashboardShell />
+      </WalletProvider>
     </ThemeProvider>
   );
 }

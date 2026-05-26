@@ -1,12 +1,14 @@
 import { useState } from "react";
-import { ChevronDown, Copy, Check, RefreshCw, Trash2, Plug, ShieldCheck } from "lucide-react";
+import { ChevronDown, Copy, Check, RefreshCw, Trash2, Plug, ShieldCheck, Wallet } from "lucide-react";
 import Modal from "./Modal";
+import WalletPanel from "./WalletPanel";
 import { API_EXCHANGES, ACCOUNT_MARKET_TABS, TRADE_ACCOUNT, EXCHANGE_GUIDES } from "../data";
 
 const maskKey = (k) => (k ? `${k.slice(0, 9)}${"•".repeat(6)}` : "—");
 const fmt = (n) => (n == null ? "—" : n.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
 
-export default function TradeAccountModal({ onClose }) {
+export default function TradeAccountModal({ onClose, initialMode = "api" }) {
+  const [mode, setMode] = useState(initialMode);
   const [market, setMarket] = useState("crypto");
   const [account, setAccount] = useState(TRADE_ACCOUNT.connected ? { ...TRADE_ACCOUNT } : null);
   const [exchange, setExchange] = useState(TRADE_ACCOUNT.exchange || "bybit");
@@ -60,7 +62,23 @@ export default function TradeAccountModal({ onClose }) {
   );
 
   return (
-    <Modal title="Trade account" sub="Connect via exchange / broker API" width={520} onClose={onClose}>
+    <Modal title="Trade account" sub="Connect an exchange, broker, or Web3 wallet" width={520} onClose={onClose}>
+      {/* Connection mode */}
+      <div className="tc-segment mb-5">
+        <div className={`tc-segment-btn ${mode === "api" ? "is-active" : ""}`} style={{ padding: "9px 0" }} onClick={() => setMode("api")} data-testid="conn-mode-api">Exchange / Broker</div>
+        <div className={`tc-segment-btn ${mode === "web3" ? "is-active" : ""}`} style={{ padding: "9px 0" }} onClick={() => setMode("web3")} data-testid="conn-mode-web3">Web3 Wallet</div>
+      </div>
+
+      {mode === "web3" ? (
+        <>
+          <div className="flex items-center gap-2 mb-4">
+            <Wallet className="w-4 h-4 text-tradeTeal" strokeWidth={2} />
+            <span className="font-mono text-[10px] tracking-[0.14em] uppercase text-white/55">On-chain perpetuals</span>
+          </div>
+          <WalletPanel />
+        </>
+      ) : (
+        <>
       {/* Market tabs */}
       <div className="flex flex-wrap gap-1.5 mb-5">
         {ACCOUNT_MARKET_TABS.map((m) => (
@@ -174,6 +192,8 @@ export default function TradeAccountModal({ onClose }) {
             </div>
           </div>
         </div>
+      )}
+        </>
       )}
     </Modal>
   );
