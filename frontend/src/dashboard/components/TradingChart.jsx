@@ -5,7 +5,7 @@ import { useTheme } from "../ThemeContext";
 import {
   sma, ema, wma, hma, bollinger, vwap, supertrend, ichimoku,
   rsi, macd, stochastic, cci, williamsR, atrSeries, obv, volumeSeries,
-  supportResistance, pivotPoints, trendChannel, breakRetests,
+  supportResistance, pivotPoints, trendChannel, breakRetests, trendFinder, insideBars,
 } from "../lib/indicators";
 
 const OVERLAY_COLORS = { SMA: "#F0B90B", EMA: "#9B8AFB", WMA: "#38BDF8", HMA: "#FF7AB6", VWAP: "#E8782A" };
@@ -137,6 +137,30 @@ export default function TradingChart({
       );
     }
 
+    // TSR — trend (regression mid) + nearest support & resistance
+    if (ai.tsr) {
+      const ch = trendChannel(candles);
+      addLine(ch.mid, "rgba(240,185,11,0.9)", 1.5);
+      const lv = supportResistance(candles);
+      const res = lv.filter((l) => l.type === "resistance").slice(-1)[0];
+      const sup = lv.filter((l) => l.type === "support").slice(-1)[0];
+      if (res) series.createPriceLine({ price: res.price, color: "rgba(242,54,69,0.7)", lineWidth: 1, lineStyle: LineStyle.Dashed, axisLabelVisible: true, title: "R" });
+      if (sup) series.createPriceLine({ price: sup.price, color: "rgba(31,184,166,0.7)", lineWidth: 1, lineStyle: LineStyle.Dashed, axisLabelVisible: true, title: "S" });
+    }
+    // Trend Finder — auto trendline
+    if (ai.trendFinder) {
+      const tf2 = trendFinder(candles);
+      if (tf2.line.length) addLine(tf2.line, tf2.up ? "#1FB8A6" : "#F23645", 2);
+    }
+    // Inside-Bar Bollinger
+    let markers = [];
+    if (ai.insideBB) {
+      const bb = bollinger(candles, 20, 2);
+      addLine(bb.upper, "rgba(155,138,251,0.5)", 1);
+      addLine(bb.lower, "rgba(155,138,251,0.5)", 1);
+      markers = insideBars(candles);
+    }
+
     // Active signal — entry / take-profit / stop-loss
     if (signal) {
       const sigLine = (price, color, title, style = LineStyle.Solid) =>
@@ -146,6 +170,8 @@ export default function TradingChart({
       sigLine(signal.target, "#1FB8A6", "TP");
       sigLine(signal.stop, "#F23645", "SL");
     }
+
+    if (markers.length && series.setMarkers) series.setMarkers(markers);
 
     // Re-apply drawn horizontal lines
     drawnLines.current = drawnLines.current.map((d) =>

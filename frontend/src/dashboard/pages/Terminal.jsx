@@ -4,11 +4,12 @@ import {
   TrendingUp, TrendingDown, Search, Minus, X, ChevronDown, Check,
   CandlestickChart, LineChart as LineIcon, AreaChart as AreaIcon, BarChart3,
   Brain, Sparkles, MousePointer2, MoveUpRight, Type, Square, Magnet, Lock, Eraser, Ruler,
-  Settings2, Keyboard, Star,
+  Settings2, Keyboard, Star, Plug,
 } from "lucide-react";
 import TradingChart from "../components/TradingChart";
 import Modal from "../components/Modal";
-import { WATCHLIST, OPEN_POSITIONS, TIMEFRAMES, SIGNALS, EXCHANGES } from "../data";
+import TradeAccountModal from "../components/TradeAccountModal";
+import { WATCHLIST, OPEN_POSITIONS, TIMEFRAMES, SIGNALS, EXCHANGES, TRADE_ACCOUNT } from "../data";
 import { OVERLAYS, OSCILLATORS } from "../lib/indicators";
 
 const CATEGORIES = ["Favorites", "Spot", "Futures", "Stocks"];
@@ -38,7 +39,7 @@ export default function Terminal() {
   const [chartType, setChartType] = useState("candles");
   const [overlays, setOverlays] = useState({});
   const [oscillator, setOscillator] = useState(null);
-  const [ai, setAi] = useState({ sr: false, pivots: false, channel: false, breaks: false });
+  const [ai, setAi] = useState({ sr: false, pivots: false, channel: false, breaks: false, tsr: false, trendFinder: false, insideBB: false });
   const [drawTool, setDrawTool] = useState(null);
   const [magnet, setMagnet] = useState(false);
   const [locked, setLocked] = useState(false);
@@ -57,11 +58,19 @@ export default function Terminal() {
 
   const [positions, setPositions] = useState(OPEN_POSITIONS);
   const [activeSignal, setActiveSignal] = useState(null);
+  const [openTabs, setOpenTabs] = useState(["BTCUSDT", "ETHUSDT", "SOLUSDT"]);
+  const [accountOpen, setAccountOpen] = useState(false);
 
   const toggleFav = (sym) =>
     setFavorites((prev) => (prev.includes(sym) ? prev.filter((s) => s !== sym) : [...prev, sym]));
 
-  const pickSymbol = (sym) => { setSymbol(sym); setActiveSignal(null); };
+  const addTab = (sym) => setOpenTabs((t) => (t.includes(sym) ? t : [...t, sym]));
+  const closeTab = (sym) => setOpenTabs((t) => {
+    const next = t.filter((s) => s !== sym);
+    if (sym === symbol && next.length) setSymbol(next[next.length - 1]);
+    return next.length ? next : t;
+  });
+  const pickSymbol = (sym) => { setSymbol(sym); setActiveSignal(null); addTab(sym); };
 
   // Click a signal -> AI auto-charts it: switch symbol/timeframe, enable AI
   // layers, and plot entry / TP / SL on the chart.
@@ -72,6 +81,7 @@ export default function Terminal() {
   };
   const chartSignal = (s) => {
     setSymbol(s.sym);
+    addTab(s.sym);
     setTf(mapTf(s.tf));
     setRightTab("signals");
     setAi((a) => ({ ...a, sr: true, pivots: true }));
@@ -112,6 +122,25 @@ export default function Terminal() {
 
   return (
     <div className="tc-fade flex flex-col gap-3">
+      {/* Multi-symbol tabs */}
+      <div className="flex items-center gap-1 overflow-x-auto pb-0.5" data-testid="symbol-tabs">
+        {openTabs.map((s) => (
+          <div key={s} onClick={() => pickSymbol(s)}
+            className={`group flex items-center gap-2 px-3 py-2 rounded-lg cursor-pointer shrink-0 transition-colors border ${s === symbol ? "bg-tradeTeal/10 border-tradeTeal/30" : "bg-white/[0.02] border-white/[0.04] hover:bg-white/[0.04]"}`}
+            data-testid={`tab-${s}`}>
+            <span className={`text-[12px] font-medium ${s === symbol ? "text-tradeTeal" : "text-white/70"}`}>{s}</span>
+            {openTabs.length > 1 && (
+              <button onClick={(e) => { e.stopPropagation(); closeTab(s); }} className="text-white/30 hover:text-white/70" aria-label={`Close ${s}`}>
+                <X className="w-3 h-3" strokeWidth={2.5} />
+              </button>
+            )}
+          </div>
+        ))}
+        <button onClick={() => setSearchOpen(true)} className="shrink-0 w-8 h-8 rounded-lg flex items-center justify-center text-white/40 hover:text-tradeTeal hover:bg-white/[0.04] transition-colors" aria-label="Add symbol">
+          <Search className="w-3.5 h-3.5" strokeWidth={2} />
+        </button>
+      </div>
+
       {/* Symbol header */}
       <div className="tc-panel flex flex-wrap items-center gap-x-8 gap-y-3 !py-3.5">
         <button className="flex items-center gap-2.5 hover:opacity-80" onClick={() => setSearchOpen(true)} data-testid="open-symbol-search">
@@ -270,9 +299,20 @@ export default function Terminal() {
             <Dropdown label="AI" icon={Brain} testid="menu-ai">
               <MenuItem checked={ai.sr} onClick={() => setAi((a) => ({ ...a, sr: !a.sr }))}>Support / Resistance</MenuItem>
               <MenuItem checked={ai.pivots} onClick={() => setAi((a) => ({ ...a, pivots: !a.pivots }))}>Pivot Points</MenuItem>
+              <MenuItem checked={ai.tsr} onClick={() => setAi((a) => ({ ...a, tsr: !a.tsr }))}>TSR Analysis</MenuItem>
               <MenuItem checked={ai.channel} onClick={() => setAi((a) => ({ ...a, channel: !a.channel }))}>Trend Channel</MenuItem>
+              <MenuItem checked={ai.trendFinder} onClick={() => setAi((a) => ({ ...a, trendFinder: !a.trendFinder }))}>Trend Finder</MenuItem>
               <MenuItem checked={ai.breaks} onClick={() => setAi((a) => ({ ...a, breaks: !a.breaks }))}>Breaks &amp; Retests</MenuItem>
+              <MenuItem checked={ai.insideBB} onClick={() => setAi((a) => ({ ...a, insideBB: !a.insideBB }))}>Inside-Bar BB</MenuItem>
             </Dropdown>
+            <span className="w-px h-5 bg-white/[0.06]" />
+            <div className="flex items-center gap-1">
+              {[["Pivot P.", "pivots"], ["TSR", "tsr"], ["B&R", "breaks"], ["Trend F.", "trendFinder"]].map(([lbl, key]) => (
+                <button key={key} onClick={() => setAi((a) => ({ ...a, [key]: !a[key] }))}
+                  className={`px-2 py-1.5 rounded-md font-mono text-[10px] tracking-[0.04em] transition-colors ${ai[key] ? "bg-tradeTeal/15 text-tradeTeal" : "text-white/45 hover:text-white/80"}`}
+                  data-testid={`ai-quick-${key}`}>{lbl}</button>
+              ))}
+            </div>
             <button className="tc-iconbtn ml-auto" style={{ width: 32, height: 32 }} onClick={() => setSettingsOpen(true)} title="Chart settings" data-testid="chart-settings">
               <Settings2 className="w-3.5 h-3.5" strokeWidth={2} />
             </button>
@@ -315,8 +355,8 @@ export default function Terminal() {
         {/* Right rail */}
         <div className="order-3 flex flex-col gap-3">
           <div className="tc-segment">
-            {["order", "signals", "ai"].map((t) => (
-              <div key={t} className={`tc-segment-btn ${rightTab === t ? "is-active" : ""}`} style={{ padding: "8px 0" }} onClick={() => setRightTab(t)} data-testid={`righttab-${t}`}>
+            {["order", "signals", "connect", "ai"].map((t) => (
+              <div key={t} className={`tc-segment-btn ${rightTab === t ? "is-active" : ""}`} style={{ padding: "8px 0", fontSize: 11 }} onClick={() => setRightTab(t)} data-testid={`righttab-${t}`}>
                 {t === "ai" ? "AI" : t.charAt(0).toUpperCase() + t.slice(1)}
               </div>
             ))}
@@ -330,6 +370,7 @@ export default function Terminal() {
             />
           )}
           {rightTab === "signals" && <SignalsRail onPick={chartSignal} activeSym={activeSignal?.sym} />}
+          {rightTab === "connect" && <ConnectPanel onManage={() => setAccountOpen(true)} />}
           {rightTab === "ai" && <AIRail ai={ai} setAi={setAi} symbol={symbol} timeframe={tf} />}
         </div>
       </div>
@@ -382,7 +423,8 @@ export default function Terminal() {
         </div>
       </div>
 
-      {searchOpen && <SymbolSearch exchange={exchange} onClose={() => setSearchOpen(false)} onPick={(s) => { setSymbol(s); setSearchOpen(false); }} />}
+      {searchOpen && <SymbolSearch exchange={exchange} onClose={() => setSearchOpen(false)} onPick={(s) => { pickSymbol(s); setSearchOpen(false); }} />}
+      {accountOpen && <TradeAccountModal onClose={() => setAccountOpen(false)} />}
       {settingsOpen && (
         <Modal title="Terminal settings" sub="Chart preferences" onClose={() => setSettingsOpen(false)}
           footer={<button className="tc-btn tc-btn-primary flex-1" onClick={() => setSettingsOpen(false)}>Done</button>}>
@@ -535,6 +577,36 @@ function SignalsRail({ onPick, activeSym }) {
   );
 }
 
+/* ===== Connect rail ===== */
+function ConnectPanel({ onManage }) {
+  const connected = TRADE_ACCOUNT.connected;
+  return (
+    <div className="tc-panel flex flex-col gap-3">
+      <div className="flex items-center justify-between">
+        <span className="font-mono text-[10px] tracking-[0.14em] uppercase text-white/55">Exchange connection</span>
+        <span className={`tc-chip ${connected ? "tc-chip-active" : ""}`}>{connected && <span className="tc-chip-dot" />} {connected ? "Active" : "Off"}</span>
+      </div>
+      {connected ? (
+        <div className="flex flex-col gap-2">
+          <div className="flex items-center justify-between p-3 rounded-xl bg-white/[0.02] border border-white/[0.045]">
+            <span className="text-[12.5px] text-white/70">Bybit · Unified</span>
+            <span className="font-mono text-[11px] text-tradeTeal">${TRADE_ACCOUNT.available.toLocaleString()}</span>
+          </div>
+          <div className="grid grid-cols-2 gap-2 font-mono text-[11px]">
+            <div className="p-2.5 rounded-lg bg-white/[0.02] border border-white/[0.045]"><div className="text-[8.5px] tracking-[0.1em] uppercase text-white/40 mb-1">Wallet</div><div className="text-white/85">${TRADE_ACCOUNT.wallet.toLocaleString()}</div></div>
+            <div className="p-2.5 rounded-lg bg-white/[0.02] border border-white/[0.045]"><div className="text-[8.5px] tracking-[0.1em] uppercase text-white/40 mb-1">Unrealized</div><div className="text-[#FF8A82]">{TRADE_ACCOUNT.unrealized}</div></div>
+          </div>
+        </div>
+      ) : (
+        <p className="text-[12.5px] text-white/50">No exchange connected. Link an API key to place live orders from the terminal.</p>
+      )}
+      <button className="tc-btn tc-btn-primary w-full" onClick={onManage} data-testid="connect-manage">
+        <Plug className="w-3.5 h-3.5" strokeWidth={2} /> {connected ? "Manage connection" : "Connect exchange"}
+      </button>
+    </div>
+  );
+}
+
 /* ===== AI rail ===== */
 function AIRail({ ai, setAi }) {
   return (
@@ -546,8 +618,11 @@ function AIRail({ ai, setAi }) {
       {[
         { k: "sr", label: "Support / Resistance", desc: "Swing-based zones plotted on the chart." },
         { k: "pivots", label: "Pivot Points", desc: "Classic P / S1–S2 / R1–R2 levels." },
+        { k: "tsr", label: "TSR Analysis", desc: "Trend bias with nearest support & resistance." },
         { k: "channel", label: "Trend Channel", desc: "Linear-regression channel with ±2σ bands." },
+        { k: "trendFinder", label: "Trend Finder", desc: "Auto trendline through recent swing points." },
         { k: "breaks", label: "Breaks & Retests", desc: "Most recent broken level + retest zone." },
+        { k: "insideBB", label: "Inside-Bar BB", desc: "Bollinger bands with inside-bar markers." },
       ].map((o) => (
         <button key={o.k} onClick={() => setAi((a) => ({ ...a, [o.k]: !a[o.k] }))}
           className={`flex items-start gap-3 p-3 rounded-xl border text-left transition-colors ${ai[o.k] ? "bg-tradeTeal/8 border-tradeTeal/30" : "bg-white/[0.02] border-white/[0.045]"}`}
