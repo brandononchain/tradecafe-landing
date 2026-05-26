@@ -4,11 +4,12 @@ import {
   TrendingUp, TrendingDown, Search, Minus, X, ChevronDown, Check,
   CandlestickChart, LineChart as LineIcon, AreaChart as AreaIcon, BarChart3,
   Brain, Sparkles, MousePointer2, MoveUpRight, Type, Square, Magnet, Lock, Eraser, Ruler,
-  Settings2, Keyboard, Star, Plug, Pencil,
+  Settings2, Keyboard, Star, Plug, Pencil, Share2,
 } from "lucide-react";
 import TradingChart from "../components/TradingChart";
 import Modal from "../components/Modal";
 import TradeAccountModal from "../components/TradeAccountModal";
+import SharePnlModal from "../components/SharePnlModal";
 import { WATCHLIST, OPEN_POSITIONS, TIMEFRAMES, SIGNALS, EXCHANGES, TRADE_ACCOUNT } from "../data";
 import { OVERLAYS, OSCILLATORS } from "../lib/indicators";
 
@@ -61,6 +62,7 @@ export default function Terminal() {
   const [activeSignal, setActiveSignal] = useState(null);
   const [openTabs, setOpenTabs] = useState(["BTCUSDT", "ETHUSDT", "SOLUSDT"]);
   const [accountOpen, setAccountOpen] = useState(false);
+  const [sharePnl, setSharePnl] = useState(null);
 
   const toggleFav = (sym) =>
     setFavorites((prev) => (prev.includes(sym) ? prev.filter((s) => s !== sym) : [...prev, sym]));
@@ -413,7 +415,15 @@ export default function Terminal() {
                   <td className="mono">{p.entry}</td>
                   <td className="mono">{p.mark}</td>
                   <td><span className="tc-pl-pos">{p.pnl} · {p.pct}</span></td>
-                  <td className="text-right"><button className="tc-iconbtn" style={{ width: 30, height: 30 }} aria-label="Close position" onClick={() => setPositions((ps) => ps.filter((x) => x.sym !== p.sym))}><X className="w-3.5 h-3.5" strokeWidth={2} /></button></td>
+                  <td className="text-right">
+                    <span className="inline-flex gap-1.5">
+                      <button className="tc-iconbtn" style={{ width: 30, height: 30 }} aria-label="Share PnL" data-testid={`share-pos-${i}`}
+                        onClick={() => setSharePnl({ source: "manual", sym: p.sym, dir: p.side, entry: p.entry, exit: p.mark, pnl: p.pct, pnlAmount: p.pnl, leverage: 10 })}>
+                        <Share2 className="w-3.5 h-3.5" strokeWidth={2} />
+                      </button>
+                      <button className="tc-iconbtn" style={{ width: 30, height: 30 }} aria-label="Close position" onClick={() => setPositions((ps) => ps.filter((x) => x.sym !== p.sym))}><X className="w-3.5 h-3.5" strokeWidth={2} /></button>
+                    </span>
+                  </td>
                 </tr>
               ))}
               {positions.length === 0 && (
@@ -426,6 +436,7 @@ export default function Terminal() {
 
       {searchOpen && <SymbolSearch exchange={exchange} onClose={() => setSearchOpen(false)} onPick={(s) => { pickSymbol(s); setSearchOpen(false); }} />}
       {accountOpen && <TradeAccountModal onClose={() => setAccountOpen(false)} />}
+      {sharePnl && <SharePnlModal data={sharePnl} onClose={() => setSharePnl(null)} />}
       {settingsOpen && (
         <Modal title="Terminal settings" sub="Chart preferences" onClose={() => setSettingsOpen(false)}
           footer={<button className="tc-btn tc-btn-primary flex-1" onClick={() => setSettingsOpen(false)}>Done</button>}>

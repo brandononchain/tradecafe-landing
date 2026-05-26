@@ -13,6 +13,7 @@ import {
   MessageSquare,
   Globe,
   Boxes,
+  Pickaxe,
 } from "lucide-react";
 
 export const APP_NAV = [
@@ -36,6 +37,7 @@ export const APP_NAV = [
     section: "Earn",
     items: [
       { label: "Trading Pool", to: "/app/pool", icon: Layers },
+      { label: "Mining Pool", to: "/app/mining", icon: Pickaxe },
       { label: "VITRIOL", to: "/app/vitriol", icon: Gem },
     ],
   },

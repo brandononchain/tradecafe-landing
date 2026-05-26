@@ -1,15 +1,23 @@
 import { useState } from "react";
-import { Bot, Power, Settings2, Activity, Layers3, ChevronRight } from "lucide-react";
+import { Bot, Power, Settings2, Activity, Layers3, ChevronRight, Share2 } from "lucide-react";
 import { PageHead, Panel } from "../ui";
 import { BOTS, AI_INSIGHTS, STRATEGIES } from "../data";
 import { SignalConfigModal, TradeConfigModal, MarginSettingsModal } from "../components/ConfigModals";
 import TradeAccountModal from "../components/TradeAccountModal";
 import StrategyModal from "../components/StrategyModal";
+import SharePnlModal from "../components/SharePnlModal";
 
 export default function Automation() {
   const [modal, setModal] = useState(null);
   const [paused, setPaused] = useState({});
   const [strategy, setStrategy] = useState(null);
+  const [share, setShare] = useState(null);
+  const shareBot = (b) => setShare({
+    source: "auto", sym: b.name, dir: "LONG",
+    pnl: b.metrics.find((m) => m.k === "Profit")?.v || "+0%",
+    entry: b.metrics.find((m) => m.k === "Win Rate")?.v || "—",
+    exit: `${b.metrics[0].v} ${b.metrics[0].k.toLowerCase()}`,
+  });
   const togglePause = (key) => setPaused((p) => ({ ...p, [key]: !p[key] }));
   return (
     <div className="tc-fade flex flex-col gap-6">
@@ -61,6 +69,9 @@ export default function Automation() {
               <button className="tc-btn tc-btn-primary flex-1" onClick={() => setModal(b.key)} data-testid={`configure-${b.key}`}>
                 <Settings2 className="w-3.5 h-3.5" strokeWidth={2} /> Configure
               </button>
+              <button className="tc-btn tc-btn-ghost" style={{ padding: "0 12px" }} onClick={() => shareBot(b)} aria-label="Share PnL" data-testid={`share-bot-${b.key}`}>
+                <Share2 className="w-3.5 h-3.5" strokeWidth={2} />
+              </button>
             </div>
           </Panel>
         ))}
@@ -100,6 +111,7 @@ export default function Automation() {
       {modal === "margin" && <MarginSettingsModal onClose={() => setModal(null)} />}
       {modal === "account" && <TradeAccountModal onClose={() => setModal(null)} />}
       {strategy && <StrategyModal strategy={strategy} onClose={() => setStrategy(null)} />}
+      {share && <SharePnlModal data={share} onClose={() => setShare(null)} />}
     </div>
   );
 }
