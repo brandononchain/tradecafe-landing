@@ -1,13 +1,15 @@
 import { useState } from "react";
-import { Bot, Power, Settings2, Activity } from "lucide-react";
+import { Bot, Power, Settings2, Activity, Layers3, ChevronRight } from "lucide-react";
 import { PageHead, Panel } from "../ui";
-import { BOTS, AI_INSIGHTS } from "../data";
+import { BOTS, AI_INSIGHTS, STRATEGIES } from "../data";
 import { SignalConfigModal, TradeConfigModal, MarginSettingsModal } from "../components/ConfigModals";
 import TradeAccountModal from "../components/TradeAccountModal";
+import StrategyModal from "../components/StrategyModal";
 
 export default function Automation() {
   const [modal, setModal] = useState(null);
   const [paused, setPaused] = useState({});
+  const [strategy, setStrategy] = useState(null);
   const togglePause = (key) => setPaused((p) => ({ ...p, [key]: !p[key] }));
   return (
     <div className="tc-fade flex flex-col gap-6">
@@ -78,10 +80,26 @@ export default function Automation() {
         </ul>
       </Panel>
 
+      <Panel icon={Layers3} title="Strategy Library">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+          {STRATEGIES.map((s) => (
+            <button key={s.id} onClick={() => setStrategy(s)} data-testid={`strategy-${s.id}`}
+              className="flex items-center gap-3 p-3 rounded-xl bg-white/[0.02] border border-white/[0.045] hover:border-tradeTeal/30 transition-colors text-left">
+              <span className="flex-1 min-w-0">
+                <span className="block text-[13px] font-medium text-tradeWhite">{s.name} <span className="text-white/35 text-[11px]">{s.mode}</span></span>
+                <span className="block text-[11px] text-white/45 truncate mt-0.5">{s.desc}</span>
+              </span>
+              <ChevronRight className="w-4 h-4 text-white/30 shrink-0" strokeWidth={2} />
+            </button>
+          ))}
+        </div>
+      </Panel>
+
       {modal === "signal" && <SignalConfigModal onClose={() => setModal(null)} />}
       {modal === "trade" && <TradeConfigModal onClose={() => setModal(null)} onOpenAccount={() => setModal("account")} />}
       {modal === "margin" && <MarginSettingsModal onClose={() => setModal(null)} />}
       {modal === "account" && <TradeAccountModal onClose={() => setModal(null)} />}
+      {strategy && <StrategyModal strategy={strategy} onClose={() => setStrategy(null)} />}
     </div>
   );
 }

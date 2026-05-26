@@ -4,6 +4,7 @@ import Sidebar from "./Sidebar";
 import Topbar from "./Topbar";
 import { ThemeProvider, useTheme } from "./ThemeContext";
 import ChatWidget from "./components/ChatWidget";
+import WelcomeModal from "./components/WelcomeModal";
 
 const PAGE_META = {
   "/app": { title: "Overview", sub: "My Account" },
@@ -36,6 +37,13 @@ function DashboardShell() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const { pathname } = useLocation();
   const { mode } = useTheme();
+  const [welcome, setWelcome] = useState(() => {
+    try { return !localStorage.getItem("tc-onboarded"); } catch { return false; }
+  });
+  const dismissWelcome = () => {
+    try { localStorage.setItem("tc-onboarded", "1"); } catch { /* ignore */ }
+    setWelcome(false);
+  };
 
   // Close the mobile drawer whenever the route changes.
   useEffect(() => setMobileOpen(false), [pathname]);
@@ -61,6 +69,7 @@ function DashboardShell() {
       </div>
 
       <ChatWidget />
+      {welcome && <WelcomeModal onClose={dismissWelcome} />}
     </div>
   );
 }
