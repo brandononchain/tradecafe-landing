@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { Link } from "react-router-dom";
 import { Menu, Bell, Eye, ArrowUpRight, Palette, Check, Radio, Bot, Layers, ShieldCheck, Users } from "lucide-react";
 import { ACCOUNT, NOTIFICATIONS } from "./data";
 import { useTheme, THEMES } from "./ThemeContext";
@@ -48,15 +49,15 @@ export default function Topbar({ title, sub, onOpenMobile }) {
           <Eye className="w-4 h-4" strokeWidth={2} />
         </button>
 
-        <a
-          href="https://terminal.tradecafe.ai"
+        <Link
+          to="/app/terminal"
           className="tc-btn tc-btn-primary hidden sm:inline-flex"
           style={{ padding: "9px 16px", fontSize: 12.5 }}
           data-testid="topbar-launch"
         >
           Launch Terminal
           <ArrowUpRight className="w-3.5 h-3.5" strokeWidth={2.4} />
-        </a>
+        </Link>
       </div>
     </header>
   );

@@ -1,7 +1,10 @@
 // TradeCafe shared brand constants
 
 export const EXTERNAL = {
-  launchTerminal: "https://terminal.tradecafe.ai",
+  // Points at the in-app dashboard/terminal so the full UI is reachable
+  // from every "Launch Terminal" CTA across the marketing site.
+  launchTerminal: "/app/terminal",
+  app: "/app",
   joinEcosystem: "https://tradecafe.ai",
   contactSales: "mailto:sales@tradecafe.ai",
 };
@@ -15,7 +18,7 @@ export const NAV_MENUS = [
       eyebrow: "Platform",
       title: "One ecosystem. One command center.",
       desc: "Signals, execution, pooled strategies, and partner tools — unified in a single AI-driven trading platform.",
-      cta: { label: "Launch Terminal", to: EXTERNAL.launchTerminal, external: true },
+      cta: { label: "Launch Terminal", to: EXTERNAL.launchTerminal },
     },
     items: [
       { label: "Terminal", desc: "One command center for the full TradeCafe ecosystem.", to: "/terminal" },

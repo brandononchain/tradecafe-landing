@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, lazy, Suspense } from "react";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
 import gsap from "gsap";
 import {
   ArrowUpRight,
@@ -344,14 +344,14 @@ function HomePage() {
             data-testid="hero-ctas"
             className="mt-5 sm:mt-7 lg:mt-10 flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4"
           >
-            <a
-              href="https://terminal.tradecafe.ai"
+            <Link
+              to="/app/terminal"
               data-testid="cta-launch-terminal"
               className="cta-primary justify-center sm:justify-start sm:self-start"
             >
               Launch Terminal
               <ArrowUpRight className="w-4 h-4" strokeWidth={2.4} />
-            </a>
+            </Link>
             <a
               href="https://tradecafe.ai"
               data-testid="cta-explore-ecosystem"

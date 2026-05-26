@@ -136,14 +136,14 @@ export default function Nav() {
           >
             Contact Sales
           </a>
-          <a
-            href={EXTERNAL.launchTerminal}
+          <Link
+            to={EXTERNAL.launchTerminal}
             data-testid="nav-launch-terminal"
             className="nav-cta-outline hidden lg:inline-flex"
           >
             Launch Terminal
             <ArrowUpRight className="w-3.5 h-3.5" strokeWidth={2.2} />
-          </a>
+          </Link>
           <button
             onClick={() => setOpen((v) => !v)}
             className="tc-burger lg:hidden"
@@ -204,10 +204,10 @@ export default function Nav() {
           <a href={EXTERNAL.contactSales} className="tc-drawer-signin" onClick={() => setOpen(false)} data-testid="mobile-contact-sales">
             Contact Sales
           </a>
-          <a href={EXTERNAL.launchTerminal} className="cta-primary justify-center w-full" onClick={() => setOpen(false)} data-testid="mobile-cta-launch">
+          <Link to={EXTERNAL.launchTerminal} className="cta-primary justify-center w-full" onClick={() => setOpen(false)} data-testid="mobile-cta-launch">
             Launch Terminal
             <ArrowUpRight className="w-3.5 h-3.5" strokeWidth={2.2} />
-          </a>
+          </Link>
         </div>
         <div className="tc-drawer-footnote">
           <span className="font-mono text-[10px] tracking-[0.18em] uppercase text-white/40">
