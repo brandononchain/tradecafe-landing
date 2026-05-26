@@ -478,6 +478,271 @@ code {
     color: #fff;
 }
 
+/* ===== Enterprise glass capsule nav + mega-menus ===== */
+.nav-capsule {
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    padding: 5px;
+    border-radius: 999px;
+    background: rgba(6, 11, 15, 0.42);
+    backdrop-filter: blur(18px) saturate(1.2);
+    -webkit-backdrop-filter: blur(18px) saturate(1.2);
+    border: 1px solid rgba(0, 212, 170, 0.16);
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.07),
+        0 10px 34px rgba(0, 0, 0, 0.4),
+        0 0 26px rgba(0, 180, 166, 0.10);
+}
+
+.nav-cap-item {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 9px 17px;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.72);
+    letter-spacing: -0.005em;
+    cursor: pointer;
+    transition: color 0.25s ease, background 0.25s ease;
+}
+
+.nav-cap-item:hover,
+.nav-cap-item.is-active {
+    color: #fff;
+    background: rgba(0, 180, 166, 0.12);
+}
+
+.nav-cap-chev {
+    opacity: 0.55;
+    transition: transform 0.3s ease, opacity 0.25s ease;
+}
+
+.nav-cap-item.is-active .nav-cap-chev {
+    transform: rotate(180deg);
+    opacity: 0.9;
+}
+
+.nav-mega {
+    position: absolute;
+    top: calc(100% + 14px);
+    left: 50%;
+    width: min(840px, 92vw);
+    padding: 22px;
+    border-radius: 28px;
+    background: rgba(7, 12, 16, 0.74);
+    backdrop-filter: blur(30px) saturate(1.25);
+    -webkit-backdrop-filter: blur(30px) saturate(1.25);
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.08),
+        0 36px 90px rgba(0, 0, 0, 0.58),
+        0 0 70px rgba(0, 180, 166, 0.10);
+    opacity: 0;
+    pointer-events: none;
+    transform: translateX(-50%) translateY(-8px) scale(0.985);
+    transition: opacity 0.3s ease, transform 0.34s cubic-bezier(.2, .7, .2, 1);
+}
+
+.nav-mega::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    padding: 1.3px;
+    background: linear-gradient(
+        135deg,
+        rgba(0, 180, 166, 0.6) 0%,
+        rgba(255, 255, 255, 0.16) 30%,
+        rgba(255, 255, 255, 0.03) 55%,
+        rgba(232, 120, 42, 0.3) 82%,
+        rgba(0, 180, 166, 0.45) 100%
+    );
+    -webkit-mask:
+        linear-gradient(#fff 0 0) content-box,
+        linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+}
+
+.nav-mega.is-open {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateX(-50%) translateY(0) scale(1);
+}
+
+.nav-mega-grid {
+    display: grid;
+    grid-template-columns: 264px 1fr;
+    gap: 22px;
+    position: relative;
+    z-index: 1;
+}
+
+.nav-feature {
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    border-radius: 20px;
+    background:
+        radial-gradient(120% 120% at 0% 0%, rgba(0, 180, 166, 0.12), transparent 60%),
+        rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.nav-feature-eyebrow {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--tc-accent-light);
+}
+
+.nav-feature-title {
+    font-family: 'Geist', 'Manrope', sans-serif;
+    font-size: 19px;
+    line-height: 1.2;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    color: #F5F6F2;
+    margin-top: 12px;
+}
+
+.nav-feature-desc {
+    font-size: 12.5px;
+    line-height: 1.55;
+    color: rgba(255, 255, 255, 0.55);
+    margin-top: 10px;
+}
+
+.nav-feature-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: auto;
+    padding-top: 18px;
+    font-size: 12.5px;
+    font-weight: 600;
+    color: var(--tc-accent-light);
+    transition: gap 0.25s ease, color 0.25s ease;
+}
+
+.nav-feature-cta:hover {
+    gap: 10px;
+    color: #fff;
+}
+
+.nav-links-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4px;
+    align-content: start;
+}
+
+.nav-menu-link {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    padding: 12px 14px;
+    border-radius: 14px;
+    border: 1px solid transparent;
+    transition: background 0.22s ease, border-color 0.22s ease, transform 0.22s ease;
+}
+
+.nav-menu-link:hover {
+    background: rgba(0, 180, 166, 0.07);
+    border-color: rgba(0, 212, 170, 0.22);
+}
+
+.nav-menu-link-label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13.5px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    color: #F5F6F2;
+}
+
+.nav-menu-link-arrow {
+    width: 13px;
+    height: 13px;
+    opacity: 0;
+    transform: translate(-3px, 2px);
+    color: var(--tc-accent-light);
+    transition: opacity 0.22s ease, transform 0.22s ease;
+}
+
+.nav-menu-link:hover .nav-menu-link-arrow {
+    opacity: 1;
+    transform: translate(0, 0);
+}
+
+.nav-menu-link-desc {
+    font-size: 11.5px;
+    line-height: 1.45;
+    color: rgba(255, 255, 255, 0.46);
+}
+
+/* ===== Mobile drawer — grouped accordion ===== */
+.tc-drawer-group {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    width: 100%;
+    padding: 14px 4px;
+    text-align: left;
+    cursor: pointer;
+}
+
+.tc-drawer-group-chev {
+    width: 16px;
+    height: 16px;
+    margin-left: auto;
+    color: rgba(255, 255, 255, 0.5);
+    transition: transform 0.3s ease;
+}
+
+.tc-drawer-group-chev.is-open {
+    transform: rotate(180deg);
+    color: var(--tc-accent-light);
+}
+
+.tc-drawer-sub {
+    display: grid;
+    grid-template-rows: 0fr;
+    overflow: hidden;
+    transition: grid-template-rows 0.34s cubic-bezier(.4, 0, .2, 1);
+}
+
+.tc-drawer-sub.is-open {
+    grid-template-rows: 1fr;
+}
+
+.tc-drawer-sub-inner {
+    min-height: 0;
+    overflow: hidden;
+}
+
+.tc-drawer-sublink {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 11px 14px 11px 38px;
+    font-size: 13.5px;
+    color: rgba(255, 255, 255, 0.62);
+    border-radius: 12px;
+    transition: color 0.2s ease, background 0.2s ease;
+}
+
+.tc-drawer-sublink:hover {
+    color: #fff;
+    background: rgba(0, 180, 166, 0.08);
+}
+
 /* ===== Premium hero CTA buttons — calm glow ===== */
 .cta-primary {
     display: inline-flex;

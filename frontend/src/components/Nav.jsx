@@ -1,31 +1,44 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { ArrowUpRight } from "lucide-react";
-import { NAV_LINKS, EXTERNAL } from "../lib/brand";
+import { ArrowUpRight, ChevronDown } from "lucide-react";
+import { NAV_MENUS, EXTERNAL } from "../lib/brand";
 
 /**
- * Premium floating nav — used on every TradeCafe page.
+ * Enterprise-grade floating nav — glass capsule with premium mega-menus.
  * Sits inside the page's hero-frame card.
  */
 export default function Nav() {
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(false); // mobile drawer
+  const [active, setActive] = useState(null); // open mega-menu index
+  const [expanded, setExpanded] = useState(null); // mobile accordion section
+  const closeTimer = useRef(null);
   const { pathname } = useLocation();
 
-  const renderLink = (l, isActive) => {
-    const isInternal = l.to.startsWith("/") && !l.to.startsWith("/#");
-    const cls = `nav-link ${isActive ? "is-active" : ""}`;
+  const openMenu = (i) => {
+    if (closeTimer.current) clearTimeout(closeTimer.current);
+    setActive(i);
+  };
+  const scheduleClose = () => {
+    if (closeTimer.current) clearTimeout(closeTimer.current);
+    closeTimer.current = setTimeout(() => setActive(null), 140);
+  };
+  const cancelClose = () => closeTimer.current && clearTimeout(closeTimer.current);
+
+  useEffect(() => () => closeTimer.current && clearTimeout(closeTimer.current), []);
+  useEffect(() => {
+    const onKey = (e) => e.key === "Escape" && setActive(null);
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, []);
+  // Close any open menu when navigating.
+  useEffect(() => { setActive(null); setOpen(false); }, [pathname]);
+
+  const renderTarget = (item, cls, onClick, children) => {
+    const isInternal = item.to.startsWith("/") && !item.to.startsWith("/#") && !item.external;
     if (isInternal) {
-      return (
-        <Link key={l.label} to={l.to} className={cls} data-testid={`nav-link-${l.label.toLowerCase()}`}>
-          {l.label}
-        </Link>
-      );
+      return <Link to={item.to} className={cls} onClick={onClick}>{children}</Link>;
     }
-    return (
-      <a key={l.label} href={l.to} className={cls} data-testid={`nav-link-${l.label.toLowerCase()}`}>
-        {l.label}
-      </a>
-    );
+    return <a href={item.to} className={cls} onClick={onClick}>{children}</a>;
   };
 
   return (
@@ -36,7 +49,7 @@ export default function Nav() {
         className="absolute top-3 sm:top-4 md:top-5 lg:top-5 left-5 right-5 sm:left-8 sm:right-8 md:left-10 md:right-10 lg:left-12 lg:right-12 z-40 flex items-center justify-between gap-3 sm:gap-6"
       >
         {/* Logo */}
-        <Link to="/" className="flex items-center shrink-0 relative" data-testid="tradecafe-logo-link" aria-label="TradeCafe">
+        <Link to="/" className="flex items-center shrink-0 relative z-10" data-testid="tradecafe-logo-link" aria-label="TradeCafe">
           <img
             src="/tradecafe-wordmark.svg?v=2"
             alt="TradeCafe"
@@ -46,19 +59,82 @@ export default function Nav() {
           />
         </Link>
 
-        {/* Center: nav links (lg+) */}
-        <div className="hidden lg:flex items-center gap-7 xl:gap-9 absolute left-1/2 -translate-x-1/2">
-          {NAV_LINKS.map((l) => renderLink(l, pathname === l.to))}
+        {/* Center: glass capsule + mega-menus (lg+) */}
+        <div
+          className="hidden lg:block absolute left-1/2 -translate-x-1/2"
+          onMouseLeave={scheduleClose}
+          onMouseEnter={cancelClose}
+        >
+          <div className="nav-capsule" data-testid="nav-capsule">
+            {NAV_MENUS.map((m, i) => (
+              <button
+                key={m.label}
+                className={`nav-cap-item ${active === i ? "is-active" : ""}`}
+                onMouseEnter={() => openMenu(i)}
+                onClick={() => setActive(active === i ? null : i)}
+                aria-expanded={active === i}
+                data-testid={`nav-trigger-${m.label.toLowerCase()}`}
+              >
+                {m.label}
+                <ChevronDown className="nav-cap-chev w-3 h-3" strokeWidth={2.4} />
+              </button>
+            ))}
+          </div>
+
+          {/* Mega-menu panel */}
+          <div
+            className={`nav-mega ${active !== null ? "is-open" : ""}`}
+            onMouseEnter={cancelClose}
+            onMouseLeave={scheduleClose}
+            role="region"
+            aria-hidden={active === null}
+            data-testid="nav-mega"
+          >
+            {active !== null && (
+              <div className="nav-mega-grid">
+                <div className="nav-feature">
+                  <span className="nav-feature-eyebrow">{NAV_MENUS[active].featured.eyebrow}</span>
+                  <h3 className="nav-feature-title">{NAV_MENUS[active].featured.title}</h3>
+                  <p className="nav-feature-desc">{NAV_MENUS[active].featured.desc}</p>
+                  {renderTarget(
+                    NAV_MENUS[active].featured.cta,
+                    "nav-feature-cta",
+                    () => setActive(null),
+                    <>
+                      {NAV_MENUS[active].featured.cta.label}
+                      <ArrowUpRight className="w-3.5 h-3.5" strokeWidth={2.2} />
+                    </>
+                  )}
+                </div>
+                <div className="nav-links-grid">
+                  {NAV_MENUS[active].items.map((item) =>
+                    renderTarget(
+                      item,
+                      "nav-menu-link",
+                      () => setActive(null),
+                      <>
+                        <span className="nav-menu-link-label">
+                          {item.label}
+                          <ArrowUpRight className="nav-menu-link-arrow" strokeWidth={2} />
+                        </span>
+                        <span className="nav-menu-link-desc">{item.desc}</span>
+                      </>
+                    )
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
         </div>
 
-        {/* Right: auth + CTA */}
-        <div className="flex items-center gap-3 sm:gap-4 shrink-0 relative">
+        {/* Right: Contact Sales + CTA */}
+        <div className="flex items-center gap-3 sm:gap-4 shrink-0 relative z-10">
           <a
-            href={EXTERNAL.launchTerminal}
-            className="hidden lg:inline-flex text-[13px] text-white/65 hover:text-white transition-colors"
-            data-testid="nav-signin"
+            href={EXTERNAL.contactSales}
+            className="hidden lg:inline-flex text-[13px] font-medium text-white/70 hover:text-white transition-colors"
+            data-testid="nav-contact-sales"
           >
-            Sign in
+            Contact Sales
           </a>
           <a
             href={EXTERNAL.launchTerminal}
@@ -82,7 +158,7 @@ export default function Nav() {
         </div>
       </nav>
 
-      {/* Mobile drawer */}
+      {/* Mobile drawer — grouped accordion */}
       <div
         className={`tc-drawer lg:hidden ${open ? "is-open" : ""}`}
         data-testid="mobile-drawer"
@@ -94,28 +170,39 @@ export default function Nav() {
           <span>Navigation</span>
         </div>
         <ul className="tc-drawer-list">
-          {NAV_LINKS.map((l, i) => (
-            <li key={l.label} style={{ "--i": i }}>
-              {l.to.startsWith("/") && !l.to.startsWith("/#") ? (
-                <Link to={l.to} className="tc-drawer-link" onClick={() => setOpen(false)} data-testid={`mobile-nav-link-${l.label.toLowerCase()}`}>
-                  <span className="tc-drawer-link-num">0{i + 1}</span>
-                  <span className="tc-drawer-link-label">{l.label}</span>
-                  <ArrowUpRight className="tc-drawer-link-arrow" strokeWidth={2} />
-                </Link>
-              ) : (
-                <a href={l.to} className="tc-drawer-link" onClick={() => setOpen(false)} data-testid={`mobile-nav-link-${l.label.toLowerCase()}`}>
-                  <span className="tc-drawer-link-num">0{i + 1}</span>
-                  <span className="tc-drawer-link-label">{l.label}</span>
-                  <ArrowUpRight className="tc-drawer-link-arrow" strokeWidth={2} />
-                </a>
-              )}
+          {NAV_MENUS.map((m, i) => (
+            <li key={m.label} style={{ "--i": i }}>
+              <button
+                className={`tc-drawer-group ${expanded === i ? "is-expanded" : ""}`}
+                onClick={() => setExpanded(expanded === i ? null : i)}
+                data-testid={`mobile-nav-group-${m.label.toLowerCase()}`}
+              >
+                <span className="tc-drawer-link-num">0{i + 1}</span>
+                <span className="tc-drawer-link-label">{m.label}</span>
+                <ChevronDown className={`tc-drawer-group-chev ${expanded === i ? "is-open" : ""}`} strokeWidth={2} />
+              </button>
+              <div className={`tc-drawer-sub ${expanded === i ? "is-open" : ""}`}>
+                <div className="tc-drawer-sub-inner">
+                  {m.items.map((item) =>
+                    renderTarget(
+                      item,
+                      "tc-drawer-sublink",
+                      () => setOpen(false),
+                      <>
+                        <span>{item.label}</span>
+                        <ArrowUpRight className="w-3.5 h-3.5 opacity-50" strokeWidth={2} />
+                      </>
+                    )
+                  )}
+                </div>
+              </div>
             </li>
           ))}
         </ul>
         <div className="tc-drawer-divider" />
         <div className="tc-drawer-actions">
-          <a href={EXTERNAL.launchTerminal} className="tc-drawer-signin" onClick={() => setOpen(false)} data-testid="mobile-signin">
-            Sign in
+          <a href={EXTERNAL.contactSales} className="tc-drawer-signin" onClick={() => setOpen(false)} data-testid="mobile-contact-sales">
+            Contact Sales
           </a>
           <a href={EXTERNAL.launchTerminal} className="cta-primary justify-center w-full" onClick={() => setOpen(false)} data-testid="mobile-cta-launch">
             Launch Terminal
