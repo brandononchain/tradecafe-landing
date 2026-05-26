@@ -263,7 +263,7 @@ export default function Terminal() {
                 </div>
                 <div className="mt-3 flex items-center gap-2">
                   {[1,2,3,4,5].map((n) => (
-                    <span key={n} className="w-7 h-7 rounded-full border border-white/15" style={{
+                    <span key={n} className="w-7 h-7 rounded-full border border-white/[0.07]" style={{
                       background: `conic-gradient(from ${n*60}deg, #00B4A6, #0B3A48 ${n*15}%, #051418)`,
                     }} />
                   ))}

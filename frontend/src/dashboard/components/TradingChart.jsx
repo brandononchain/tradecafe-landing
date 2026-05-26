@@ -222,7 +222,7 @@ export default function TradingChart({
     <div className="flex flex-col w-full h-full">
       <div ref={mainRef} className={`w-full ${oscillator ? "flex-1" : "h-full"}`} data-testid="trading-chart" />
       {oscillator && (
-        <div className="border-t border-white/5 h-[130px] shrink-0">
+        <div className="border-t border-white/[0.04] h-[130px] shrink-0">
           <div ref={oscRef} className="w-full h-full" />
         </div>
       )}

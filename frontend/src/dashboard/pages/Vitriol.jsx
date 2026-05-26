@@ -35,7 +35,7 @@ export default function Vitriol() {
             </div>
           </div>
 
-          <div className="flex items-center justify-between gap-3 mt-5 p-3 rounded-xl bg-white/[0.02] border border-white/5 font-mono text-[11.5px] text-white/60">
+          <div className="flex items-center justify-between gap-3 mt-5 p-3 rounded-xl bg-white/[0.02] border border-white/[0.04] font-mono text-[11.5px] text-white/60">
             <span className="truncate">{VITRIOL.wallet}</span>
             <button className="tc-iconbtn" style={{ width: 30, height: 30 }} aria-label="Copy address">
               <Copy className="w-3.5 h-3.5" strokeWidth={2} />

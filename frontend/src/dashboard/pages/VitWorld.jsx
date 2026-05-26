@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { createPortal } from "react-dom";
 import { useNavigate } from "react-router-dom";
 import { Search, Globe, Settings2, MessageSquare, UserPlus, X, Check } from "lucide-react";
 import { PageHead, Panel } from "../ui";
@@ -32,13 +33,13 @@ export default function VitWorld() {
       <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-5">
         {/* Globe */}
         <Panel className="!p-0 overflow-hidden">
-          <div className="p-3 border-b border-white/5">
+          <div className="p-3 border-b border-white/[0.04]">
             <div className="tc-search max-w-[320px]">
               <Search className="w-4 h-4 text-white/35" strokeWidth={2} />
               <input placeholder="Search traders…" value={q} onChange={(e) => setQ(e.target.value)} />
             </div>
             {results.length > 0 && (
-              <div className="mt-2 max-w-[320px] rounded-lg bg-white/[0.03] border border-white/8 p-1">
+              <div className="mt-2 max-w-[320px] rounded-lg bg-white/[0.03] border border-white/[0.05] p-1">
                 {results.slice(0, 6).map((u) => (
                   <button key={u.id} onClick={() => { setSelected(u); setQ(""); }} className="w-full flex items-center gap-2 px-2.5 py-2 rounded hover:bg-white/[0.04] text-left">
                     <span className="w-1.5 h-1.5 rounded-full" style={{ background: u.online ? "#1FB8A6" : "#6B7686" }} />
@@ -98,15 +99,15 @@ export default function VitWorld() {
         )}
       </div>
 
-      {showPrivacy && (
+      {showPrivacy && createPortal(
         <div className="fixed inset-0 z-[80] flex items-center justify-center px-4">
-          <div className="absolute inset-0 bg-black/60" onClick={() => setShowPrivacy(false)} />
-          <div className="relative w-full max-w-[440px] rounded-2xl bg-surface border border-white/8 p-5">
+          <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={() => setShowPrivacy(false)} />
+          <div className="relative w-full max-w-[440px] rounded-2xl bg-surface border border-white/[0.05] p-5">
             <div className="flex items-center justify-between mb-4">
               <span className="font-mono text-[10px] tracking-[0.16em] uppercase text-white/55">VITworld Settings</span>
               <button className="tc-iconbtn" style={{ width: 30, height: 30 }} onClick={() => setShowPrivacy(false)}><X className="w-3.5 h-3.5" /></button>
             </div>
-            <div className="flex items-center justify-between p-3 rounded-xl bg-white/[0.02] border border-white/5 mb-3">
+            <div className="flex items-center justify-between p-3 rounded-xl bg-white/[0.02] border border-white/[0.04] mb-3">
               <span className="text-[13px] font-medium text-white/85">Show me on VITworld</span>
               <button onClick={() => setVisible((v) => !v)} className={`relative w-11 h-6 rounded-full transition-colors ${visible ? "bg-tradeTeal" : "bg-white/12"}`}>
                 <span className="absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white transition-transform" style={{ transform: visible ? "translateX(20px)" : "none" }} />
@@ -115,7 +116,7 @@ export default function VitWorld() {
             {visible && PRIVACY_FIELDS.map((f) => (
               <div key={f} className="flex items-center justify-between py-2.5">
                 <span className="text-[12.5px] text-white/70">{f}</span>
-                <div className="flex items-center gap-1 p-0.5 rounded-lg bg-white/[0.03] border border-white/8">
+                <div className="flex items-center gap-1 p-0.5 rounded-lg bg-white/[0.03] border border-white/[0.05]">
                   {PRIVACY_OPTS.map((o) => (
                     <button key={o} onClick={() => setPrivacy((p) => ({ ...p, [f]: o }))}
                       className={`px-2.5 py-1 rounded font-mono text-[9.5px] uppercase tracking-[0.08em] transition-colors ${privacy[f] === o ? "bg-tradeTeal/20 text-tradeTeal" : "text-white/45"}`}>{o}</button>
@@ -124,7 +125,8 @@ export default function VitWorld() {
               </div>
             ))}
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );

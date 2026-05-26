@@ -31,7 +31,7 @@ export default function Affiliate() {
       {/* Referral link */}
       <Panel glow icon={Share2} title="Your Referral Link">
         <div className="flex flex-col sm:flex-row gap-3">
-          <div className="flex-1 flex items-center px-4 py-3 rounded-xl bg-white/[0.025] border border-white/8 font-mono text-[12.5px] text-white/75 truncate">
+          <div className="flex-1 flex items-center px-4 py-3 rounded-xl bg-white/[0.025] border border-white/[0.05] font-mono text-[12.5px] text-white/75 truncate">
             {AFFILIATE.referralUrl}
           </div>
           <button className="tc-btn tc-btn-primary sm:w-auto" onClick={copy} data-testid="copy-referral">
@@ -59,7 +59,7 @@ export default function Affiliate() {
                         ? "bg-tradeTeal/15 border-tradeTeal/50 text-tradeTeal"
                         : active
                         ? "bg-tradeTeal/8 border-tradeTeal/25 text-tradeTeal/80"
-                        : "bg-white/[0.03] border-white/8 text-white/40"
+                        : "bg-white/[0.03] border-white/[0.05] text-white/40"
                     }`}
                   >
                     {i + 1}

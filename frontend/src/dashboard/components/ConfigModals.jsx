@@ -43,7 +43,7 @@ function Chips({ options, selected, onToggle, single, onPick }) {
         const active = single ? selected === o : selected.includes(o);
         return (
           <button key={o} onClick={() => (single ? onPick(o) : onToggle(o))}
-            className={`px-3 py-1.5 rounded-full text-[11px] border transition-colors ${active ? "bg-tradeTeal/15 text-tradeTeal border-tradeTeal/30" : "text-white/55 border-white/8 hover:text-white/85"}`}>
+            className={`px-3 py-1.5 rounded-full text-[11px] border transition-colors ${active ? "bg-tradeTeal/15 text-tradeTeal border-tradeTeal/30" : "text-white/55 border-white/[0.05] hover:text-white/85"}`}>
             {o}
           </button>
         );

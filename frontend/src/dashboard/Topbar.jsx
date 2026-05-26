@@ -82,8 +82,8 @@ function NotificationsMenu() {
         {unread > 0 && <span className="absolute -top-0.5 -right-0.5 min-w-[15px] h-[15px] px-1 rounded-full bg-tradeTeal text-[#042024] font-mono text-[9px] leading-[15px] text-center">{unread}</span>}
       </button>
       {open && (
-        <div className="absolute right-0 mt-2 w-[320px] rounded-xl bg-surface border border-white/8 shadow-xl z-50 overflow-hidden">
-          <div className="flex items-center justify-between px-4 py-3 border-b border-white/6">
+        <div className="absolute right-0 mt-2 w-[320px] rounded-xl bg-surface border border-white/[0.05] shadow-xl z-50 overflow-hidden">
+          <div className="flex items-center justify-between px-4 py-3 border-b border-white/[0.045]">
             <span className="font-mono text-[10px] tracking-[0.16em] uppercase text-white/50">Notifications</span>
             <button className="font-mono text-[10px] text-tradeTeal hover:opacity-80" onClick={() => setItems((p) => p.map((n) => ({ ...n, unread: false })))}>
               Mark all read
@@ -93,7 +93,7 @@ function NotificationsMenu() {
             {items.map((n) => {
               const Icon = NOTIF_ICON[n.type] || Bell;
               return (
-                <div key={n.id} className={`flex items-start gap-3 px-4 py-3 border-b border-white/4 last:border-0 ${n.unread ? "bg-tradeTeal/[0.04]" : ""}`}>
+                <div key={n.id} className={`flex items-start gap-3 px-4 py-3 border-b border-white/[0.03] last:border-0 ${n.unread ? "bg-tradeTeal/[0.04]" : ""}`}>
                   <span className="w-7 h-7 rounded-lg bg-tradeTeal/10 border border-tradeTeal/20 flex items-center justify-center shrink-0">
                     <Icon className="w-3.5 h-3.5 text-tradeTeal" strokeWidth={2} />
                   </span>

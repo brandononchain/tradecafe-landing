@@ -66,7 +66,7 @@ export function WithdrawModal({ balance = 0, onClose }) {
       {step === 2 && (
         <div className="flex flex-col gap-2.5">
           {[["Amount", `${amount || "0.00"} USDT`], ["Network", "TRC20"], ["Address", address || "—"], ["Fee", "1.00 USDT"]].map(([k, v]) => (
-            <div key={k} className="flex items-center justify-between p-3 rounded-xl bg-white/[0.02] border border-white/5">
+            <div key={k} className="flex items-center justify-between p-3 rounded-xl bg-white/[0.02] border border-white/[0.04]">
               <span className="font-mono text-[9.5px] tracking-[0.14em] uppercase text-white/45">{k}</span>
               <span className="text-[12.5px] text-white/85 font-medium truncate ml-3 max-w-[60%]">{v}</span>
             </div>
@@ -85,7 +85,7 @@ export function SupportModal({ onClose }) {
       <ModalField label="Subject"><ModalInput placeholder="How can we help?" /></ModalField>
       <ModalField label="Message">
         <textarea rows={5} placeholder="Describe your issue…"
-          className="w-full px-3.5 py-2.5 rounded-xl bg-white/[0.03] border border-white/8 text-[13px] text-white outline-none focus:border-tradeTeal/40 resize-none" />
+          className="w-full px-3.5 py-2.5 rounded-xl bg-white/[0.03] border border-white/[0.05] text-[13px] text-white outline-none focus:border-tradeTeal/40 resize-none" />
       </ModalField>
     </Modal>
   );
@@ -102,7 +102,7 @@ export function TwoFAModal({ onClose }) {
             <span key={i} className="rounded-[1px]" style={{ background: (i * 7 + ((i * 13) % 5)) % 3 === 0 ? "#0a0a0a" : "transparent" }} />
           ))}
         </div>
-        <div className="w-full flex items-center justify-between p-3 rounded-xl bg-white/[0.02] border border-white/5 font-mono text-[12px] text-white/70">
+        <div className="w-full flex items-center justify-between p-3 rounded-xl bg-white/[0.02] border border-white/[0.04] font-mono text-[12px] text-white/70">
           <span className="truncate">JBSWY3DPEHPK3PXP</span>
           <button className="tc-iconbtn" style={{ width: 28, height: 28 }}><Copy className="w-3.5 h-3.5" /></button>
         </div>

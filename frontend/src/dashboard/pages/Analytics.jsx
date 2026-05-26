@@ -160,7 +160,7 @@ export default function Analytics() {
           </div>
         </div>
 
-        <div className="tc-config-grid pt-4 border-t border-white/5">
+        <div className="tc-config-grid pt-4 border-t border-white/[0.04]">
           {isAnalysis && (
             <div className="tc-config-cell">
               <div className="lbl"><Layers3 className="w-3 h-3" /> Markets</div>

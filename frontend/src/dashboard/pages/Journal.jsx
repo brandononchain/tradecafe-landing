@@ -55,7 +55,7 @@ export default function Journal() {
               <div className="flex items-center gap-1.5 flex-wrap">
                 {EXCHANGES.map((e) => (
                   <button key={e} onClick={() => setExch(e)}
-                    className={`px-3 py-1.5 rounded-full font-mono text-[9.5px] tracking-[0.1em] uppercase border transition-colors ${exch === e ? "bg-tradeTeal/15 text-tradeTeal border-tradeTeal/30" : "text-white/50 border-white/8"}`}>{e}</button>
+                    className={`px-3 py-1.5 rounded-full font-mono text-[9.5px] tracking-[0.1em] uppercase border transition-colors ${exch === e ? "bg-tradeTeal/15 text-tradeTeal border-tradeTeal/30" : "text-white/50 border-white/[0.05]"}`}>{e}</button>
                 ))}
               </div>
             </div>
@@ -105,7 +105,7 @@ export default function Journal() {
               <div className="flex flex-wrap gap-1.5">
                 {JOURNAL.breakdowns.map((b) => (
                   <button key={b} onClick={() => setBreakdown(b)}
-                    className={`px-3 py-1.5 rounded-full text-[11px] border transition-colors ${breakdown === b ? "bg-tradeTeal/15 text-tradeTeal border-tradeTeal/30" : "text-white/55 border-white/8 hover:text-white/85"}`}>{b}</button>
+                    className={`px-3 py-1.5 rounded-full text-[11px] border transition-colors ${breakdown === b ? "bg-tradeTeal/15 text-tradeTeal border-tradeTeal/30" : "text-white/55 border-white/[0.05] hover:text-white/85"}`}>{b}</button>
                 ))}
               </div>
               <div className="mt-4 flex items-end gap-1.5 h-[120px]">
@@ -166,7 +166,7 @@ function MiniCalendar() {
           const p = pnl(d);
           const tone = p == null ? "" : p > 0 ? "bg-tradeTeal/12 text-tradeTeal" : p < 0 ? "bg-[#F23645]/12 text-[#FF8A82]" : "";
           return (
-            <div key={i} className={`aspect-square rounded-md flex items-center justify-center text-[10px] ${valid ? `border border-white/5 ${tone}` : "opacity-0"}`}>
+            <div key={i} className={`aspect-square rounded-md flex items-center justify-center text-[10px] ${valid ? `border border-white/[0.04] ${tone}` : "opacity-0"}`}>
               {valid ? d : ""}
             </div>
           );

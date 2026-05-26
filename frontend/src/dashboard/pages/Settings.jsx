@@ -21,7 +21,7 @@ function Toggle({ on, onClick }) {
 
 function Row({ icon: Icon, title, sub, children }) {
   return (
-    <div className="flex items-center justify-between gap-4 p-4 rounded-xl bg-white/[0.02] border border-white/5">
+    <div className="flex items-center justify-between gap-4 p-4 rounded-xl bg-white/[0.02] border border-white/[0.04]">
       <div className="flex items-center gap-3 min-w-0">
         <span className="tc-action-ico shrink-0"><Icon className="w-4 h-4" strokeWidth={2} /></span>
         <div className="min-w-0">
@@ -89,7 +89,7 @@ export default function Settings() {
 
 function Field({ label, value }) {
   return (
-    <div className="flex items-center justify-between p-3.5 rounded-xl bg-white/[0.02] border border-white/5">
+    <div className="flex items-center justify-between p-3.5 rounded-xl bg-white/[0.02] border border-white/[0.04]">
       <span className="font-mono text-[9.5px] tracking-[0.14em] uppercase text-white/45">{label}</span>
       <span className="text-[13px] text-white/85 font-medium truncate ml-3">{value}</span>
     </div>

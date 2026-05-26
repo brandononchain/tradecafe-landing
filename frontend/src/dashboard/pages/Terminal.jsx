@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { createPortal } from "react-dom";
 import {
   TrendingUp, TrendingDown, Search, Minus, X, ChevronDown, Check,
   CandlestickChart, LineChart as LineIcon, AreaChart as AreaIcon, BarChart3,
@@ -123,7 +124,7 @@ export default function Terminal() {
             <button
               onClick={() => setExchOpen((v) => !v)}
               onBlur={() => setTimeout(() => setExchOpen(false), 150)}
-              className="w-full flex items-center justify-between px-3 py-2 rounded-lg bg-white/[0.03] border border-white/8 hover:border-tradeTeal/30 transition-colors"
+              className="w-full flex items-center justify-between px-3 py-2 rounded-lg bg-white/[0.03] border border-white/[0.05] hover:border-tradeTeal/30 transition-colors"
               data-testid="exchange-selector"
             >
               <span className="flex items-center gap-2">
@@ -136,7 +137,7 @@ export default function Terminal() {
               </span>
             </button>
             {exchOpen && (
-              <div className="absolute left-0 right-0 mt-1.5 p-1.5 rounded-xl bg-surface border border-white/8 shadow-xl z-50">
+              <div className="absolute left-0 right-0 mt-1.5 p-1.5 rounded-xl bg-surface border border-white/[0.05] shadow-xl z-50">
                 {EXCHANGES.map((ex) => (
                   <button
                     key={ex.key}
@@ -210,28 +211,26 @@ export default function Terminal() {
         {/* Chart + toolbar + drawing rail */}
         <div className="tc-panel !p-0 overflow-hidden order-1 xl:order-2 flex flex-col">
           {/* Toolbar */}
-          <div className="flex items-center gap-2 px-3 py-2 border-b border-white/5 flex-wrap">
-            <div className="flex items-center gap-0.5">
+          <div className="flex items-center gap-2 px-3 py-2 border-b border-white/[0.04] flex-wrap">
+            <div className="flex items-center gap-0.5 p-0.5 rounded-lg bg-white/[0.025]">
               {CHART_TYPES.map((c) => {
                 const Ic = c.icon;
                 return (
                   <button key={c.key} onClick={() => setChartType(c.key)} title={c.label}
-                    className={`tc-iconbtn ${chartType === c.key ? "!border-tradeTeal/40 !text-tradeTeal" : ""}`}
-                    style={{ width: 32, height: 32 }} data-testid={`charttype-${c.key}`}>
+                    className={`flex items-center justify-center rounded-md transition-colors ${chartType === c.key ? "bg-tradeTeal/15 text-tradeTeal" : "text-white/45 hover:text-white/80"}`}
+                    style={{ width: 30, height: 30 }} data-testid={`charttype-${c.key}`}>
                     <Ic className="w-3.5 h-3.5" strokeWidth={2} />
                   </button>
                 );
               })}
             </div>
-            <span className="w-px h-5 bg-white/8" />
-            <div className="flex items-center gap-0.5">
+            <div className="flex items-center gap-0.5 p-0.5 rounded-lg bg-white/[0.025]">
               {TIMEFRAMES.map((t) => (
                 <button key={t} onClick={() => setTf(t)}
                   className={`px-2.5 py-1.5 rounded-md font-mono text-[11px] transition-colors ${t === tf ? "bg-tradeTeal/15 text-tradeTeal" : "text-white/45 hover:text-white/80"}`}
                   data-testid={`tf-${t}`}>{t}</button>
               ))}
             </div>
-            <span className="w-px h-5 bg-white/8" />
             <Dropdown
               label="Indicators"
               badge={activeIndicatorCount || null}
@@ -263,29 +262,29 @@ export default function Terminal() {
 
           {/* Chart area with drawing rail */}
           <div className="flex flex-1">
-            <div className="flex flex-col items-center gap-1 py-2 px-1.5 border-r border-white/5">
+            <div className="flex flex-col items-center gap-0.5 py-2 px-1.5 border-r border-white/[0.04]">
               {DRAW_TOOLS.map((d) => {
                 const Ic = d.icon;
                 const isActive = drawTool === d.key;
                 return (
                   <button key={d.label} onClick={() => setDrawTool(d.key)} title={d.label}
-                    className={`tc-iconbtn ${isActive ? "!border-tradeTeal/40 !text-tradeTeal" : ""}`}
+                    className={`flex items-center justify-center rounded-md transition-colors ${isActive ? "bg-tradeTeal/15 text-tradeTeal" : "text-white/40 hover:text-white/85 hover:bg-white/[0.04]"}`}
                     style={{ width: 30, height: 30 }} data-testid={`draw-${d.label.replace(/\s+/g, "-").toLowerCase()}`}>
                     <Ic className="w-3.5 h-3.5" strokeWidth={2} />
                   </button>
                 );
               })}
-              <span className="w-5 h-px bg-white/8 my-1" />
+              <span className="w-5 h-px bg-white/[0.06] my-1" />
               <button onClick={() => setMagnet((v) => !v)} title="Magnet"
-                className={`tc-iconbtn ${magnet ? "!border-tradeTeal/40 !text-tradeTeal" : ""}`} style={{ width: 30, height: 30 }}>
+                className={`flex items-center justify-center rounded-md transition-colors ${magnet ? "bg-tradeTeal/15 text-tradeTeal" : "text-white/40 hover:text-white/85 hover:bg-white/[0.04]"}`} style={{ width: 30, height: 30 }}>
                 <Magnet className="w-3.5 h-3.5" strokeWidth={2} />
               </button>
               <button onClick={() => setLocked((v) => !v)} title="Lock"
-                className={`tc-iconbtn ${locked ? "!border-tradeTeal/40 !text-tradeTeal" : ""}`} style={{ width: 30, height: 30 }}>
+                className={`flex items-center justify-center rounded-md transition-colors ${locked ? "bg-tradeTeal/15 text-tradeTeal" : "text-white/40 hover:text-white/85 hover:bg-white/[0.04]"}`} style={{ width: 30, height: 30 }}>
                 <Lock className="w-3.5 h-3.5" strokeWidth={2} />
               </button>
               <button onClick={() => setDrawTool("eraser")} title="Eraser"
-                className={`tc-iconbtn ${drawTool === "eraser" ? "!border-[#FF8A82]/50 !text-[#FF8A82]" : ""}`} style={{ width: 30, height: 30 }}>
+                className={`flex items-center justify-center rounded-md transition-colors ${drawTool === "eraser" ? "bg-[#F23645]/15 text-[#FF8A82]" : "text-white/40 hover:text-white/85 hover:bg-white/[0.04]"}`} style={{ width: 30, height: 30 }}>
                 <Eraser className="w-3.5 h-3.5" strokeWidth={2} />
               </button>
             </div>
@@ -325,7 +324,7 @@ export default function Terminal() {
         </div>
         <div className="flex gap-2 overflow-x-auto pb-1">
           {SIGNALS.map((s, i) => (
-            <button key={i} onClick={() => setSymbol(s.sym)} className="shrink-0 px-3 py-2 rounded-lg bg-white/[0.02] border border-white/6 hover:border-tradeTeal/30 transition-colors text-left">
+            <button key={i} onClick={() => setSymbol(s.sym)} className="shrink-0 px-3 py-2 rounded-lg bg-white/[0.02] border border-white/[0.045] hover:border-tradeTeal/30 transition-colors text-left">
               <div className="flex items-center gap-2">
                 <span className={s.dir === "LONG" ? "tc-tag-long" : "tc-tag-short"}>{s.dir}</span>
                 <span className="text-[12px] font-medium text-white/85">{s.sym}</span>
@@ -372,7 +371,7 @@ export default function Terminal() {
           <ToggleRow label="Logarithmic price scale" on={logScale} onClick={() => setLogScale((v) => !v)} />
           <ToggleRow label="Magnet (snap to price)" on={magnet} onClick={() => setMagnet((v) => !v)} />
           <ToggleRow label="Lock drawings" on={locked} onClick={() => setLocked((v) => !v)} />
-          <div className="mt-4 pt-4 border-t border-white/6">
+          <div className="mt-4 pt-4 border-t border-white/[0.045]">
             <div className="flex items-center gap-2 font-mono text-[10px] tracking-[0.14em] uppercase text-white/45 mb-3">
               <Keyboard className="w-3.5 h-3.5" /> Shortcuts
             </div>
@@ -418,7 +417,7 @@ function OrderPanel({ active, side, setSide, marginMode, setMarginMode, leverage
         <div className="tc-segment-btn" style={side === "sell" ? { padding: "9px 0", color: "#042024", background: "linear-gradient(135deg,#FF9B91,#F23645)" } : { padding: "9px 0" }} onClick={() => setSide("sell")}>Short</div>
       </div>
 
-      <div className="flex items-center gap-1.5 p-1 rounded-lg bg-white/[0.025] border border-white/8">
+      <div className="flex items-center gap-1.5 p-1 rounded-lg bg-white/[0.025] border border-white/[0.05]">
         {["percent", "usd"].map((m) => (
           <button key={m} onClick={() => setMarginMode(m)}
             className={`flex-1 py-1.5 rounded-md font-mono text-[10px] tracking-[0.1em] uppercase transition-colors ${marginMode === m ? "bg-tradeTeal/15 text-tradeTeal" : "text-white/50"}`}>
@@ -447,7 +446,7 @@ function OrderPanel({ active, side, setSide, marginMode, setMarginMode, leverage
         <div className="font-mono text-[10px] tracking-[0.1em] uppercase text-white/45 mb-2">DCA / Averaging</div>
         <div className="grid grid-cols-4 gap-1.5">
           {dca.map((d) => (
-            <div key={d.lvl} className="p-2 rounded-lg bg-white/[0.02] border border-white/5 text-center">
+            <div key={d.lvl} className="p-2 rounded-lg bg-white/[0.02] border border-white/[0.04] text-center">
               <div className="font-mono text-[8.5px] tracking-[0.08em] uppercase text-white/40">{d.lvl}</div>
               <div className="font-mono text-[12px] text-tradeTeal mt-0.5">{d.mult}</div>
             </div>
@@ -485,12 +484,12 @@ function SignalsRail() {
       <div className="flex gap-1.5">
         {markets.map((m) => (
           <button key={m} onClick={() => setMkt(m)}
-            className={`px-3 py-1.5 rounded-full font-mono text-[9.5px] tracking-[0.1em] uppercase border transition-colors ${mkt === m ? "bg-tradeTeal/15 text-tradeTeal border-tradeTeal/30" : "text-white/50 border-white/8"}`}>{m}</button>
+            className={`px-3 py-1.5 rounded-full font-mono text-[9.5px] tracking-[0.1em] uppercase border transition-colors ${mkt === m ? "bg-tradeTeal/15 text-tradeTeal border-tradeTeal/30" : "text-white/50 border-white/[0.05]"}`}>{m}</button>
         ))}
       </div>
       <div className="flex flex-col gap-2 max-h-[460px] overflow-y-auto">
         {SIGNALS.map((s, i) => (
-          <div key={i} className="p-3 rounded-xl bg-white/[0.02] border border-white/6">
+          <div key={i} className="p-3 rounded-xl bg-white/[0.02] border border-white/[0.045]">
             <div className="flex items-center justify-between">
               <span className="text-[13px] font-semibold text-white/90">{s.sym}</span>
               <span className={s.dir === "LONG" ? "tc-tag-long" : "tc-tag-short"}>{s.dir}</span>
@@ -502,7 +501,7 @@ function SignalsRail() {
               <span className="text-[#FF8A82] text-right">S {s.stop}</span>
             </div>
             <div className="flex items-center gap-2 mt-2">
-              <span className="flex-1 h-1 rounded-full bg-white/8 overflow-hidden"><span className="block h-full bg-tradeTeal" style={{ width: `${s.conf}%` }} /></span>
+              <span className="flex-1 h-1 rounded-full bg-white/[0.06] overflow-hidden"><span className="block h-full bg-tradeTeal" style={{ width: `${s.conf}%` }} /></span>
               <span className="font-mono text-[9.5px] text-white/50">{s.conf}%</span>
             </div>
           </div>
@@ -527,9 +526,9 @@ function AIRail({ ai, setAi }) {
         { k: "breaks", label: "Breaks & Retests", desc: "Most recent broken level + retest zone." },
       ].map((o) => (
         <button key={o.k} onClick={() => setAi((a) => ({ ...a, [o.k]: !a[o.k] }))}
-          className={`flex items-start gap-3 p-3 rounded-xl border text-left transition-colors ${ai[o.k] ? "bg-tradeTeal/8 border-tradeTeal/30" : "bg-white/[0.02] border-white/6"}`}
+          className={`flex items-start gap-3 p-3 rounded-xl border text-left transition-colors ${ai[o.k] ? "bg-tradeTeal/8 border-tradeTeal/30" : "bg-white/[0.02] border-white/[0.045]"}`}
           data-testid={`ai-${o.k}`}>
-          <span className={`mt-0.5 w-4 h-4 rounded flex items-center justify-center shrink-0 ${ai[o.k] ? "bg-tradeTeal text-[#042024]" : "border border-white/15"}`}>
+          <span className={`mt-0.5 w-4 h-4 rounded flex items-center justify-center shrink-0 ${ai[o.k] ? "bg-tradeTeal text-[#042024]" : "border border-white/[0.07]"}`}>
             {ai[o.k] && <Check className="w-3 h-3" strokeWidth={3} />}
           </span>
           <span>
@@ -556,20 +555,20 @@ function SymbolSearch({ onClose, onPick, exchange }) {
     const match = !term || w.sym.includes(term) || w.name.toUpperCase().includes(term);
     return inCat && match;
   });
-  return (
+  return createPortal(
     <div className="fixed inset-0 z-[80] flex items-start justify-center pt-[12vh] px-4" data-testid="symbol-search-modal">
-      <div className="absolute inset-0 bg-black/60" onClick={onClose} />
-      <div className="relative w-full max-w-[480px] rounded-2xl bg-surface border border-white/8 overflow-hidden">
-        <div className="tc-search !rounded-none !border-0 border-b border-white/8 px-4 py-3.5">
+      <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={onClose} />
+      <div className="relative w-full max-w-[480px] rounded-2xl bg-surface border border-white/[0.05] overflow-hidden">
+        <div className="tc-search !rounded-none !border-0 border-b border-white/[0.05] px-4 py-3.5">
           <Search className="w-4 h-4 text-white/40" strokeWidth={2} />
           <input autoFocus placeholder="Search symbol or name…" value={q} onChange={(e) => setQ(e.target.value)} />
           <button onClick={onClose} className="tc-iconbtn" style={{ width: 28, height: 28 }}><X className="w-3.5 h-3.5" /></button>
         </div>
-        <div className="flex items-center gap-1.5 px-4 py-2.5 border-b border-white/6">
+        <div className="flex items-center gap-1.5 px-4 py-2.5 border-b border-white/[0.045]">
           {exchange && <span className="font-mono text-[9.5px] tracking-[0.1em] uppercase text-white/40 mr-1">{exchange.name}</span>}
           {cats.map((c) => (
             <button key={c} onClick={() => setCat(c)}
-              className={`px-2.5 py-1 rounded-full font-mono text-[9.5px] tracking-[0.08em] uppercase border transition-colors ${cat === c ? "bg-tradeTeal/15 text-tradeTeal border-tradeTeal/30" : "text-white/45 border-white/8"}`}>
+              className={`px-2.5 py-1 rounded-full font-mono text-[9.5px] tracking-[0.08em] uppercase border transition-colors ${cat === c ? "bg-tradeTeal/15 text-tradeTeal border-tradeTeal/30" : "text-white/45 border-white/[0.05]"}`}>
               {c}
             </button>
           ))}
@@ -590,7 +589,8 @@ function SymbolSearch({ onClose, onPick, exchange }) {
           {results.length === 0 && <div className="text-center text-white/40 py-8 text-[13px]">No markets found.</div>}
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }
 
@@ -608,7 +608,7 @@ function Field({ label, value, mono }) {
   return (
     <div>
       <div className="font-mono text-[10px] tracking-[0.1em] uppercase text-white/45 mb-2">{label}</div>
-      <div className={`px-3 py-2.5 rounded-lg bg-white/[0.025] border border-white/8 text-[13px] text-white/85 ${mono ? "font-mono" : ""}`}>{value}</div>
+      <div className={`px-3 py-2.5 rounded-lg bg-white/[0.025] border border-white/[0.05] text-[13px] text-white/85 ${mono ? "font-mono" : ""}`}>{value}</div>
     </div>
   );
 }
@@ -626,7 +626,7 @@ function Dropdown({ label, icon: Icon, badge, testid, children }) {
         <ChevronDown className="w-3 h-3 opacity-60" />
       </button>
       {open && (
-        <div className="absolute left-0 mt-1.5 w-56 p-1.5 rounded-xl bg-surface border border-white/8 shadow-xl z-50 max-h-[320px] overflow-y-auto">
+        <div className="absolute left-0 mt-1.5 w-56 p-1.5 rounded-xl bg-surface border border-white/[0.05] shadow-xl z-50 max-h-[320px] overflow-y-auto">
           {children}
         </div>
       )}
@@ -640,7 +640,7 @@ function MenuItem({ checked, onClick, children }) {
   return (
     <button onMouseDown={(e) => { e.preventDefault(); onClick(); }}
       className="w-full flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-left hover:bg-white/[0.04] transition-colors">
-      <span className={`w-4 h-4 rounded flex items-center justify-center shrink-0 ${checked ? "bg-tradeTeal text-[#042024]" : "border border-white/15"}`}>
+      <span className={`w-4 h-4 rounded flex items-center justify-center shrink-0 ${checked ? "bg-tradeTeal text-[#042024]" : "border border-white/[0.07]"}`}>
         {checked && <Check className="w-3 h-3" strokeWidth={3} />}
       </span>
       <span className="flex-1 text-[12.5px] text-white/80">{children}</span>

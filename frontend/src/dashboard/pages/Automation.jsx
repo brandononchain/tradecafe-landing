@@ -44,7 +44,7 @@ export default function Automation() {
 
             <div className="grid grid-cols-3 gap-2 mt-4">
               {b.metrics.map((m) => (
-                <div key={m.k} className="p-3 rounded-xl bg-white/[0.02] border border-white/5 text-center">
+                <div key={m.k} className="p-3 rounded-xl bg-white/[0.02] border border-white/[0.04] text-center">
                   <div className="font-mono text-[9px] tracking-[0.12em] uppercase text-white/45">{m.k}</div>
                   <div className="font-mono text-[15px] font-semibold text-tradeWhite mt-1">{m.v}</div>
                 </div>
@@ -66,7 +66,7 @@ export default function Automation() {
       <Panel icon={Activity} title="Recent Bot Activity">
         <ul className="flex flex-col gap-2">
           {AI_INSIGHTS.map((it, i) => (
-            <li key={i} className="flex items-start gap-3 p-3 rounded-xl bg-white/[0.02] border border-white/5 text-[12.5px] text-white/72">
+            <li key={i} className="flex items-start gap-3 p-3 rounded-xl bg-white/[0.02] border border-white/[0.04] text-[12.5px] text-white/72">
               <span className="inline-flex w-6 h-6 items-center justify-center rounded-md bg-tradeTeal/10 border border-tradeTeal/25 shrink-0">
                 <Activity className="w-3 h-3 text-tradeTeal" strokeWidth={2} />
               </span>
