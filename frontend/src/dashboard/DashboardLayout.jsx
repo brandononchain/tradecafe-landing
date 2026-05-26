@@ -3,6 +3,7 @@ import { Outlet, useLocation } from "react-router-dom";
 import Sidebar from "./Sidebar";
 import Topbar from "./Topbar";
 import { ThemeProvider, useTheme } from "./ThemeContext";
+import ChatWidget from "./components/ChatWidget";
 
 const PAGE_META = {
   "/app": { title: "Overview", sub: "My Account" },
@@ -16,6 +17,7 @@ const PAGE_META = {
   "/app/vitchat": { title: "VITchat", sub: "Community" },
   "/app/vitworld": { title: "VITworld", sub: "Social Globe" },
   "/app/products": { title: "Products", sub: "Ecosystem" },
+  "/app/card": { title: "TradeCafe Card", sub: "Spend" },
   "/app/affiliate": { title: "Affiliate Program", sub: "Partner Network" },
   "/app/subscriptions": { title: "Subscriptions", sub: "Billing" },
   "/app/settings": { title: "Settings", sub: "Account & Security" },
@@ -57,6 +59,8 @@ function DashboardShell() {
           <Outlet />
         </main>
       </div>
+
+      <ChatWidget />
     </div>
   );
 }

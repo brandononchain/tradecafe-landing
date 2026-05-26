@@ -50,6 +50,7 @@ export const APP_NAV = [
     section: "Account",
     items: [
       { label: "Products", to: "/app/products", icon: Boxes },
+      { label: "Card", to: "/app/card", icon: CreditCard },
       { label: "Affiliate", to: "/app/affiliate", icon: Users },
       { label: "Subscriptions", to: "/app/subscriptions", icon: CreditCard },
     ],

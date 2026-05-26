@@ -450,6 +450,45 @@ export const VITWORLD_USERS = [
   { id: "u8", username: "wei", country: "Singapore", lat: 1.35, lng: 103.8, online: true },
 ];
 
+// ===== TradeCafe Card =====
+export const CARD = {
+  stats: [
+    { k: "Cashback", v: "2%" },
+    { k: "Currencies", v: "30+" },
+    { k: "Monthly fee", v: "$0" },
+    { k: "Issued", v: "Instant" },
+  ],
+  features: [
+    { title: "Virtual & physical", text: "Spin up a virtual card instantly; order a metal card to your door." },
+    { title: "Crypto top-up", text: "Fund directly from your TradeCafe balance or any supported asset." },
+    { title: "Global acceptance", text: "Spend anywhere VISA is accepted, online and in-store." },
+    { title: "Real-time controls", text: "Freeze, set limits, and view every transaction live in-app." },
+  ],
+  tiers: [
+    { name: "Core", price: "Free", cashback: "1%", color: "#9BA6B2", limit: "$10k / mo" },
+    { name: "Plus", price: "$9 / mo", cashback: "2%", color: "#00B4A6", limit: "$50k / mo", popular: true },
+    { name: "Metal", price: "$29 / mo", cashback: "3%", color: "#E8782A", limit: "Unlimited" },
+  ],
+};
+
+// ===== Invoice / payment =====
+export const INVOICE = {
+  id: "INV-20518",
+  item: "Trade Bot · 12 months",
+  total: "990.00",
+  currency: "USDT",
+  network: "TRC20",
+  address: "TQn9Y2khEsLJW1ChVWFMSMeRDow5KcbX9p",
+  minutes: 30,
+};
+
+// ===== Support chat =====
+export const SUPPORT_THREAD = [
+  { id: "s1", fromMe: false, text: "Hi! 👋 You're chatting with TradeCafe support. How can we help?", t: "09:30" },
+  { id: "s2", fromMe: true, text: "How long do withdrawals take?", t: "09:31" },
+  { id: "s3", fromMe: false, text: "TRC20 withdrawals usually confirm in 2–5 minutes after approval.", t: "09:31" },
+];
+
 // ===== Products =====
 export const PRODUCTS = [
   {
