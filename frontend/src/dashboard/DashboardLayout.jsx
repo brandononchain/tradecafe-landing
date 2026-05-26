@@ -33,7 +33,7 @@ function DashboardShell() {
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const { pathname } = useLocation();
-  const { theme } = useTheme();
+  const { mode } = useTheme();
 
   // Close the mobile drawer whenever the route changes.
   useEffect(() => setMobileOpen(false), [pathname]);
@@ -41,7 +41,7 @@ function DashboardShell() {
   const meta = PAGE_META[pathname] || { title: "Dashboard", sub: "TradeCafe" };
 
   return (
-    <div className="tc-app font-body" data-theme={theme} data-testid="dashboard-app">
+    <div className="tc-app font-body" data-theme={mode} data-testid="dashboard-app">
       <div className="tc-app-bg" aria-hidden />
 
       <Sidebar

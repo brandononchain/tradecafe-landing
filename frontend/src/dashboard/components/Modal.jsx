@@ -12,10 +12,10 @@ export default function Modal({ title, sub, onClose, children, footer, width = 4
     <div className="fixed inset-0 z-[90] flex items-center justify-center px-4" data-testid="modal">
       <div className="absolute inset-0 bg-black/60" onClick={onClose} />
       <div
-        className="relative w-full rounded-2xl bg-[#070d12] border border-white/10 max-h-[88vh] overflow-y-auto"
+        className="relative w-full rounded-2xl bg-surface border border-white/8 max-h-[88vh] overflow-y-auto"
         style={{ maxWidth: width }}
       >
-        <div className="flex items-start justify-between gap-4 px-5 py-4 border-b border-white/6 sticky top-0 bg-[#070d12] z-10">
+        <div className="flex items-start justify-between gap-4 px-5 py-4 border-b border-white/6 sticky top-0 bg-surface z-10">
           <div>
             <div className="text-[15px] font-semibold text-tradeWhite">{title}</div>
             {sub && <div className="font-mono text-[10px] tracking-[0.12em] uppercase text-white/40 mt-0.5">{sub}</div>}

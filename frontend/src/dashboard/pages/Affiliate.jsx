@@ -59,7 +59,7 @@ export default function Affiliate() {
                         ? "bg-tradeTeal/15 border-tradeTeal/50 text-tradeTeal"
                         : active
                         ? "bg-tradeTeal/8 border-tradeTeal/25 text-tradeTeal/80"
-                        : "bg-white/[0.03] border-white/10 text-white/40"
+                        : "bg-white/[0.03] border-white/8 text-white/40"
                     }`}
                   >
                     {i + 1}

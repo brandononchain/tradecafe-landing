@@ -35,7 +35,7 @@ import {
 function ChartTooltip({ active, payload, label, unit }) {
   if (!active || !payload?.length) return null;
   return (
-    <div className="rounded-lg border border-tradeTeal/30 bg-[#041014]/95 px-3 py-2 shadow-xl backdrop-blur">
+    <div className="rounded-lg border border-tradeTeal/30 bg-surface/95 px-3 py-2 shadow-xl backdrop-blur">
       <div className="font-mono text-[9.5px] tracking-[0.14em] uppercase text-white/45">{label}</div>
       <div className="font-mono text-[13px] font-semibold text-tradeTeal mt-0.5">
         {payload[0].value}

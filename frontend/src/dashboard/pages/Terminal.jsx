@@ -101,7 +101,7 @@ export default function Terminal() {
             <Search className="w-4 h-4 text-white/35" strokeWidth={2} />
             <input placeholder="Search market…" value={query} onChange={(e) => setQuery(e.target.value)} />
           </div>
-          <div className="flex flex-col gap-1 max-h-[440px] overflow-y-auto">
+          <div className="flex flex-col gap-1 max-h-[560px] xl:max-h-[680px] overflow-y-auto">
             {list.map((w) => (
               <button
                 key={w.sym}
@@ -203,7 +203,7 @@ export default function Terminal() {
                 <Eraser className="w-3.5 h-3.5" strokeWidth={2} />
               </button>
             </div>
-            <div className="flex-1 h-[400px] sm:h-[460px]">
+            <div className="flex-1 h-[540px] sm:h-[620px] xl:h-[720px]">
               <TradingChart symbol={symbol} timeframe={tf} chartType={chartType} overlays={overlays} oscillator={oscillator} ai={ai} drawTool={locked ? null : drawTool} logScale={logScale} />
             </div>
           </div>
@@ -429,7 +429,7 @@ function AIRail({ ai, setAi }) {
         <button key={o.k} onClick={() => setAi((a) => ({ ...a, [o.k]: !a[o.k] }))}
           className={`flex items-start gap-3 p-3 rounded-xl border text-left transition-colors ${ai[o.k] ? "bg-tradeTeal/8 border-tradeTeal/30" : "bg-white/[0.02] border-white/6"}`}
           data-testid={`ai-${o.k}`}>
-          <span className={`mt-0.5 w-4 h-4 rounded flex items-center justify-center shrink-0 ${ai[o.k] ? "bg-tradeTeal text-[#042024]" : "border border-white/20"}`}>
+          <span className={`mt-0.5 w-4 h-4 rounded flex items-center justify-center shrink-0 ${ai[o.k] ? "bg-tradeTeal text-[#042024]" : "border border-white/15"}`}>
             {ai[o.k] && <Check className="w-3 h-3" strokeWidth={3} />}
           </span>
           <span>
@@ -452,7 +452,7 @@ function SymbolSearch({ onClose, onPick }) {
   return (
     <div className="fixed inset-0 z-[80] flex items-start justify-center pt-[12vh] px-4" data-testid="symbol-search-modal">
       <div className="absolute inset-0 bg-black/60" onClick={onClose} />
-      <div className="relative w-full max-w-[440px] rounded-2xl bg-[#070d12] border border-white/10 overflow-hidden">
+      <div className="relative w-full max-w-[440px] rounded-2xl bg-surface border border-white/8 overflow-hidden">
         <div className="tc-search !rounded-none !border-0 border-b border-white/8 px-4 py-3.5">
           <Search className="w-4 h-4 text-white/40" strokeWidth={2} />
           <input autoFocus placeholder="Search symbol…" value={q} onChange={(e) => setQ(e.target.value)} />
@@ -504,7 +504,7 @@ function Dropdown({ label, icon: Icon, badge, testid, children }) {
         <ChevronDown className="w-3 h-3 opacity-60" />
       </button>
       {open && (
-        <div className="absolute left-0 mt-1.5 w-56 p-1.5 rounded-xl bg-[#070d12] border border-white/10 shadow-xl z-50 max-h-[320px] overflow-y-auto">
+        <div className="absolute left-0 mt-1.5 w-56 p-1.5 rounded-xl bg-surface border border-white/8 shadow-xl z-50 max-h-[320px] overflow-y-auto">
           {children}
         </div>
       )}
@@ -518,7 +518,7 @@ function MenuItem({ checked, onClick, children }) {
   return (
     <button onMouseDown={(e) => { e.preventDefault(); onClick(); }}
       className="w-full flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-left hover:bg-white/[0.04] transition-colors">
-      <span className={`w-4 h-4 rounded flex items-center justify-center shrink-0 ${checked ? "bg-tradeTeal text-[#042024]" : "border border-white/20"}`}>
+      <span className={`w-4 h-4 rounded flex items-center justify-center shrink-0 ${checked ? "bg-tradeTeal text-[#042024]" : "border border-white/15"}`}>
         {checked && <Check className="w-3 h-3" strokeWidth={3} />}
       </span>
       <span className="flex-1 text-[12.5px] text-white/80">{children}</span>
