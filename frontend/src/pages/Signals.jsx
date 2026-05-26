@@ -17,6 +17,7 @@ import {
   CheckCircle2,
 } from "lucide-react";
 import Nav from "../components/Nav";
+import LiveTerminalPreview from "../components/LiveTerminalPreview";
 import { EXTERNAL } from "../lib/brand";
 
 const PIPELINE = [
@@ -137,6 +138,19 @@ export default function Signals() {
             </p>
           </div>
         </header>
+
+        {/* ===== Live signal, charted (real component) ===== */}
+        <div className="relative z-20 px-4 sm:px-6 md:px-10 lg:px-14 max-w-[1280px] mx-auto mb-16 sm:mb-20">
+          <div className="flex items-center gap-2 mb-3">
+            <span className="trade-pulse-dot inline-block w-1.5 h-1.5 rounded-full bg-tradeTeal" />
+            <span className="font-mono text-[10px] tracking-[0.18em] uppercase text-white/50">AI-charted signal · interactive</span>
+          </div>
+          <LiveTerminalPreview
+            symbol="ETHUSDT"
+            label="ETHUSDT · LONG signal · Entry / TP / SL"
+            signal={{ entry: 3512.18, target: 3640, stop: 3440, dir: "LONG" }}
+          />
+        </div>
 
         {/* ===== Signal Pipeline ===== */}
         <div id="pipeline" className="relative z-20 px-4 sm:px-6 md:px-10 lg:px-14 max-w-[1280px] mx-auto">

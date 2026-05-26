@@ -19,6 +19,7 @@ import {
   Clock,
 } from "lucide-react";
 import Nav from "../components/Nav";
+import LiveTerminalPreview from "../components/LiveTerminalPreview";
 import { EXTERNAL } from "../lib/brand";
 
 const SIGNAL_FEED = [
@@ -123,6 +124,15 @@ export default function Terminal() {
             </Link>
           </div>
         </header>
+
+        {/* ===== LIVE CHART (real platform component) ===== */}
+        <div data-t="module" className="relative z-20 px-4 sm:px-6 md:px-10 lg:px-14 max-w-[1280px] mx-auto mb-6 sm:mb-8">
+          <div className="flex items-center gap-2 mb-3">
+            <span className="trade-pulse-dot inline-block w-1.5 h-1.5 rounded-full bg-tradeTeal" />
+            <span className="font-mono text-[10px] tracking-[0.18em] uppercase text-white/50">Live component · interactive</span>
+          </div>
+          <LiveTerminalPreview />
+        </div>
 
         {/* ===== DASHBOARD PREVIEW ===== */}
         <div className="relative z-20 px-4 sm:px-6 md:px-10 lg:px-14 max-w-[1280px] mx-auto">
