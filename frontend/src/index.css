@@ -2345,6 +2345,12 @@ code {
     margin: 0 auto;
 }
 @media (min-width: 768px) { .tc-content { padding: 28px; } }
+@media (max-width: 640px) {
+    .tc-content { padding: 14px; }
+    .tc-topbar { padding: 10px 14px; gap: 10px; }
+    .tc-topbar-title { font-size: 15px; }
+    .tc-topbar-sub { font-size: 9.5px; }
+}
 
 .tc-page-head { margin-bottom: 22px; }
 .tc-page-eyebrow {

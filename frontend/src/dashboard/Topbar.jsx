@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
-import { Menu, Bell, Eye, ArrowUpRight, Sun, Moon, Radio, Bot, Layers, ShieldCheck, Users } from "lucide-react";
+import { Menu, Bell, ArrowUpRight, Sun, Moon, Radio, Bot, Layers, ShieldCheck, Users } from "lucide-react";
 import { ACCOUNT, NOTIFICATIONS } from "./data";
 import { useTheme } from "./ThemeContext";
 
@@ -20,44 +20,47 @@ export default function Topbar({ title, sub, onOpenMobile }) {
 
   return (
     <header className="tc-topbar" data-testid="app-topbar">
-      <button
-        className="tc-iconbtn lg:hidden"
-        onClick={onOpenMobile}
-        aria-label="Open menu"
-        data-testid="topbar-menu"
-      >
-        <Menu className="w-4 h-4" strokeWidth={2} />
-      </button>
+      <span className="inline-flex lg:hidden shrink-0">
+        <button
+          className="tc-iconbtn"
+          onClick={onOpenMobile}
+          aria-label="Open menu"
+          data-testid="topbar-menu"
+        >
+          <Menu className="w-4 h-4" strokeWidth={2} />
+        </button>
+      </span>
 
-      <div className="min-w-0">
+      <div className="min-w-0 flex-1">
         <div className="tc-topbar-title truncate">{title}</div>
         {sub && <div className="tc-topbar-sub truncate">{sub}</div>}
       </div>
 
-      <div className="ml-auto flex items-center gap-3">
-        <span className="tc-clock hidden sm:inline">{time}</span>
+      <div className="flex items-center gap-2 sm:gap-3 shrink-0">
+        <span className="tc-clock hidden xl:inline">{time}</span>
 
-        <div className="tc-balance-pill hidden md:inline-flex" data-testid="topbar-balance">
-          <span className="lbl">Balance</span>
-          <span className="val">${ACCOUNT.balance.toFixed(2)}</span>
-          <span className="text-[10px] font-mono text-tradeTeal">{ACCOUNT.currency}</span>
-        </div>
+        <span className="hidden md:inline-flex">
+          <span className="tc-balance-pill" data-testid="topbar-balance">
+            <span className="lbl">Balance</span>
+            <span className="val">${ACCOUNT.balance.toFixed(2)}</span>
+            <span className="text-[10px] font-mono text-tradeTeal">{ACCOUNT.currency}</span>
+          </span>
+        </span>
 
         <ModeToggle />
         <NotificationsMenu />
-        <button className="tc-iconbtn hidden sm:inline-flex" aria-label="Watchlist">
-          <Eye className="w-4 h-4" strokeWidth={2} />
-        </button>
 
-        <Link
-          to="/app/terminal"
-          className="tc-btn tc-btn-primary hidden sm:inline-flex"
-          style={{ padding: "9px 16px", fontSize: 12.5 }}
-          data-testid="topbar-launch"
-        >
-          Launch Terminal
-          <ArrowUpRight className="w-3.5 h-3.5" strokeWidth={2.4} />
-        </Link>
+        <span className="hidden lg:inline-flex">
+          <Link
+            to="/app/terminal"
+            className="tc-btn tc-btn-primary"
+            style={{ padding: "9px 16px", fontSize: 12.5 }}
+            data-testid="topbar-launch"
+          >
+            Launch Terminal
+            <ArrowUpRight className="w-3.5 h-3.5" strokeWidth={2.4} />
+          </Link>
+        </span>
       </div>
     </header>
   );
