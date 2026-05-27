@@ -1,7 +1,7 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import gsap from "gsap";
-import { ArrowUpRight, ArrowRight } from "lucide-react";
+import { ArrowUpRight, ArrowRight, ChevronDown } from "lucide-react";
 import Nav from "../../components/Nav";
 
 /* Shared scaffold for the marketing Solutions pages — atmospheric
@@ -194,6 +194,25 @@ export function RiskNote({ children, testid }) {
         <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-white/55">Risk acknowledgement</span>
       </div>
       <p className="text-[12.5px] leading-[1.6] text-white/55">{children}</p>
+    </div>
+  );
+}
+
+export function Accordion({ items, testid }) {
+  const [open, setOpen] = useState(0);
+  return (
+    <div className="flex flex-col gap-2.5" data-testid={testid}>
+      {items.map((it, i) => (
+        <div key={it.q} data-s="reveal" className="rounded-xl bg-white/[0.02] border border-white/[0.06] overflow-hidden">
+          <button onClick={() => setOpen(open === i ? -1 : i)}
+            className="w-full flex items-center justify-between gap-4 px-4 sm:px-5 py-4 text-left"
+            data-testid={`faq-${slug(it.q)}`}>
+            <span className="text-[14px] sm:text-[15px] font-medium text-white/90">{it.q}</span>
+            <ChevronDown className={`w-4 h-4 text-white/45 shrink-0 transition-transform ${open === i ? "rotate-180" : ""}`} strokeWidth={2} />
+          </button>
+          {open === i && <div className="px-4 sm:px-5 pb-4 text-[13px] leading-[1.6] text-white/60 max-w-[760px]">{it.a}</div>}
+        </div>
+      ))}
     </div>
   );
 }
