@@ -265,9 +265,9 @@ export default function Terminal() {
         </div>
 
         {/* Chart + toolbar + drawing rail */}
-        <div className="tc-panel !p-0 overflow-hidden order-1 xl:order-2 flex flex-col">
+        <div className="tc-panel !p-0 overflow-hidden order-1 xl:order-2 flex flex-col h-[calc(100dvh-322px)] min-h-[320px] xl:h-auto xl:min-h-0">
           {/* Toolbar */}
-          <div className="flex items-center gap-2 px-3 py-2 border-b border-white/[0.04] flex-wrap">
+          <div className="flex items-center gap-2 px-3 py-2 border-b border-white/[0.04] flex-wrap shrink-0">
             <div className="flex items-center gap-0.5 p-0.5 rounded-lg bg-white/[0.025]">
               {CHART_TYPES.map((c) => {
                 const Ic = c.icon;
@@ -314,21 +314,23 @@ export default function Terminal() {
               <MenuItem checked={ai.breaks} onClick={() => setAi((a) => ({ ...a, breaks: !a.breaks }))}>Breaks &amp; Retests</MenuItem>
               <MenuItem checked={ai.insideBB} onClick={() => setAi((a) => ({ ...a, insideBB: !a.insideBB }))}>Inside-Bar BB</MenuItem>
             </Dropdown>
-            <span className="w-px h-5 bg-white/[0.06]" />
-            <div className="flex items-center gap-1">
-              {[["Pivot P.", "pivots"], ["TSR", "tsr"], ["B&R", "breaks"], ["Trend F.", "trendFinder"]].map(([lbl, key]) => (
-                <button key={key} onClick={() => setAi((a) => ({ ...a, [key]: !a[key] }))}
-                  className={`px-2 py-1.5 rounded-md font-mono text-[10px] tracking-[0.04em] transition-colors ${ai[key] ? "bg-tradeTeal/15 text-tradeTeal" : "text-white/45 hover:text-white/80"}`}
-                  data-testid={`ai-quick-${key}`}>{lbl}</button>
-              ))}
+            <div className="hidden md:flex items-center gap-2">
+              <span className="w-px h-5 bg-white/[0.06]" />
+              <div className="flex items-center gap-1">
+                {[["Pivot P.", "pivots"], ["TSR", "tsr"], ["B&R", "breaks"], ["Trend F.", "trendFinder"]].map(([lbl, key]) => (
+                  <button key={key} onClick={() => setAi((a) => ({ ...a, [key]: !a[key] }))}
+                    className={`px-2 py-1.5 rounded-md font-mono text-[10px] tracking-[0.04em] transition-colors ${ai[key] ? "bg-tradeTeal/15 text-tradeTeal" : "text-white/45 hover:text-white/80"}`}
+                    data-testid={`ai-quick-${key}`}>{lbl}</button>
+                ))}
+              </div>
             </div>
-            <button className="tc-iconbtn ml-auto" style={{ width: 32, height: 32 }} onClick={() => setSettingsOpen(true)} title="Chart settings" data-testid="chart-settings">
+            <button className="tc-iconbtn ml-auto shrink-0" style={{ width: 32, height: 32 }} onClick={() => setSettingsOpen(true)} title="Chart settings" data-testid="chart-settings">
               <Settings2 className="w-3.5 h-3.5" strokeWidth={2} />
             </button>
           </div>
 
           {/* Chart area with drawing rail */}
-          <div className="flex flex-1">
+          <div className="flex flex-1 min-h-0">
             <div className="hidden sm:flex flex-col items-center gap-0.5 py-2 px-1.5 border-r border-white/[0.04]">
               {DRAW_TOOLS.map((d) => {
                 const Ic = d.icon;
@@ -355,7 +357,7 @@ export default function Terminal() {
                 <Eraser className="w-3.5 h-3.5" strokeWidth={2} />
               </button>
             </div>
-            <div className="flex-1 h-[540px] sm:h-[620px] xl:h-[720px]">
+            <div className="flex-1 min-h-0 xl:flex-none xl:h-[720px]">
               <TradingChart symbol={symbol} timeframe={tf} chartType={chartType} overlays={overlays} oscillator={oscillator} ai={ai} drawTool={locked ? null : drawTool} logScale={logScale} signal={activeSignal && activeSignal.sym === symbol ? activeSignal : null} />
             </div>
           </div>
@@ -801,48 +803,89 @@ function AIRail({ ai, setAi }) {
 }
 
 /* ===== Symbol search modal ===== */
+const TYPE_TONE = {
+  Spot: "text-tradeTeal bg-tradeTeal/12 border-tradeTeal/25",
+  Futures: "text-[#9B8AFB] bg-[#9B8AFB]/12 border-[#9B8AFB]/25",
+  Stocks: "text-[#E8782A] bg-[#E8782A]/12 border-[#E8782A]/25",
+};
+
 function SymbolSearch({ onClose, onPick, exchange }) {
   const [q, setQ] = useState("");
   const [cat, setCat] = useState("All");
   const cats = ["All", ...CATEGORIES.filter((c) => c !== "Favorites")];
+  const term = q.trim().toUpperCase();
   const results = WATCHLIST.filter((w) => {
-    const term = q.trim().toUpperCase();
     const inCat = cat === "All" || w.cat === cat;
     const match = !term || w.sym.includes(term) || w.name.toUpperCase().includes(term);
     return inCat && match;
   });
+
   return createPortal(
-    <div className="fixed inset-0 z-[80] flex items-start justify-center pt-[12vh] px-4" data-testid="symbol-search-modal">
+    <div className="fixed inset-0 z-[80] flex items-start justify-center pt-[8vh] sm:pt-[11vh] px-3 sm:px-4" data-testid="symbol-search-modal">
       <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={onClose} />
-      <div className="relative w-full max-w-[480px] rounded-2xl bg-surface border border-white/[0.05] overflow-hidden">
-        <div className="tc-search !rounded-none !border-0 border-b border-white/[0.05] px-4 py-3.5">
-          <Search className="w-4 h-4 text-white/40" strokeWidth={2} />
-          <input autoFocus placeholder="Search symbol or name…" value={q} onChange={(e) => setQ(e.target.value)} />
-          <button onClick={onClose} className="tc-iconbtn" style={{ width: 28, height: 28 }}><X className="w-3.5 h-3.5" /></button>
+      <div className="relative w-full max-w-[520px] rounded-2xl bg-surface border border-white/[0.06] overflow-hidden shadow-2xl flex flex-col max-h-[82vh]">
+        {/* Search field */}
+        <div className="flex items-center gap-2.5 px-4 py-3.5 border-b border-white/[0.05]">
+          <Search className="w-4 h-4 text-tradeTeal shrink-0" strokeWidth={2} />
+          <input autoFocus placeholder="Search markets — symbol or name…" value={q}
+            onChange={(e) => setQ(e.target.value)}
+            onKeyDown={(e) => { if (e.key === "Enter" && results[0]) onPick(results[0].sym); if (e.key === "Escape") onClose(); }}
+            className="flex-1 min-w-0 bg-transparent text-[15px] text-white placeholder-white/35 outline-none" />
+          <kbd className="hidden sm:inline font-mono text-[9px] tracking-[0.08em] text-white/40 px-1.5 py-0.5 rounded border border-white/[0.08]">ESC</kbd>
+          <button onClick={onClose} className="tc-iconbtn shrink-0" style={{ width: 30, height: 30 }}><X className="w-3.5 h-3.5" /></button>
         </div>
-        <div className="flex items-center gap-1.5 px-4 py-2.5 border-b border-white/[0.045]">
-          {exchange && <span className="font-mono text-[9.5px] tracking-[0.1em] uppercase text-white/40 mr-1">{exchange.name}</span>}
+
+        {/* Filters */}
+        <div className="flex items-center gap-1.5 px-3 py-2.5 border-b border-white/[0.045] overflow-x-auto">
+          {exchange && <span className="flex items-center gap-1.5 font-mono text-[9.5px] tracking-[0.1em] uppercase text-white/40 mr-1 shrink-0"><span className="tc-chip-dot" />{exchange.name}</span>}
           {cats.map((c) => (
             <button key={c} onClick={() => setCat(c)}
-              className={`px-2.5 py-1 rounded-full font-mono text-[9.5px] tracking-[0.08em] uppercase border transition-colors ${cat === c ? "bg-tradeTeal/15 text-tradeTeal border-tradeTeal/30" : "text-white/45 border-white/[0.05]"}`}>
+              className={`px-3 py-1 rounded-full font-mono text-[9.5px] tracking-[0.08em] uppercase border transition-colors shrink-0 ${cat === c ? "bg-tradeTeal/15 text-tradeTeal border-tradeTeal/30" : "text-white/45 border-white/[0.06] hover:text-white/70"}`}>
               {c}
             </button>
           ))}
         </div>
-        <div className="max-h-[340px] overflow-y-auto p-1.5">
-          {results.map((w) => (
-            <button key={w.sym} onClick={() => onPick(w.sym)} className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-white/[0.04] transition-colors text-left">
+
+        {/* Results header */}
+        <div className="flex items-center justify-between px-4 pt-3 pb-1">
+          <span className="font-mono text-[9px] tracking-[0.14em] uppercase text-white/35">{term ? "Results" : "Popular markets"}</span>
+          <span className="font-mono text-[9px] text-white/30">{results.length}</span>
+        </div>
+
+        {/* Results */}
+        <div className="flex-1 min-h-0 overflow-y-auto px-1.5 pb-2">
+          {results.map((w, i) => (
+            <button key={w.sym} onClick={() => onPick(w.sym)}
+              className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-colors text-left ${i === 0 && term ? "bg-white/[0.04]" : "hover:bg-white/[0.04]"}`}
+              data-testid={`search-result-${w.sym}`}>
+              <span className="w-8 h-8 rounded-lg bg-white/[0.04] border border-white/[0.06] flex items-center justify-center shrink-0 font-heading font-bold text-[12px] text-white/80">{w.sym[0]}</span>
               <span className="min-w-0 flex-1">
-                <span className="block text-[13px] font-medium text-white/85 truncate">{w.sym}</span>
-                <span className="block text-[10.5px] text-white/40 truncate">{w.name} · {w.cat}</span>
+                <span className="flex items-center gap-2">
+                  <span className="text-[13.5px] font-semibold text-tradeWhite truncate">{w.sym}</span>
+                  <span className={`font-mono text-[8px] tracking-[0.06em] uppercase px-1.5 py-0.5 rounded border ${TYPE_TONE[w.cat] || "text-white/50 border-white/10"}`}>{w.cat}</span>
+                </span>
+                <span className="block text-[10.5px] text-white/40 truncate mt-0.5">{w.name}</span>
               </span>
               <span className="text-right shrink-0">
-                <span className="block font-mono text-[11.5px] text-white/75">{w.last}</span>
+                <span className="block font-mono text-[12px] text-white/80">{w.last}</span>
                 <span className={`block font-mono text-[10px] ${w.up ? "text-tradeTeal" : "text-[#FF8A82]"}`}>{w.chg}</span>
               </span>
             </button>
           ))}
-          {results.length === 0 && <div className="text-center text-white/40 py-8 text-[13px]">No markets found.</div>}
+          {results.length === 0 && (
+            <div className="flex flex-col items-center text-center py-10">
+              <Search className="w-7 h-7 text-white/20 mb-3" strokeWidth={1.6} />
+              <div className="text-[13px] text-white/55">No markets found for “{q}”.</div>
+              <div className="text-[11.5px] text-white/35 mt-1">Try a different symbol or category.</div>
+            </div>
+          )}
+        </div>
+
+        {/* Footer hints */}
+        <div className="hidden sm:flex items-center gap-4 px-4 py-2.5 border-t border-white/[0.045] font-mono text-[9.5px] text-white/35">
+          <span><span className="text-white/55">↵</span> select</span>
+          <span><span className="text-white/55">esc</span> close</span>
+          <span className="ml-auto">{WATCHLIST.length} instruments</span>
         </div>
       </div>
     </div>,
