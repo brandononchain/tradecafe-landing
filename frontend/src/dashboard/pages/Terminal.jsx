@@ -67,6 +67,8 @@ export default function Terminal() {
   const [accountOpen, setAccountOpen] = useState(false);
   const [accountMode, setAccountMode] = useState("api");
   const [sharePnl, setSharePnl] = useState(null);
+  const [orderSheet, setOrderSheet] = useState(false); // mobile/tablet order ticket
+  const openSheet = (s) => { setSide(s); setOrderSheet(true); };
 
   const toggleFav = (sym) =>
     setFavorites((prev) => (prev.includes(sym) ? prev.filter((s) => s !== sym) : [...prev, sym]));
@@ -128,7 +130,7 @@ export default function Terminal() {
   const activeIndicatorCount = Object.keys(overlays).length + (oscillator ? 1 : 0);
 
   return (
-    <div className="tc-fade flex flex-col gap-3">
+    <div className="tc-fade flex flex-col gap-3 pb-20 xl:pb-0">
       {/* Multi-symbol tabs */}
       <div className="flex items-center gap-1 overflow-x-auto pb-0.5" data-testid="symbol-tabs">
         {openTabs.map((s) => (
@@ -459,6 +461,43 @@ export default function Terminal() {
           </div>
         </Modal>
       )}
+
+      {/* Fixed Long/Short bar — mobile & tablet (portaled so it pins to the viewport) */}
+      {createPortal(
+        <div className="xl:hidden fixed bottom-0 left-0 right-0 z-40 flex items-center gap-2 px-3 py-2.5 border-t border-white/[0.06]"
+          style={{ background: "rgb(var(--tc-surface-rgb) / 0.96)", backdropFilter: "blur(10px)", paddingBottom: "max(10px, env(safe-area-inset-bottom))" }}>
+          <div className="shrink-0 pr-1">
+            <div className="font-mono text-[10px] text-white/45 leading-none">{active.sym}</div>
+            <div className={`font-mono text-[13px] font-semibold ${active.up ? "text-tradeTeal" : "text-[#FF8A82]"}`}>{active.last}</div>
+          </div>
+          <button onClick={() => openSheet("buy")} className="tc-btn tc-btn-primary flex-1" data-testid="bar-long">Long</button>
+          <button onClick={() => openSheet("sell")} className="tc-btn flex-1" style={{ color: "#042024", background: "linear-gradient(135deg,#FF9B91,#F23645)" }} data-testid="bar-short">Short</button>
+        </div>,
+        document.body
+      )}
+
+      {/* Order ticket bottom sheet */}
+      {orderSheet && createPortal(
+        <div className="fixed inset-0 z-[85] flex items-end justify-center" data-testid="order-sheet">
+          <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={() => setOrderSheet(false)} />
+          <div className="relative w-full max-w-[440px] max-h-[88vh] overflow-y-auto rounded-t-2xl bg-surface border-t border-x border-white/[0.06] p-4" style={{ paddingBottom: "max(16px, env(safe-area-inset-bottom))" }}>
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center gap-2">
+                <span className="font-heading text-[15px] font-semibold text-tradeWhite">{active.sym}</span>
+                <span className={`font-mono text-[11px] ${active.up ? "text-tradeTeal" : "text-[#FF8A82]"}`}>{active.last}</span>
+              </div>
+              <button className="tc-iconbtn" style={{ width: 30, height: 30 }} onClick={() => setOrderSheet(false)}><X className="w-3.5 h-3.5" /></button>
+            </div>
+            <OrderPanel
+              active={active} side={side} setSide={setSide}
+              marginMode={marginMode} setMarginMode={setMarginMode}
+              leverage={leverage} setLeverage={setLeverage} bare
+              onConnectWallet={() => { setOrderSheet(false); setAccountMode("web3"); setAccountOpen(true); }}
+            />
+          </div>
+        </div>,
+        document.body
+      )}
     </div>
   );
 }
@@ -475,7 +514,7 @@ function ToggleRow({ label, on, onClick }) {
 }
 
 /* ===== Order panel ===== */
-function OrderPanel({ active, side, setSide, marginMode, setMarginMode, leverage, setLeverage, onConnectWallet }) {
+function OrderPanel({ active, side, setSide, marginMode, setMarginMode, leverage, setLeverage, onConnectWallet, bare }) {
   const wallet = useWallet() || {};
   const { address, balance, network, nativeSymbol } = wallet;
   const venueObj = venueFor(network);
@@ -513,7 +552,7 @@ function OrderPanel({ active, side, setSide, marginMode, setMarginMode, leverage
   const onchain = venue === "onchain";
 
   return (
-    <div className="tc-panel flex flex-col gap-4">
+    <div className={`flex flex-col gap-4 ${bare ? "" : "tc-panel"}`}>
       {/* Venue */}
       <div className="flex items-center gap-1 p-1 rounded-lg bg-white/[0.025] border border-white/[0.05]">
         {[["cex", "CEX"], ["onchain", "On-chain"]].map(([v, lbl]) => (
