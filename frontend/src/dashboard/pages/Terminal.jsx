@@ -358,7 +358,7 @@ export default function Terminal() {
                 <Eraser className="w-3.5 h-3.5" strokeWidth={2} />
               </button>
             </div>
-            <div className="flex-1 min-h-0 xl:flex-none xl:h-[720px]">
+            <div className="flex-1 min-w-0 min-h-0 xl:h-[720px]">
               <TradingChart symbol={symbol} timeframe={tf} chartType={chartType} overlays={overlays} oscillator={oscillator} ai={ai} drawTool={locked ? null : drawTool} logScale={logScale} signal={activeSignal && activeSignal.sym === symbol ? activeSignal : null} />
             </div>
           </div>
