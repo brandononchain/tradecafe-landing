@@ -17,6 +17,11 @@ import Signals from "./pages/Signals";
 import Automation from "./pages/Automation";
 import Pool from "./pages/Pool";
 import Partners from "./pages/Partners";
+import ActiveTraders from "./pages/solutions/ActiveTraders";
+import PassiveParticipants from "./pages/solutions/PassiveParticipants";
+import PartnersAffiliates from "./pages/solutions/PartnersAffiliates";
+import BrokersExchanges from "./pages/solutions/BrokersExchanges";
+import FundsManagers from "./pages/solutions/FundsManagers";
 // Dashboard app — code-split so the marketing landing stays lean.
 const DashboardLayout = lazy(() => import("./dashboard/DashboardLayout"));
 const Overview = lazy(() => import("./dashboard/pages/Overview"));
@@ -454,6 +459,13 @@ function App() {
         <Route path="/automation" element={<Automation />} />
         <Route path="/pool" element={<Pool />} />
         <Route path="/partners" element={<Partners />} />
+
+        {/* ===== Solutions ===== */}
+        <Route path="/solutions/active-traders" element={<ActiveTraders />} />
+        <Route path="/solutions/passive-participants" element={<PassiveParticipants />} />
+        <Route path="/solutions/partners-affiliates" element={<PartnersAffiliates />} />
+        <Route path="/solutions/brokers-exchanges" element={<BrokersExchanges />} />
+        <Route path="/solutions/funds-managers" element={<FundsManagers />} />
 
         {/* ===== Dashboard app ===== */}
         <Route

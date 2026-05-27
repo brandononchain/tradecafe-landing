@@ -37,11 +37,11 @@ export const NAV_MENUS = [
       cta: { label: "Talk to our team", to: EXTERNAL.contactSales, external: true },
     },
     items: [
-      { label: "Active Traders", desc: "Use signals and automation while staying in control.", to: "/terminal" },
-      { label: "Passive Participants", desc: "Access managed strategy exposure through the Trading Pool.", to: "/pool" },
-      { label: "Partners & Affiliates", desc: "Build recurring income through the TradeCafe Partner Network.", to: "/partners" },
-      { label: "Brokers & Exchanges", desc: "Drive volume, leads, competitions, and co-branded growth.", to: "/partners" },
-      { label: "Funds & Managers", desc: "Infrastructure for managed strategies, reporting, and execution workflows.", to: "/pool" },
+      { label: "Active Traders", desc: "Use signals and automation while staying in control.", to: "/solutions/active-traders" },
+      { label: "Passive Participants", desc: "Access managed strategy exposure through the Trading Pool.", to: "/solutions/passive-participants" },
+      { label: "Partners & Affiliates", desc: "Build recurring income through the TradeCafe Partner Network.", to: "/solutions/partners-affiliates" },
+      { label: "Brokers & Exchanges", desc: "Drive volume, leads, competitions, and co-branded growth.", to: "/solutions/brokers-exchanges" },
+      { label: "Funds & Managers", desc: "Infrastructure for managed strategies, reporting, and execution workflows.", to: "/solutions/funds-managers" },
     ],
   },
   {
