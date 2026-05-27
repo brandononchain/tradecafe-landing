@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Wallet, Copy, Check, LogOut, Loader2, ShieldCheck, ExternalLink } from "lucide-react";
 import { useWallet } from "../WalletContext";
 import { EVM_CHAINS, EVM_WALLETS, SOLANA_WALLETS, shortAddr, detectWallet } from "../lib/web3";
+import { BrandLogo } from "../lib/brandLogos";
 
 export default function WalletPanel() {
   const { ecosystem, address, chainId, balance, network, nativeSymbol, connecting, error, hasEvm, hasSolana, hasProvider, connect, disconnect, changeChain } = useWallet();
@@ -101,10 +102,7 @@ export default function WalletPanel() {
             <button key={w.id} onClick={() => connect(eco)} disabled={connecting || !enabled}
               className="relative flex items-center gap-2.5 px-3 py-3 rounded-xl bg-white/[0.025] border border-white/[0.06] hover:border-tradeTeal/35 hover:bg-white/[0.04] transition-colors text-left disabled:opacity-40 disabled:hover:border-white/[0.06]"
               data-testid={`wallet-${w.id}`}>
-              <span className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0 font-heading font-bold text-[14px]"
-                style={{ background: `${w.brand}26`, border: `1px solid ${w.brand}59`, color: w.brand }}>
-                {w.label[0]}
-              </span>
+              <BrandLogo id={w.id} size={34} />
               <span className="min-w-0">
                 <span className="block text-[12.5px] font-medium text-white/85 truncate">{w.label}</span>
                 {detected && <span className="flex items-center gap-1 text-[9px] font-mono uppercase tracking-[0.08em] text-tradeTeal"><Check className="w-2.5 h-2.5" strokeWidth={3} /> Detected</span>}

@@ -17,6 +17,24 @@ import Signals from "./pages/Signals";
 import Automation from "./pages/Automation";
 import Pool from "./pages/Pool";
 import Partners from "./pages/Partners";
+import ActiveTraders from "./pages/solutions/ActiveTraders";
+import PassiveParticipants from "./pages/solutions/PassiveParticipants";
+import PartnersAffiliates from "./pages/solutions/PartnersAffiliates";
+import BrokersExchanges from "./pages/solutions/BrokersExchanges";
+import FundsManagers from "./pages/solutions/FundsManagers";
+import PartnerProgram from "./pages/network/PartnerProgram";
+import BrokerCampaigns from "./pages/network/BrokerCampaigns";
+import AmbassadorProgram from "./pages/network/AmbassadorProgram";
+import ProofCards from "./pages/network/ProofCards";
+import Leaderboards from "./pages/network/Leaderboards";
+import Performance from "./pages/insights/Performance";
+import AiMethodology from "./pages/insights/AiMethodology";
+import RiskFramework from "./pages/insights/RiskFramework";
+import MarketNotes from "./pages/insights/MarketNotes";
+import Docs from "./pages/insights/Docs";
+import About from "./pages/company/About";
+import Roadmap from "./pages/company/Roadmap";
+import Support from "./pages/company/Support";
 // Dashboard app — code-split so the marketing landing stays lean.
 const DashboardLayout = lazy(() => import("./dashboard/DashboardLayout"));
 const Overview = lazy(() => import("./dashboard/pages/Overview"));
@@ -454,6 +472,32 @@ function App() {
         <Route path="/automation" element={<Automation />} />
         <Route path="/pool" element={<Pool />} />
         <Route path="/partners" element={<Partners />} />
+
+        {/* ===== Solutions ===== */}
+        <Route path="/solutions/active-traders" element={<ActiveTraders />} />
+        <Route path="/solutions/passive-participants" element={<PassiveParticipants />} />
+        <Route path="/solutions/partners-affiliates" element={<PartnersAffiliates />} />
+        <Route path="/solutions/brokers-exchanges" element={<BrokersExchanges />} />
+        <Route path="/solutions/funds-managers" element={<FundsManagers />} />
+
+        {/* ===== Network ===== */}
+        <Route path="/network/partner-program" element={<PartnerProgram />} />
+        <Route path="/network/broker-campaigns" element={<BrokerCampaigns />} />
+        <Route path="/network/ambassador-program" element={<AmbassadorProgram />} />
+        <Route path="/network/proof-cards" element={<ProofCards />} />
+        <Route path="/network/leaderboards" element={<Leaderboards />} />
+
+        {/* ===== Insights ===== */}
+        <Route path="/insights/performance" element={<Performance />} />
+        <Route path="/insights/ai-methodology" element={<AiMethodology />} />
+        <Route path="/insights/risk-framework" element={<RiskFramework />} />
+        <Route path="/insights/market-notes" element={<MarketNotes />} />
+        <Route path="/insights/docs" element={<Docs />} />
+
+        {/* ===== Company ===== */}
+        <Route path="/company/about" element={<About />} />
+        <Route path="/company/roadmap" element={<Roadmap />} />
+        <Route path="/company/support" element={<Support />} />
 
         {/* ===== Dashboard app ===== */}
         <Route

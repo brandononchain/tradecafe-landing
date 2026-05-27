@@ -2352,6 +2352,18 @@ code {
     .tc-topbar-sub { font-size: 9.5px; }
 }
 
+/* iOS Safari auto-zooms when a focused control's font-size is < 16px.
+   Pin form controls to 16px on touch viewports so tapping any input —
+   chat box, search, order fields — never triggers a zoom. !important is
+   needed to override Tailwind text-size utilities on these inputs. */
+@media (max-width: 768px) {
+    input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
+    textarea,
+    select {
+        font-size: 16px !important;
+    }
+}
+
 .tc-page-head { margin-bottom: 22px; }
 .tc-page-eyebrow {
     font-family: 'JetBrains Mono', monospace;
