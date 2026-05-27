@@ -13,6 +13,7 @@ import SharePnlModal from "../components/SharePnlModal";
 import { useWallet } from "../WalletContext";
 import { shortAddr } from "../lib/web3";
 import { placeOrder, venueFor } from "../lib/orders";
+import { BrandLogo } from "../lib/brandLogos";
 import { WATCHLIST, OPEN_POSITIONS, TIMEFRAMES, SIGNALS, EXCHANGES, TRADE_ACCOUNT } from "../data";
 import { OVERLAYS, OSCILLATORS } from "../lib/indicators";
 
@@ -48,7 +49,7 @@ export default function Terminal() {
   const [drawTool, setDrawTool] = useState(null);
   const [magnet, setMagnet] = useState(false);
   const [locked, setLocked] = useState(false);
-  const [rightTab, setRightTab] = useState("order");
+  const [rightTab, setRightTab] = useState("signals");
   const [side, setSide] = useState("buy");
   const [marginMode, setMarginMode] = useState("percent");
   const [leverage, setLeverage] = useState(10);
@@ -93,6 +94,7 @@ export default function Terminal() {
     addTab(s.sym);
     setTf(mapTf(s.tf));
     setRightTab("signals");
+    setSide(s.dir === "LONG" ? "buy" : "sell");
     setAi((a) => ({ ...a, sr: true, pivots: true }));
     setActiveSignal({ sym: s.sym, dir: s.dir, entry: num(s.price), target: num(s.target), stop: num(s.stop) });
   };
@@ -183,11 +185,14 @@ export default function Terminal() {
               className="w-full flex items-center justify-between px-3 py-2 rounded-lg bg-white/[0.03] border border-white/[0.05] hover:border-tradeTeal/30 transition-colors"
               data-testid="exchange-selector"
             >
-              <span className="flex items-center gap-2">
-                <span className="font-mono text-[9px] tracking-[0.12em] uppercase text-white/40">Exchange</span>
-                <span className="text-[12.5px] font-semibold text-tradeWhite">{exchange.name}</span>
+              <span className="flex items-center gap-2 min-w-0">
+                <BrandLogo id={exchange.key} size={24} />
+                <span className="flex flex-col items-start min-w-0">
+                  <span className="font-mono text-[8px] tracking-[0.12em] uppercase text-white/40 leading-none">Exchange</span>
+                  <span className="text-[12.5px] font-semibold text-tradeWhite truncate">{exchange.name}</span>
+                </span>
               </span>
-              <span className="flex items-center gap-1.5">
+              <span className="flex items-center gap-1.5 shrink-0">
                 <span className="font-mono text-[10px] text-tradeTeal">{exchange.count}</span>
                 <ChevronDown className="w-3.5 h-3.5 text-white/40" strokeWidth={2} />
               </span>
@@ -198,10 +203,11 @@ export default function Terminal() {
                   <button
                     key={ex.key}
                     onMouseDown={(e) => { e.preventDefault(); setExchange(ex); setExchOpen(false); }}
-                    className={`w-full flex items-center justify-between px-2.5 py-2 rounded-lg text-left transition-colors ${ex.key === exchange.key ? "bg-tradeTeal/10" : "hover:bg-white/[0.04]"}`}
+                    className={`w-full flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-left transition-colors ${ex.key === exchange.key ? "bg-tradeTeal/10" : "hover:bg-white/[0.04]"}`}
                     data-testid={`exch-${ex.key}`}
                   >
-                    <span className="text-[12.5px] text-white/85">{ex.name}</span>
+                    <BrandLogo id={ex.key} size={22} />
+                    <span className="flex-1 text-[12.5px] text-white/85">{ex.name}</span>
                     <span className="font-mono text-[10px] text-white/40">{ex.count}</span>
                   </button>
                 ))}
@@ -360,24 +366,28 @@ export default function Terminal() {
 
         {/* Right rail */}
         <div className="order-3 flex flex-col gap-3">
+          {/* Always-on order ticket (desktop) — trade without leaving the signals feed */}
+          <div className="hidden xl:block">
+            <OrderPanel
+              active={active} side={side} setSide={setSide}
+              marginMode={marginMode} setMarginMode={setMarginMode}
+              leverage={leverage} setLeverage={setLeverage} compact
+              signal={activeSignal && activeSignal.sym === symbol ? activeSignal : null}
+              onConnectWallet={() => { setAccountMode("web3"); setAccountOpen(true); }}
+            />
+          </div>
+
+          {/* Context tabs: research while the ticket stays put */}
           <div className="tc-segment">
-            {["order", "signals", "connect", "ai"].map((t) => (
+            {["signals", "ai", "connect"].map((t) => (
               <div key={t} className={`tc-segment-btn ${rightTab === t ? "is-active" : ""}`} style={{ padding: "8px 0", fontSize: 11 }} onClick={() => setRightTab(t)} data-testid={`righttab-${t}`}>
                 {t === "ai" ? "AI" : t.charAt(0).toUpperCase() + t.slice(1)}
               </div>
             ))}
           </div>
 
-          {rightTab === "order" && (
-            <OrderPanel
-              active={active} side={side} setSide={setSide}
-              marginMode={marginMode} setMarginMode={setMarginMode}
-              leverage={leverage} setLeverage={setLeverage}
-              onConnectWallet={() => { setAccountMode("web3"); setAccountOpen(true); }}
-            />
-          )}
           {rightTab === "signals" && <SignalsRail onPick={chartSignal} activeSym={activeSignal?.sym} />}
-          {rightTab === "connect" && <ConnectPanel onManage={() => { setAccountMode("api"); setAccountOpen(true); }} onConnectWallet={() => { setAccountMode("web3"); setAccountOpen(true); }} />}
+          {rightTab === "connect" && <ConnectPanel onManage={() => { setAccountMode("exchange"); setAccountOpen(true); }} onConnectWallet={() => { setAccountMode("web3"); setAccountOpen(true); }} />}
           {rightTab === "ai" && <AIRail ai={ai} setAi={setAi} symbol={symbol} timeframe={tf} />}
         </div>
       </div>
@@ -489,6 +499,7 @@ export default function Terminal() {
               active={active} side={side} setSide={setSide}
               marginMode={marginMode} setMarginMode={setMarginMode}
               leverage={leverage} setLeverage={setLeverage} bare
+              signal={activeSignal && activeSignal.sym === symbol ? activeSignal : null}
               onConnectWallet={() => { setOrderSheet(false); setAccountMode("web3"); setAccountOpen(true); }}
             />
           </div>
@@ -511,7 +522,7 @@ function ToggleRow({ label, on, onClick }) {
 }
 
 /* ===== Order panel ===== */
-function OrderPanel({ active, side, setSide, marginMode, setMarginMode, leverage, setLeverage, onConnectWallet, bare }) {
+function OrderPanel({ active, side, setSide, marginMode, setMarginMode, leverage, setLeverage, onConnectWallet, bare, compact, signal }) {
   const wallet = useWallet() || {};
   const { address, balance, network, nativeSymbol } = wallet;
   const venueObj = venueFor(network);
@@ -574,6 +585,24 @@ function OrderPanel({ active, side, setSide, marginMode, setMarginMode, leverage
         </div>
       )}
 
+      {signal && (
+        <button onClick={() => setSide(signal.dir === "LONG" ? "buy" : "sell")}
+          className="flex flex-col gap-1.5 px-3 py-2.5 rounded-lg bg-tradeTeal/[0.08] border border-tradeTeal/25 text-left transition-colors hover:bg-tradeTeal/[0.12]"
+          data-testid="order-signal-banner">
+          <span className="flex items-center gap-1.5">
+            <Sparkles className="w-3 h-3 text-tradeTeal" strokeWidth={2} />
+            <span className="font-mono text-[9px] tracking-[0.12em] uppercase text-tradeTeal">AI signal</span>
+            <span className={signal.dir === "LONG" ? "tc-tag-long" : "tc-tag-short"} style={{ fontSize: 9, padding: "1px 6px" }}>{signal.dir}</span>
+            <span className="ml-auto font-mono text-[10px] text-white/40">tap to load</span>
+          </span>
+          <span className="grid grid-cols-3 gap-1 font-mono text-[10.5px]">
+            <span className="text-white/60">@ {Number(signal.entry).toLocaleString()}</span>
+            <span className="text-tradeTeal text-center">T {Number(signal.target).toLocaleString()}</span>
+            <span className="text-[#FF8A82] text-right">S {Number(signal.stop).toLocaleString()}</span>
+          </span>
+        </button>
+      )}
+
       <div className="tc-segment">
         <div className={`tc-segment-btn ${side === "buy" ? "is-active" : ""}`} style={{ padding: "9px 0" }} onClick={() => setSide("buy")}>Long</div>
         <div className="tc-segment-btn" style={side === "sell" ? { padding: "9px 0", color: "#042024", background: "linear-gradient(135deg,#FF9B91,#F23645)" } : { padding: "9px 0" }} onClick={() => setSide("sell")}>Short</div>
@@ -588,7 +617,7 @@ function OrderPanel({ active, side, setSide, marginMode, setMarginMode, leverage
         ))}
       </div>
 
-      <Field label="Order Type" value="Market" />
+      {!compact && <Field label="Order Type" value="Market" />}
       <Field label="Price" value={active.last} mono />
       <Field label={marginMode === "percent" ? "Size (% balance)" : "Amount (USDT)"} value={marginMode === "percent" ? "10%" : "0.00"} mono />
 
@@ -604,17 +633,19 @@ function OrderPanel({ active, side, setSide, marginMode, setMarginMode, leverage
         </div>
       </div>
 
-      <div>
-        <div className="font-mono text-[10px] tracking-[0.1em] uppercase text-white/45 mb-2">DCA / Averaging</div>
-        <div className="grid grid-cols-4 gap-1.5">
-          {dca.map((d) => (
-            <div key={d.lvl} className="p-2 rounded-lg bg-white/[0.02] border border-white/[0.04] text-center">
-              <div className="font-mono text-[8.5px] tracking-[0.08em] uppercase text-white/40">{d.lvl}</div>
-              <div className="font-mono text-[12px] text-tradeTeal mt-0.5">{d.mult}</div>
-            </div>
-          ))}
+      {!compact && (
+        <div>
+          <div className="font-mono text-[10px] tracking-[0.1em] uppercase text-white/45 mb-2">DCA / Averaging</div>
+          <div className="grid grid-cols-4 gap-1.5">
+            {dca.map((d) => (
+              <div key={d.lvl} className="p-2 rounded-lg bg-white/[0.02] border border-white/[0.04] text-center">
+                <div className="font-mono text-[8.5px] tracking-[0.08em] uppercase text-white/40">{d.lvl}</div>
+                <div className="font-mono text-[12px] text-tradeTeal mt-0.5">{d.mult}</div>
+              </div>
+            ))}
+          </div>
         </div>
-      </div>
+      )}
 
       {onchain ? (
         <button className={`tc-btn w-full ${side === "buy" ? "tc-btn-primary" : ""}`}
@@ -725,8 +756,9 @@ function ConnectPanel({ onManage, onConnectWallet }) {
           <span className={`tc-chip ${connected ? "tc-chip-active" : ""}`}>{connected && <span className="tc-chip-dot" />} {connected ? "Active" : "Off"}</span>
         </div>
         {connected ? (
-          <div className="flex items-center justify-between p-3 rounded-xl bg-white/[0.02] border border-white/[0.045]">
-            <span className="text-[12.5px] text-white/70">Bybit · Unified</span>
+          <div className="flex items-center gap-2.5 p-3 rounded-xl bg-white/[0.02] border border-white/[0.045]">
+            <BrandLogo id={TRADE_ACCOUNT.exchange} size={28} />
+            <span className="flex-1 text-[12.5px] text-white/70">Bybit · Unified</span>
             <span className="font-mono text-[11px] text-tradeTeal">${TRADE_ACCOUNT.available.toLocaleString()}</span>
           </div>
         ) : (

@@ -226,12 +226,21 @@ export const TRADE_MODES = [
 export const API_EXCHANGES = [
   { id: "binance", label: "Binance", enabled: true, passphrase: false },
   { id: "bybit", label: "Bybit", enabled: true, passphrase: false },
-  { id: "bitget", label: "BitGet", enabled: true, passphrase: true },
+  { id: "bitget", label: "Bitget", enabled: true, passphrase: true },
   { id: "okx", label: "OKX", enabled: true, passphrase: true },
-  { id: "weex", label: "Weex", enabled: true, passphrase: false },
+  { id: "weex", label: "WEEX", enabled: true, passphrase: false },
   { id: "bingx", label: "BingX", enabled: true, passphrase: false },
   { id: "kucoin", label: "KuCoin", enabled: true, passphrase: true },
-  { id: "ibkr", label: "Interactive Brokers", enabled: false, passphrase: false },
+];
+
+// TradFi / FX brokers — connect via REST API token + account id.
+export const API_BROKERS = [
+  { id: "oanda", label: "OANDA", enabled: true, account: true },
+  { id: "forexcom", label: "Forex.com", enabled: true, account: true },
+  { id: "ibkr", label: "Interactive Brokers", enabled: true, account: true },
+  { id: "ig", label: "IG", enabled: false, account: true },
+  { id: "pepperstone", label: "Pepperstone", enabled: false, account: true },
+  { id: "saxo", label: "Saxo", enabled: false, account: true },
 ];
 
 export const ACCOUNT_MARKET_TABS = [
