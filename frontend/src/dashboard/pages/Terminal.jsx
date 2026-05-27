@@ -12,6 +12,7 @@ import TradeAccountModal from "../components/TradeAccountModal";
 import SharePnlModal from "../components/SharePnlModal";
 import { useWallet } from "../WalletContext";
 import { shortAddr } from "../lib/web3";
+import { placeOrder, venueFor } from "../lib/orders";
 import { WATCHLIST, OPEN_POSITIONS, TIMEFRAMES, SIGNALS, EXCHANGES, TRADE_ACCOUNT } from "../data";
 import { OVERLAYS, OSCILLATORS } from "../lib/indicators";
 
@@ -66,6 +67,8 @@ export default function Terminal() {
   const [accountOpen, setAccountOpen] = useState(false);
   const [accountMode, setAccountMode] = useState("api");
   const [sharePnl, setSharePnl] = useState(null);
+  const [orderSheet, setOrderSheet] = useState(false); // mobile/tablet order ticket
+  const openSheet = (s) => { setSide(s); setOrderSheet(true); };
 
   const toggleFav = (sym) =>
     setFavorites((prev) => (prev.includes(sym) ? prev.filter((s) => s !== sym) : [...prev, sym]));
@@ -127,7 +130,7 @@ export default function Terminal() {
   const activeIndicatorCount = Object.keys(overlays).length + (oscillator ? 1 : 0);
 
   return (
-    <div className="tc-fade flex flex-col gap-3">
+    <div className="tc-fade flex flex-col gap-3 pb-20 xl:pb-0">
       {/* Multi-symbol tabs */}
       <div className="flex items-center gap-1 overflow-x-auto pb-0.5" data-testid="symbol-tabs">
         {openTabs.map((s) => (
@@ -262,9 +265,9 @@ export default function Terminal() {
         </div>
 
         {/* Chart + toolbar + drawing rail */}
-        <div className="tc-panel !p-0 overflow-hidden order-1 xl:order-2 flex flex-col">
+        <div className="tc-panel !p-0 overflow-hidden order-1 xl:order-2 flex flex-col h-[calc(100dvh-313px)] min-h-[320px] xl:h-auto xl:min-h-0">
           {/* Toolbar */}
-          <div className="flex items-center gap-2 px-3 py-2 border-b border-white/[0.04] flex-wrap">
+          <div className="flex items-center gap-2 px-3 py-2 border-b border-white/[0.04] flex-wrap shrink-0">
             <div className="flex items-center gap-0.5 p-0.5 rounded-lg bg-white/[0.025]">
               {CHART_TYPES.map((c) => {
                 const Ic = c.icon;
@@ -284,48 +287,45 @@ export default function Terminal() {
                   data-testid={`tf-${t}`}>{t}</button>
               ))}
             </div>
-            <Dropdown
-              label="Indicators"
-              badge={activeIndicatorCount || null}
-              testid="menu-indicators"
-            >
-              <MenuLabel>Overlays</MenuLabel>
-              {OVERLAYS.map((o) => (
-                <MenuItem key={o.key} checked={!!overlays[o.key]} onClick={() => toggleOverlay(o.key, o.defaults)}>
-                  {o.label}
-                </MenuItem>
-              ))}
-              <MenuLabel>Oscillators</MenuLabel>
-              {OSCILLATORS.map((o) => (
-                <MenuItem key={o.key} checked={oscillator === o.key} onClick={() => setOscillator(oscillator === o.key ? null : o.key)}>
-                  {o.label}
-                </MenuItem>
-              ))}
-            </Dropdown>
-            <Dropdown label="AI" icon={Brain} testid="menu-ai">
-              <MenuItem checked={ai.sr} onClick={() => setAi((a) => ({ ...a, sr: !a.sr }))}>Support / Resistance</MenuItem>
-              <MenuItem checked={ai.pivots} onClick={() => setAi((a) => ({ ...a, pivots: !a.pivots }))}>Pivot Points</MenuItem>
-              <MenuItem checked={ai.tsr} onClick={() => setAi((a) => ({ ...a, tsr: !a.tsr }))}>TSR Analysis</MenuItem>
-              <MenuItem checked={ai.channel} onClick={() => setAi((a) => ({ ...a, channel: !a.channel }))}>Trend Channel</MenuItem>
-              <MenuItem checked={ai.trendFinder} onClick={() => setAi((a) => ({ ...a, trendFinder: !a.trendFinder }))}>Trend Finder</MenuItem>
-              <MenuItem checked={ai.breaks} onClick={() => setAi((a) => ({ ...a, breaks: !a.breaks }))}>Breaks &amp; Retests</MenuItem>
-              <MenuItem checked={ai.insideBB} onClick={() => setAi((a) => ({ ...a, insideBB: !a.insideBB }))}>Inside-Bar BB</MenuItem>
-            </Dropdown>
-            <span className="w-px h-5 bg-white/[0.06]" />
-            <div className="flex items-center gap-1">
-              {[["Pivot P.", "pivots"], ["TSR", "tsr"], ["B&R", "breaks"], ["Trend F.", "trendFinder"]].map(([lbl, key]) => (
-                <button key={key} onClick={() => setAi((a) => ({ ...a, [key]: !a[key] }))}
-                  className={`px-2 py-1.5 rounded-md font-mono text-[10px] tracking-[0.04em] transition-colors ${ai[key] ? "bg-tradeTeal/15 text-tradeTeal" : "text-white/45 hover:text-white/80"}`}
-                  data-testid={`ai-quick-${key}`}>{lbl}</button>
-              ))}
-            </div>
-            <button className="tc-iconbtn ml-auto" style={{ width: 32, height: 32 }} onClick={() => setSettingsOpen(true)} title="Chart settings" data-testid="chart-settings">
+            {/* Filter / chart settings — sits where Indicators used to be */}
+            <button className="tc-iconbtn shrink-0" style={{ width: 32, height: 32 }} onClick={() => setSettingsOpen(true)} title="Chart settings & filters" data-testid="chart-settings">
               <Settings2 className="w-3.5 h-3.5" strokeWidth={2} />
             </button>
+
+            {/* Right cluster: AI quick toggles (desktop) + Indicators + AI */}
+            <div className="ml-auto flex items-center gap-2 shrink-0">
+              <div className="hidden lg:flex items-center gap-1">
+                {[["Pivot P.", "pivots"], ["TSR", "tsr"], ["B&R", "breaks"], ["Trend F.", "trendFinder"]].map(([lbl, key]) => (
+                  <button key={key} onClick={() => setAi((a) => ({ ...a, [key]: !a[key] }))}
+                    className={`px-2 py-1.5 rounded-md font-mono text-[10px] tracking-[0.04em] transition-colors ${ai[key] ? "bg-tradeTeal/15 text-tradeTeal" : "text-white/45 hover:text-white/80"}`}
+                    data-testid={`ai-quick-${key}`}>{lbl}</button>
+                ))}
+                <span className="w-px h-5 bg-white/[0.06] mx-1" />
+              </div>
+              <Dropdown label="Indicators" align="right" badge={activeIndicatorCount || null} testid="menu-indicators">
+                <MenuLabel>Overlays</MenuLabel>
+                {OVERLAYS.map((o) => (
+                  <MenuItem key={o.key} checked={!!overlays[o.key]} onClick={() => toggleOverlay(o.key, o.defaults)}>{o.label}</MenuItem>
+                ))}
+                <MenuLabel>Oscillators</MenuLabel>
+                {OSCILLATORS.map((o) => (
+                  <MenuItem key={o.key} checked={oscillator === o.key} onClick={() => setOscillator(oscillator === o.key ? null : o.key)}>{o.label}</MenuItem>
+                ))}
+              </Dropdown>
+              <Dropdown label="AI" icon={Brain} align="right" testid="menu-ai">
+                <MenuItem checked={ai.sr} onClick={() => setAi((a) => ({ ...a, sr: !a.sr }))}>Support / Resistance</MenuItem>
+                <MenuItem checked={ai.pivots} onClick={() => setAi((a) => ({ ...a, pivots: !a.pivots }))}>Pivot Points</MenuItem>
+                <MenuItem checked={ai.tsr} onClick={() => setAi((a) => ({ ...a, tsr: !a.tsr }))}>TSR Analysis</MenuItem>
+                <MenuItem checked={ai.channel} onClick={() => setAi((a) => ({ ...a, channel: !a.channel }))}>Trend Channel</MenuItem>
+                <MenuItem checked={ai.trendFinder} onClick={() => setAi((a) => ({ ...a, trendFinder: !a.trendFinder }))}>Trend Finder</MenuItem>
+                <MenuItem checked={ai.breaks} onClick={() => setAi((a) => ({ ...a, breaks: !a.breaks }))}>Breaks &amp; Retests</MenuItem>
+                <MenuItem checked={ai.insideBB} onClick={() => setAi((a) => ({ ...a, insideBB: !a.insideBB }))}>Inside-Bar BB</MenuItem>
+              </Dropdown>
+            </div>
           </div>
 
           {/* Chart area with drawing rail */}
-          <div className="flex flex-1">
+          <div className="flex flex-1 min-h-0">
             <div className="hidden sm:flex flex-col items-center gap-0.5 py-2 px-1.5 border-r border-white/[0.04]">
               {DRAW_TOOLS.map((d) => {
                 const Ic = d.icon;
@@ -352,7 +352,7 @@ export default function Terminal() {
                 <Eraser className="w-3.5 h-3.5" strokeWidth={2} />
               </button>
             </div>
-            <div className="flex-1 h-[540px] sm:h-[620px] xl:h-[720px]">
+            <div className="flex-1 min-h-0 xl:flex-none xl:h-[720px]">
               <TradingChart symbol={symbol} timeframe={tf} chartType={chartType} overlays={overlays} oscillator={oscillator} ai={ai} drawTool={locked ? null : drawTool} logScale={logScale} signal={activeSignal && activeSignal.sym === symbol ? activeSignal : null} />
             </div>
           </div>
@@ -458,6 +458,43 @@ export default function Terminal() {
           </div>
         </Modal>
       )}
+
+      {/* Fixed Long/Short bar — mobile & tablet (portaled so it pins to the viewport) */}
+      {createPortal(
+        <div className="xl:hidden fixed bottom-0 left-0 right-0 z-40 flex items-center gap-2 px-3 py-2.5 border-t border-white/[0.06]"
+          style={{ background: "rgb(var(--tc-surface-rgb) / 0.96)", backdropFilter: "blur(10px)", paddingBottom: "max(10px, env(safe-area-inset-bottom))" }}>
+          <div className="shrink-0 pr-1">
+            <div className="font-mono text-[10px] text-white/45 leading-none">{active.sym}</div>
+            <div className={`font-mono text-[13px] font-semibold ${active.up ? "text-tradeTeal" : "text-[#FF8A82]"}`}>{active.last}</div>
+          </div>
+          <button onClick={() => openSheet("buy")} className="tc-btn tc-btn-primary flex-1" data-testid="bar-long">Long</button>
+          <button onClick={() => openSheet("sell")} className="tc-btn flex-1" style={{ color: "#042024", background: "linear-gradient(135deg,#FF9B91,#F23645)" }} data-testid="bar-short">Short</button>
+        </div>,
+        document.body
+      )}
+
+      {/* Order ticket bottom sheet */}
+      {orderSheet && createPortal(
+        <div className="fixed inset-0 z-[85] flex items-end justify-center" data-testid="order-sheet">
+          <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={() => setOrderSheet(false)} />
+          <div className="relative w-full max-w-[440px] max-h-[88vh] overflow-y-auto rounded-t-2xl bg-surface border-t border-x border-white/[0.06] p-4" style={{ paddingBottom: "max(16px, env(safe-area-inset-bottom))" }}>
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center gap-2">
+                <span className="font-heading text-[15px] font-semibold text-tradeWhite">{active.sym}</span>
+                <span className={`font-mono text-[11px] ${active.up ? "text-tradeTeal" : "text-[#FF8A82]"}`}>{active.last}</span>
+              </div>
+              <button className="tc-iconbtn" style={{ width: 30, height: 30 }} onClick={() => setOrderSheet(false)}><X className="w-3.5 h-3.5" /></button>
+            </div>
+            <OrderPanel
+              active={active} side={side} setSide={setSide}
+              marginMode={marginMode} setMarginMode={setMarginMode}
+              leverage={leverage} setLeverage={setLeverage} bare
+              onConnectWallet={() => { setOrderSheet(false); setAccountMode("web3"); setAccountOpen(true); }}
+            />
+          </div>
+        </div>,
+        document.body
+      )}
     </div>
   );
 }
@@ -474,12 +511,13 @@ function ToggleRow({ label, on, onClick }) {
 }
 
 /* ===== Order panel ===== */
-function OrderPanel({ active, side, setSide, marginMode, setMarginMode, leverage, setLeverage, onConnectWallet }) {
-  const { address, balance, network, nativeSymbol } = useWallet() || {};
-  const { signMessage } = useWallet() || {};
+function OrderPanel({ active, side, setSide, marginMode, setMarginMode, leverage, setLeverage, onConnectWallet, bare }) {
+  const wallet = useWallet() || {};
+  const { address, balance, network, nativeSymbol } = wallet;
+  const venueObj = venueFor(network);
   const [venue, setVenue] = useState("cex"); // cex | onchain
   const [placed, setPlaced] = useState(false);
-  const [status, setStatus] = useState("idle"); // idle | signing | done | error
+  const [status, setStatus] = useState("idle"); // idle | signing | done | error | rejected
   const [sig, setSig] = useState("");
 
   const submit = () => {
@@ -487,17 +525,17 @@ function OrderPanel({ active, side, setSide, marginMode, setMarginMode, leverage
     setTimeout(() => setPlaced(false), 2400);
   };
 
+  // One unified router for every chain.
   const submitOnchain = async () => {
     if (!address) { onConnectWallet?.(); return; }
     setStatus("signing"); setSig("");
-    try {
-      const msg = `TradeCafe perp order\n${side === "buy" ? "LONG" : "SHORT"} ${active.sym}\nleverage: ${leverage}x\nchain: ${network?.name || network?.short || "—"}\nts: ${Date.now()}`;
-      const signature = await signMessage(msg);
-      setSig(signature ? `${signature.slice(0, 10)}…${signature.slice(-6)}` : "0xsigned");
+    const res = await placeOrder(wallet, { symbol: active.sym, side, leverage, sizeUsd: 1000 });
+    if (res.ok) {
+      setSig(res.signature ? `${res.signature.slice(0, 10)}…${res.signature.slice(-6)}` : "0xsigned");
       setStatus("done");
-      setTimeout(() => setStatus("idle"), 4000);
-    } catch (e) {
-      setStatus("error");
+      setTimeout(() => setStatus("idle"), 5000);
+    } else {
+      setStatus(res.error === "REJECTED" ? "rejected" : "error");
       setTimeout(() => setStatus("idle"), 3000);
     }
   };
@@ -511,7 +549,7 @@ function OrderPanel({ active, side, setSide, marginMode, setMarginMode, leverage
   const onchain = venue === "onchain";
 
   return (
-    <div className="tc-panel flex flex-col gap-4">
+    <div className={`flex flex-col gap-4 ${bare ? "" : "tc-panel"}`}>
       {/* Venue */}
       <div className="flex items-center gap-1 p-1 rounded-lg bg-white/[0.025] border border-white/[0.05]">
         {[["cex", "CEX"], ["onchain", "On-chain"]].map(([v, lbl]) => (
@@ -605,21 +643,21 @@ function OrderPanel({ active, side, setSide, marginMode, setMarginMode, leverage
       )}
       {onchain && status === "done" && (
         <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-tradeTeal/10 border border-tradeTeal/25 text-[12px] text-tradeTeal">
-          <Check className="w-3.5 h-3.5" strokeWidth={2.5} /> Order signed & routed · {sig}
+          <Check className="w-3.5 h-3.5 shrink-0" strokeWidth={2.5} /> Signed & routed to {venueObj.name} · {sig}
         </div>
       )}
-      {onchain && status === "error" && (
+      {onchain && (status === "error" || status === "rejected") && (
         <div className="px-3 py-2 rounded-lg bg-[#F23645]/10 border border-[#F23645]/25 text-[12px] text-[#FF8A82]">
-          Signature rejected — order not placed.
+          {status === "rejected" ? "Signature rejected — order not placed." : "Order failed — please try again."}
         </div>
       )}
 
       {onchain ? (
         <div className="grid grid-cols-2 gap-2 font-mono text-[11px] text-white/50">
-          <span>Venue</span><span className="text-right text-white/80">On-chain perp</span>
+          <span>Venue</span><span className="text-right text-tradeTeal">{venueObj.name}</span>
           <span>Network</span><span className="text-right text-white/80">{network?.short || "—"}</span>
           <span>Wallet</span><span className="text-right text-white/80">{balance ? `${balance} ${nativeSymbol}` : "—"}</span>
-          <span>Est. gas</span><span className="text-right text-white/80">~0.0003 ETH</span>
+          <span>Settlement</span><span className="text-right text-white/80">{network?.ecosystem === "solana" ? "Solana tx" : "EIP-712"}</span>
         </div>
       ) : (
         <div className="grid grid-cols-2 gap-2 font-mono text-[11px] text-white/50">
@@ -760,48 +798,98 @@ function AIRail({ ai, setAi }) {
 }
 
 /* ===== Symbol search modal ===== */
+const TYPE_TONE = {
+  Spot: "text-tradeTeal bg-tradeTeal/12 border-tradeTeal/25",
+  Futures: "text-[#9B8AFB] bg-[#9B8AFB]/12 border-[#9B8AFB]/25",
+  Stocks: "text-[#E8782A] bg-[#E8782A]/12 border-[#E8782A]/25",
+};
+
 function SymbolSearch({ onClose, onPick, exchange }) {
   const [q, setQ] = useState("");
   const [cat, setCat] = useState("All");
   const cats = ["All", ...CATEGORIES.filter((c) => c !== "Favorites")];
+  const term = q.trim().toUpperCase();
   const results = WATCHLIST.filter((w) => {
-    const term = q.trim().toUpperCase();
     const inCat = cat === "All" || w.cat === cat;
     const match = !term || w.sym.includes(term) || w.name.toUpperCase().includes(term);
     return inCat && match;
   });
+
   return createPortal(
-    <div className="fixed inset-0 z-[80] flex items-start justify-center pt-[12vh] px-4" data-testid="symbol-search-modal">
+    <div className="fixed inset-0 z-[80] flex items-start justify-center pt-[8vh] sm:pt-[11vh] px-3 sm:px-4" data-testid="symbol-search-modal">
       <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={onClose} />
-      <div className="relative w-full max-w-[480px] rounded-2xl bg-surface border border-white/[0.05] overflow-hidden">
-        <div className="tc-search !rounded-none !border-0 border-b border-white/[0.05] px-4 py-3.5">
-          <Search className="w-4 h-4 text-white/40" strokeWidth={2} />
-          <input autoFocus placeholder="Search symbol or name…" value={q} onChange={(e) => setQ(e.target.value)} />
-          <button onClick={onClose} className="tc-iconbtn" style={{ width: 28, height: 28 }}><X className="w-3.5 h-3.5" /></button>
+      <div className="relative w-full max-w-[520px] rounded-2xl bg-surface border border-white/[0.06] overflow-hidden shadow-2xl flex flex-col max-h-[82vh]">
+        {/* Search field */}
+        <div className="flex items-center gap-2.5 px-4 py-3.5 border-b border-white/[0.05]">
+          <Search className="w-4 h-4 text-tradeTeal shrink-0" strokeWidth={2} />
+          <input autoFocus placeholder="Search markets — symbol or name…" value={q}
+            onChange={(e) => setQ(e.target.value)}
+            onKeyDown={(e) => { if (e.key === "Enter" && results[0]) onPick(results[0].sym); if (e.key === "Escape") onClose(); }}
+            className="flex-1 min-w-0 bg-transparent text-[15px] text-white placeholder-white/35 outline-none" />
+          <kbd className="hidden sm:inline font-mono text-[9px] tracking-[0.08em] text-white/40 px-1.5 py-0.5 rounded border border-white/[0.08]">ESC</kbd>
+          <button onClick={onClose} className="tc-iconbtn shrink-0" style={{ width: 30, height: 30 }}><X className="w-3.5 h-3.5" /></button>
         </div>
-        <div className="flex items-center gap-1.5 px-4 py-2.5 border-b border-white/[0.045]">
-          {exchange && <span className="font-mono text-[9.5px] tracking-[0.1em] uppercase text-white/40 mr-1">{exchange.name}</span>}
-          {cats.map((c) => (
-            <button key={c} onClick={() => setCat(c)}
-              className={`px-2.5 py-1 rounded-full font-mono text-[9.5px] tracking-[0.08em] uppercase border transition-colors ${cat === c ? "bg-tradeTeal/15 text-tradeTeal border-tradeTeal/30" : "text-white/45 border-white/[0.05]"}`}>
-              {c}
-            </button>
-          ))}
+
+        {/* Filters */}
+        <div className="px-4 py-3 border-b border-white/[0.045]">
+          <div className="flex items-center justify-between mb-2.5">
+            <span className="font-mono text-[9px] tracking-[0.14em] uppercase text-white/35">Filter by market</span>
+            {exchange && (
+              <span className="flex items-center gap-1.5 font-mono text-[9px] tracking-[0.1em] uppercase text-tradeTeal">
+                <span className="w-1.5 h-1.5 rounded-full bg-tradeTeal" />{exchange.name}
+              </span>
+            )}
+          </div>
+          <div className="flex items-center gap-1 p-1 rounded-lg bg-white/[0.025] border border-white/[0.05]">
+            {cats.map((c) => (
+              <button key={c} onClick={() => setCat(c)}
+                className={`flex-1 py-1.5 rounded-md font-mono text-[10px] tracking-[0.06em] uppercase transition-colors ${cat === c ? "bg-tradeTeal/15 text-tradeTeal" : "text-white/50 hover:text-white/80"}`}>
+                {c}
+              </button>
+            ))}
+          </div>
         </div>
-        <div className="max-h-[340px] overflow-y-auto p-1.5">
-          {results.map((w) => (
-            <button key={w.sym} onClick={() => onPick(w.sym)} className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-white/[0.04] transition-colors text-left">
+
+        {/* Results header */}
+        <div className="flex items-center justify-between px-4 pt-3 pb-1">
+          <span className="font-mono text-[9px] tracking-[0.14em] uppercase text-white/35">{term ? "Results" : "Popular markets"}</span>
+          <span className="font-mono text-[9px] text-white/30">{results.length}</span>
+        </div>
+
+        {/* Results */}
+        <div className="flex-1 min-h-0 overflow-y-auto px-1.5 pb-2">
+          {results.map((w, i) => (
+            <button key={w.sym} onClick={() => onPick(w.sym)}
+              className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-colors text-left ${i === 0 && term ? "bg-white/[0.04]" : "hover:bg-white/[0.04]"}`}
+              data-testid={`search-result-${w.sym}`}>
+              <span className="w-8 h-8 rounded-lg bg-white/[0.04] border border-white/[0.06] flex items-center justify-center shrink-0 font-heading font-bold text-[12px] text-white/80">{w.sym[0]}</span>
               <span className="min-w-0 flex-1">
-                <span className="block text-[13px] font-medium text-white/85 truncate">{w.sym}</span>
-                <span className="block text-[10.5px] text-white/40 truncate">{w.name} · {w.cat}</span>
+                <span className="flex items-center gap-2">
+                  <span className="text-[13.5px] font-semibold text-tradeWhite truncate">{w.sym}</span>
+                  <span className={`font-mono text-[8px] tracking-[0.06em] uppercase px-1.5 py-0.5 rounded border ${TYPE_TONE[w.cat] || "text-white/50 border-white/10"}`}>{w.cat}</span>
+                </span>
+                <span className="block text-[10.5px] text-white/40 truncate mt-0.5">{w.name}</span>
               </span>
               <span className="text-right shrink-0">
-                <span className="block font-mono text-[11.5px] text-white/75">{w.last}</span>
+                <span className="block font-mono text-[12px] text-white/80">{w.last}</span>
                 <span className={`block font-mono text-[10px] ${w.up ? "text-tradeTeal" : "text-[#FF8A82]"}`}>{w.chg}</span>
               </span>
             </button>
           ))}
-          {results.length === 0 && <div className="text-center text-white/40 py-8 text-[13px]">No markets found.</div>}
+          {results.length === 0 && (
+            <div className="flex flex-col items-center text-center py-10">
+              <Search className="w-7 h-7 text-white/20 mb-3" strokeWidth={1.6} />
+              <div className="text-[13px] text-white/55">No markets found for “{q}”.</div>
+              <div className="text-[11.5px] text-white/35 mt-1">Try a different symbol or category.</div>
+            </div>
+          )}
+        </div>
+
+        {/* Footer hints */}
+        <div className="hidden sm:flex items-center gap-4 px-4 py-2.5 border-t border-white/[0.045] font-mono text-[9.5px] text-white/35">
+          <span><span className="text-white/55">↵</span> select</span>
+          <span><span className="text-white/55">esc</span> close</span>
+          <span className="ml-auto">{WATCHLIST.length} instruments</span>
         </div>
       </div>
     </div>,
@@ -828,7 +916,7 @@ function Field({ label, value, mono }) {
   );
 }
 
-function Dropdown({ label, icon: Icon, badge, testid, children }) {
+function Dropdown({ label, icon: Icon, badge, testid, children, align = "left" }) {
   const [open, setOpen] = useState(false);
   return (
     <div className="relative">
@@ -841,7 +929,7 @@ function Dropdown({ label, icon: Icon, badge, testid, children }) {
         <ChevronDown className="w-3 h-3 opacity-60" />
       </button>
       {open && (
-        <div className="absolute left-0 mt-1.5 w-56 p-1.5 rounded-xl bg-surface border border-white/[0.05] shadow-xl z-50 max-h-[320px] overflow-y-auto">
+        <div className={`absolute ${align === "right" ? "right-0" : "left-0"} mt-1.5 w-56 p-1.5 rounded-xl bg-surface border border-white/[0.05] shadow-xl z-50 max-h-[320px] overflow-y-auto`}>
           {children}
         </div>
       )}

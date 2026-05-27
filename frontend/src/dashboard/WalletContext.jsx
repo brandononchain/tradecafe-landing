@@ -1,6 +1,6 @@
 import { createContext, useCallback, useContext, useEffect, useState } from "react";
 import {
-  getEthereum, evmConnect, evmAccounts, evmBalance, evmSwitchChain, evmSign,
+  getEthereum, evmConnect, evmAccounts, evmBalance, evmSwitchChain, evmSign, evmSignTypedData,
   getSolana, solConnect, solBalance, solSign, networkFor,
 } from "./lib/web3";
 
@@ -95,11 +95,17 @@ export function WalletProvider({ children }) {
     return ecosystem === "solana" ? solSign(msg) : evmSign(address, msg);
   }, [ecosystem, address]);
 
+  const signTypedData = useCallback(async (typed) => {
+    if (!address) throw new Error("NOT_CONNECTED");
+    if (ecosystem !== "evm") throw new Error("EVM_ONLY");
+    return evmSignTypedData(address, typed);
+  }, [ecosystem, address]);
+
   return (
     <WalletContext.Provider value={{
       ecosystem, address, chainId, balance, network, nativeSymbol,
       connecting, error, hasEvm, hasSolana, hasProvider,
-      connect, disconnect, changeChain, signMessage,
+      connect, disconnect, changeChain, signMessage, signTypedData,
     }}>
       {children}
     </WalletContext.Provider>

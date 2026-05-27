@@ -1,11 +1,16 @@
 import { useState } from "react";
+import { useLocation } from "react-router-dom";
 import { MessageCircle, X, Send, Paperclip, Headphones } from "lucide-react";
 import { SUPPORT_THREAD } from "../data";
 
 export default function ChatWidget() {
+  const { pathname } = useLocation();
   const [open, setOpen] = useState(false);
   const [thread, setThread] = useState(SUPPORT_THREAD);
   const [draft, setDraft] = useState("");
+  // Pages with their own fixed bottom UI — keep the support FAB out of the way
+  // on small screens (still available on desktop).
+  const conflicts = pathname.startsWith("/app/vitchat") || pathname.startsWith("/app/terminal");
 
   const send = () => {
     const text = draft.trim();
@@ -53,7 +58,7 @@ export default function ChatWidget() {
 
       <button
         onClick={() => setOpen((v) => !v)}
-        className="fixed bottom-5 right-5 z-[70] w-14 h-14 rounded-full flex items-center justify-center shadow-xl transition-transform hover:scale-105"
+        className={`fixed bottom-5 right-5 z-[70] w-14 h-14 rounded-full items-center justify-center shadow-xl transition-transform hover:scale-105 ${conflicts ? "hidden lg:flex" : "flex"}`}
         style={{ background: "linear-gradient(135deg, var(--tc-accent-light), var(--tc-accent))", color: "#042024" }}
         aria-label="Support chat"
         data-testid="chat-widget-toggle"
