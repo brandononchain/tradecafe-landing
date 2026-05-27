@@ -45,7 +45,7 @@ export default function Automation() {
                 </div>
               </div>
               {paused[b.key] ? (
-                <span className="tc-chip" style={{ color: "rgba(255,255,255,0.55)" }}>Paused</span>
+                <span className="tc-chip">Paused</span>
               ) : (
                 <span className="tc-chip tc-chip-active"><span className="tc-chip-dot" /> {b.status}</span>
               )}

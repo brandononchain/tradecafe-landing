@@ -76,9 +76,9 @@ export default function Journal() {
                       <stop offset="100%" stopColor="#00B4A6" stopOpacity={0} />
                     </linearGradient>
                   </defs>
-                  <CartesianGrid stroke="rgba(255,255,255,0.05)" vertical={false} />
-                  <XAxis dataKey="t" tick={{ fill: "rgba(255,255,255,0.4)", fontSize: 10, fontFamily: "JetBrains Mono" }} axisLine={false} tickLine={false} />
-                  <YAxis tick={{ fill: "rgba(255,255,255,0.4)", fontSize: 10, fontFamily: "JetBrains Mono" }} axisLine={false} tickLine={false} width={44} />
+                  <CartesianGrid stroke="rgb(var(--tc-ink-rgb) / 0.07)" vertical={false} />
+                  <XAxis dataKey="t" tick={{ fill: "rgb(var(--tc-ink-rgb) / 0.45)", fontSize: 10, fontFamily: "JetBrains Mono" }} axisLine={false} tickLine={false} />
+                  <YAxis tick={{ fill: "rgb(var(--tc-ink-rgb) / 0.45)", fontSize: 10, fontFamily: "JetBrains Mono" }} axisLine={false} tickLine={false} width={44} />
                   <Tooltip contentStyle={{ background: "#041014", border: "1px solid rgba(0,180,166,0.3)", borderRadius: 8, fontSize: 12 }} labelStyle={{ color: "rgba(255,255,255,0.5)" }} />
                   <Area type="monotone" dataKey="v" stroke="#00B4A6" strokeWidth={2} fill="url(#jfill)" dot={false} />
                 </AreaChart>

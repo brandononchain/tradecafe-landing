@@ -11,6 +11,7 @@ import Nav from "../../components/Nav";
 export function SolutionLayout({ eyebrow, title, accent, tail = ".", sub, ctas = [], children, testid }) {
   const root = useRef(null);
   useEffect(() => {
+    if (typeof window !== "undefined" && window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) return;
     const ctx = gsap.context(() => {
       gsap.fromTo("[data-s='eyebrow']", { y: 12, opacity: 0 }, { y: 0, opacity: 1, duration: 0.7, ease: "power3.out", delay: 0.1 });
       gsap.fromTo("[data-s='title']", { y: 24, opacity: 0 }, { y: 0, opacity: 1, duration: 0.9, ease: "power3.out", delay: 0.2 });

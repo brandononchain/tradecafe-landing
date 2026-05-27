@@ -60,17 +60,17 @@ function AreaPanel({ title, color, data, unit = "" }) {
                 <stop offset="100%" stopColor={color} stopOpacity={0} />
               </linearGradient>
             </defs>
-            <CartesianGrid stroke="rgba(255,255,255,0.05)" vertical={false} />
+            <CartesianGrid stroke="rgb(var(--tc-ink-rgb) / 0.07)" vertical={false} />
             <XAxis
               dataKey="t"
-              tick={{ fill: "rgba(255,255,255,0.4)", fontSize: 10, fontFamily: "JetBrains Mono" }}
+              tick={{ fill: "rgb(var(--tc-ink-rgb) / 0.45)", fontSize: 10, fontFamily: "JetBrains Mono" }}
               axisLine={false}
               tickLine={false}
               interval="preserveStartEnd"
               minTickGap={24}
             />
             <YAxis
-              tick={{ fill: "rgba(255,255,255,0.4)", fontSize: 10, fontFamily: "JetBrains Mono" }}
+              tick={{ fill: "rgb(var(--tc-ink-rgb) / 0.45)", fontSize: 10, fontFamily: "JetBrains Mono" }}
               axisLine={false}
               tickLine={false}
               width={42}

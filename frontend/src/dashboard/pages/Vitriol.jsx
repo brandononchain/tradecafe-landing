@@ -72,7 +72,7 @@ export default function Vitriol() {
                   <td className="text-white/80">{h.type}</td>
                   <td className="mono text-tradeTeal">{h.amount}</td>
                   <td className="mono text-white/55">{h.date}</td>
-                  <td><span className="tc-chip" style={{ color: "rgba(255,255,255,0.6)", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)" }}>{h.status}</span></td>
+                  <td><span className="tc-chip">{h.status}</span></td>
                 </tr>
               ))}
             </tbody>

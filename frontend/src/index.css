@@ -2781,3 +2781,28 @@ code {
 /* keep the sidebar rail clean */
 .tc-sidebar-scroll { scrollbar-width: none; }
 .tc-sidebar-scroll::-webkit-scrollbar { width: 0; height: 0; }
+
+/* ===== Accessibility ===== */
+/* Visible focus ring for keyboard users only — uses the brand accent and
+   adapts to light/dark via the accent variable. */
+a:focus-visible,
+button:focus-visible,
+[role="button"]:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible,
+[tabindex]:focus-visible {
+    outline: 2px solid rgb(var(--tc-accent-rgb) / 0.9);
+    outline-offset: 2px;
+    border-radius: 6px;
+}
+
+/* Honor the user's reduced-motion preference across the app. */
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: 0.001ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.001ms !important;
+        scroll-behavior: auto !important;
+    }
+}
