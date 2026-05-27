@@ -265,7 +265,7 @@ export default function Terminal() {
         </div>
 
         {/* Chart + toolbar + drawing rail */}
-        <div className="tc-panel !p-0 overflow-hidden order-1 xl:order-2 flex flex-col h-[calc(100dvh-322px)] min-h-[320px] xl:h-auto xl:min-h-0">
+        <div className="tc-panel !p-0 overflow-hidden order-1 xl:order-2 flex flex-col h-[calc(100dvh-313px)] min-h-[320px] xl:h-auto xl:min-h-0">
           {/* Toolbar */}
           <div className="flex items-center gap-2 px-3 py-2 border-b border-white/[0.04] flex-wrap shrink-0">
             <div className="flex items-center gap-0.5 p-0.5 rounded-lg bg-white/[0.025]">
@@ -287,46 +287,41 @@ export default function Terminal() {
                   data-testid={`tf-${t}`}>{t}</button>
               ))}
             </div>
-            <Dropdown
-              label="Indicators"
-              badge={activeIndicatorCount || null}
-              testid="menu-indicators"
-            >
-              <MenuLabel>Overlays</MenuLabel>
-              {OVERLAYS.map((o) => (
-                <MenuItem key={o.key} checked={!!overlays[o.key]} onClick={() => toggleOverlay(o.key, o.defaults)}>
-                  {o.label}
-                </MenuItem>
-              ))}
-              <MenuLabel>Oscillators</MenuLabel>
-              {OSCILLATORS.map((o) => (
-                <MenuItem key={o.key} checked={oscillator === o.key} onClick={() => setOscillator(oscillator === o.key ? null : o.key)}>
-                  {o.label}
-                </MenuItem>
-              ))}
-            </Dropdown>
-            <Dropdown label="AI" icon={Brain} testid="menu-ai">
-              <MenuItem checked={ai.sr} onClick={() => setAi((a) => ({ ...a, sr: !a.sr }))}>Support / Resistance</MenuItem>
-              <MenuItem checked={ai.pivots} onClick={() => setAi((a) => ({ ...a, pivots: !a.pivots }))}>Pivot Points</MenuItem>
-              <MenuItem checked={ai.tsr} onClick={() => setAi((a) => ({ ...a, tsr: !a.tsr }))}>TSR Analysis</MenuItem>
-              <MenuItem checked={ai.channel} onClick={() => setAi((a) => ({ ...a, channel: !a.channel }))}>Trend Channel</MenuItem>
-              <MenuItem checked={ai.trendFinder} onClick={() => setAi((a) => ({ ...a, trendFinder: !a.trendFinder }))}>Trend Finder</MenuItem>
-              <MenuItem checked={ai.breaks} onClick={() => setAi((a) => ({ ...a, breaks: !a.breaks }))}>Breaks &amp; Retests</MenuItem>
-              <MenuItem checked={ai.insideBB} onClick={() => setAi((a) => ({ ...a, insideBB: !a.insideBB }))}>Inside-Bar BB</MenuItem>
-            </Dropdown>
-            <div className="hidden md:flex items-center gap-2">
-              <span className="w-px h-5 bg-white/[0.06]" />
-              <div className="flex items-center gap-1">
+            {/* Filter / chart settings — sits where Indicators used to be */}
+            <button className="tc-iconbtn shrink-0" style={{ width: 32, height: 32 }} onClick={() => setSettingsOpen(true)} title="Chart settings & filters" data-testid="chart-settings">
+              <Settings2 className="w-3.5 h-3.5" strokeWidth={2} />
+            </button>
+
+            {/* Right cluster: AI quick toggles (desktop) + Indicators + AI */}
+            <div className="ml-auto flex items-center gap-2 shrink-0">
+              <div className="hidden lg:flex items-center gap-1">
                 {[["Pivot P.", "pivots"], ["TSR", "tsr"], ["B&R", "breaks"], ["Trend F.", "trendFinder"]].map(([lbl, key]) => (
                   <button key={key} onClick={() => setAi((a) => ({ ...a, [key]: !a[key] }))}
                     className={`px-2 py-1.5 rounded-md font-mono text-[10px] tracking-[0.04em] transition-colors ${ai[key] ? "bg-tradeTeal/15 text-tradeTeal" : "text-white/45 hover:text-white/80"}`}
                     data-testid={`ai-quick-${key}`}>{lbl}</button>
                 ))}
+                <span className="w-px h-5 bg-white/[0.06] mx-1" />
               </div>
+              <Dropdown label="Indicators" align="right" badge={activeIndicatorCount || null} testid="menu-indicators">
+                <MenuLabel>Overlays</MenuLabel>
+                {OVERLAYS.map((o) => (
+                  <MenuItem key={o.key} checked={!!overlays[o.key]} onClick={() => toggleOverlay(o.key, o.defaults)}>{o.label}</MenuItem>
+                ))}
+                <MenuLabel>Oscillators</MenuLabel>
+                {OSCILLATORS.map((o) => (
+                  <MenuItem key={o.key} checked={oscillator === o.key} onClick={() => setOscillator(oscillator === o.key ? null : o.key)}>{o.label}</MenuItem>
+                ))}
+              </Dropdown>
+              <Dropdown label="AI" icon={Brain} align="right" testid="menu-ai">
+                <MenuItem checked={ai.sr} onClick={() => setAi((a) => ({ ...a, sr: !a.sr }))}>Support / Resistance</MenuItem>
+                <MenuItem checked={ai.pivots} onClick={() => setAi((a) => ({ ...a, pivots: !a.pivots }))}>Pivot Points</MenuItem>
+                <MenuItem checked={ai.tsr} onClick={() => setAi((a) => ({ ...a, tsr: !a.tsr }))}>TSR Analysis</MenuItem>
+                <MenuItem checked={ai.channel} onClick={() => setAi((a) => ({ ...a, channel: !a.channel }))}>Trend Channel</MenuItem>
+                <MenuItem checked={ai.trendFinder} onClick={() => setAi((a) => ({ ...a, trendFinder: !a.trendFinder }))}>Trend Finder</MenuItem>
+                <MenuItem checked={ai.breaks} onClick={() => setAi((a) => ({ ...a, breaks: !a.breaks }))}>Breaks &amp; Retests</MenuItem>
+                <MenuItem checked={ai.insideBB} onClick={() => setAi((a) => ({ ...a, insideBB: !a.insideBB }))}>Inside-Bar BB</MenuItem>
+              </Dropdown>
             </div>
-            <button className="tc-iconbtn ml-auto shrink-0" style={{ width: 32, height: 32 }} onClick={() => setSettingsOpen(true)} title="Chart settings" data-testid="chart-settings">
-              <Settings2 className="w-3.5 h-3.5" strokeWidth={2} />
-            </button>
           </div>
 
           {/* Chart area with drawing rail */}
@@ -836,14 +831,23 @@ function SymbolSearch({ onClose, onPick, exchange }) {
         </div>
 
         {/* Filters */}
-        <div className="flex items-center gap-1.5 px-3 py-2.5 border-b border-white/[0.045] overflow-x-auto">
-          {exchange && <span className="flex items-center gap-1.5 font-mono text-[9.5px] tracking-[0.1em] uppercase text-white/40 mr-1 shrink-0"><span className="tc-chip-dot" />{exchange.name}</span>}
-          {cats.map((c) => (
-            <button key={c} onClick={() => setCat(c)}
-              className={`px-3 py-1 rounded-full font-mono text-[9.5px] tracking-[0.08em] uppercase border transition-colors shrink-0 ${cat === c ? "bg-tradeTeal/15 text-tradeTeal border-tradeTeal/30" : "text-white/45 border-white/[0.06] hover:text-white/70"}`}>
-              {c}
-            </button>
-          ))}
+        <div className="px-4 py-3 border-b border-white/[0.045]">
+          <div className="flex items-center justify-between mb-2.5">
+            <span className="font-mono text-[9px] tracking-[0.14em] uppercase text-white/35">Filter by market</span>
+            {exchange && (
+              <span className="flex items-center gap-1.5 font-mono text-[9px] tracking-[0.1em] uppercase text-tradeTeal">
+                <span className="w-1.5 h-1.5 rounded-full bg-tradeTeal" />{exchange.name}
+              </span>
+            )}
+          </div>
+          <div className="flex items-center gap-1 p-1 rounded-lg bg-white/[0.025] border border-white/[0.05]">
+            {cats.map((c) => (
+              <button key={c} onClick={() => setCat(c)}
+                className={`flex-1 py-1.5 rounded-md font-mono text-[10px] tracking-[0.06em] uppercase transition-colors ${cat === c ? "bg-tradeTeal/15 text-tradeTeal" : "text-white/50 hover:text-white/80"}`}>
+                {c}
+              </button>
+            ))}
+          </div>
         </div>
 
         {/* Results header */}
@@ -912,7 +916,7 @@ function Field({ label, value, mono }) {
   );
 }
 
-function Dropdown({ label, icon: Icon, badge, testid, children }) {
+function Dropdown({ label, icon: Icon, badge, testid, children, align = "left" }) {
   const [open, setOpen] = useState(false);
   return (
     <div className="relative">
@@ -925,7 +929,7 @@ function Dropdown({ label, icon: Icon, badge, testid, children }) {
         <ChevronDown className="w-3 h-3 opacity-60" />
       </button>
       {open && (
-        <div className="absolute left-0 mt-1.5 w-56 p-1.5 rounded-xl bg-surface border border-white/[0.05] shadow-xl z-50 max-h-[320px] overflow-y-auto">
+        <div className={`absolute ${align === "right" ? "right-0" : "left-0"} mt-1.5 w-56 p-1.5 rounded-xl bg-surface border border-white/[0.05] shadow-xl z-50 max-h-[320px] overflow-y-auto`}>
           {children}
         </div>
       )}
