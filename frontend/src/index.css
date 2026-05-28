@@ -2770,29 +2770,14 @@ code {
 @keyframes tcFadeUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; } }
 .tc-fade { animation: tcFadeUp 0.5s cubic-bezier(.2,.7,.2,1) both; }
 
-/* ===== Scrollbars — almost invisible at rest, subtle on hover ===== */
+/* ===== Scrollbars — fully hidden everywhere, scroll still works ===== */
 * {
-    scrollbar-width: thin;
-    scrollbar-color: rgb(var(--tc-ink-rgb) / 0.08) transparent;
+    scrollbar-width: none;            /* Firefox */
+    -ms-overflow-style: none;         /* IE / old Edge */
 }
-*::-webkit-scrollbar { width: 8px; height: 8px; }
-*::-webkit-scrollbar-track { background: transparent; }
-*::-webkit-scrollbar-thumb {
-    background: transparent;
-    border-radius: 999px;
-    border: 2px solid transparent;
-    background-clip: padding-box;
-    transition: background-color 0.2s ease;
-}
-/* Show a faint thumb while the scroll host (or any ancestor) is hovered. */
-*:hover::-webkit-scrollbar-thumb {
-    background: rgb(var(--tc-ink-rgb) / 0.14);
-    background-clip: padding-box;
-}
-*::-webkit-scrollbar-thumb:hover {
-    background: rgb(var(--tc-ink-rgb) / 0.28);
-    background-clip: padding-box;
-}
+*::-webkit-scrollbar { width: 0; height: 0; background: transparent; }
+*::-webkit-scrollbar-track,
+*::-webkit-scrollbar-thumb,
 *::-webkit-scrollbar-corner { background: transparent; }
 /* keep the sidebar rail clean */
 .tc-sidebar-scroll { scrollbar-width: none; }
