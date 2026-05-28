@@ -65,7 +65,7 @@ export default function Terminal() {
   const [drawTool, setDrawTool] = useState(null);
   const [magnet, setMagnet] = useState(false);
   const [locked, setLocked] = useState(false);
-  const [rightTab, setRightTab] = useState("signals");
+  const [rightTab, setRightTab] = useState("order");
   const [side, setSide] = useState("buy");
   const [marginMode, setMarginMode] = useState("percent");
   const [leverage, setLeverage] = useState(10);
@@ -418,30 +418,34 @@ export default function Terminal() {
 
         {/* Right rail */}
         <div className="order-3 flex flex-col gap-3 xl:h-full xl:min-h-0">
-          {/* Always-on order ticket (desktop), trade without leaving the signals feed */}
-          <div className="hidden xl:block xl:shrink-0">
-            <OrderPanel
-              active={active} side={side} setSide={setSide}
-              marginMode={marginMode} setMarginMode={setMarginMode}
-              leverage={leverage} setLeverage={setLeverage} compact
-              signal={activeSignal && activeSignal.sym === symbol ? activeSignal : null}
-              onConnectWallet={() => { setAccountMode("web3"); setAccountOpen(true); }}
-            />
-          </div>
-
-          {/* Context tabs: research while the ticket stays put */}
+          {/* Order / Signals — single bento panel for the right rail */}
           <div className="tc-segment xl:shrink-0">
-            {["signals", "ai", "connect"].map((t) => (
-              <div key={t} className={`tc-segment-btn ${rightTab === t ? "is-active" : ""}`} style={{ padding: "11px 0", fontSize: 12.5, letterSpacing: "0.12em" }} onClick={() => setRightTab(t)} data-testid={`righttab-${t}`}>
-                {t === "ai" ? "AI" : t.charAt(0).toUpperCase() + t.slice(1)}
+            {[
+              { k: "order", label: "Order" },
+              { k: "signals", label: "Signals" },
+            ].map((t) => (
+              <div key={t.k} className={`tc-segment-btn ${rightTab === t.k ? "is-active" : ""}`}
+                style={{ padding: "11px 0", fontSize: 12.5, letterSpacing: "0.12em" }}
+                onClick={() => setRightTab(t.k)} data-testid={`righttab-${t.k}`}>
+                {t.label}
               </div>
             ))}
           </div>
 
-          <div className="xl:flex-1 xl:min-h-0 xl:overflow-y-auto">
+          <div className="xl:flex-1 xl:min-h-0 xl:flex xl:flex-col">
+            {rightTab === "order" && (
+              <div className="hidden xl:flex xl:flex-1 xl:min-h-0">
+                <OrderPanel
+                  active={active} side={side} setSide={setSide}
+                  marginMode={marginMode} setMarginMode={setMarginMode}
+                  leverage={leverage} setLeverage={setLeverage}
+                  signal={activeSignal && activeSignal.sym === symbol ? activeSignal : null}
+                  onConnectWallet={() => { setAccountMode("web3"); setAccountOpen(true); }}
+                  fill
+                />
+              </div>
+            )}
             {rightTab === "signals" && <SignalsRail onPick={chartSignal} activeSym={activeSignal?.sym} />}
-            {rightTab === "connect" && <ConnectPanel onManage={() => { setAccountMode("exchange"); setAccountOpen(true); }} onConnectWallet={() => { setAccountMode("web3"); setAccountOpen(true); }} />}
-            {rightTab === "ai" && <AIRail ai={ai} setAi={setAi} symbol={symbol} timeframe={tf} />}
           </div>
         </div>
       </div>
@@ -639,12 +643,13 @@ function ToggleRow({ label, on, onClick }) {
 }
 
 /* ===== Order panel ===== */
-function OrderPanel({ active, side, setSide, marginMode, setMarginMode, leverage, setLeverage, onConnectWallet, bare, compact, signal }) {
+function OrderPanel({ active, side, setSide, marginMode, setMarginMode, leverage, setLeverage, onConnectWallet, bare, compact, fill, signal }) {
   const wallet = useWallet() || {};
   const { notify } = useNotifications();
   const { address, balance, network, nativeSymbol } = wallet;
   const venueObj = venueFor(network);
-  const [venue, setVenue] = useState("cex"); // cex | onchain
+  // On-chain mode is auto-derived from wallet connection — no manual toggle.
+  const onchain = !!address;
   const [placed, setPlaced] = useState(false);
   const [status, setStatus] = useState("idle"); // idle | signing | done | error | rejected
   const [sig, setSig] = useState("");
@@ -677,33 +682,27 @@ function OrderPanel({ active, side, setSide, marginMode, setMarginMode, leverage
     { lvl: "Avg 2", mult: "×2" },
     { lvl: "Avg 3", mult: "×3" },
   ];
-  const onchain = venue === "onchain";
 
   return (
-    <div className={`flex flex-col gap-4 ${bare ? "" : "tc-panel"}`}>
-      {/* Venue */}
-      <div className="flex items-center gap-1 p-1 rounded-lg bg-white/[0.025] border border-white/[0.05]">
-        {[["cex", "CEX"], ["onchain", "On-chain"]].map(([v, lbl]) => (
-          <button key={v} onClick={() => setVenue(v)}
-            className={`flex-1 py-1.5 rounded-md font-mono text-[10px] tracking-[0.08em] uppercase transition-colors flex items-center justify-center gap-1.5 ${venue === v ? "bg-tradeTeal/15 text-tradeTeal" : "text-white/50"}`}
-            data-testid={`venue-${v}`}>
-            {v === "onchain" && <Wallet className="w-3 h-3" strokeWidth={2} />}{lbl}
-          </button>
-        ))}
-      </div>
-
-      {onchain && (
-        <div className="flex items-center justify-between px-3 py-2 rounded-lg bg-white/[0.02] border border-white/[0.045] text-[11px]">
+    <div className={`flex flex-col gap-4 ${bare ? "" : "tc-panel"} ${fill ? "flex-1 min-h-0 overflow-y-auto" : ""}`}>
+      {/* Wallet status / connect — compact pill at the top */}
+      <button onClick={onConnectWallet}
+        className="flex items-center justify-between gap-2 px-3 py-2 rounded-lg bg-white/[0.025] border border-white/[0.05] hover:border-tradeTeal/30 transition-colors text-left"
+        data-testid="wallet-pill">
+        <span className="flex items-center gap-2 min-w-0">
+          <Wallet className="w-3.5 h-3.5 text-tradeTeal shrink-0" strokeWidth={2} />
           {address ? (
-            <>
-              <span className="text-white/65">{network?.short || "Unknown"} · {shortAddr(address)}</span>
-              <span className="font-mono text-tradeTeal">{balance ?? "…"} {nativeSymbol}</span>
-            </>
+            <span className="font-mono text-[11px] text-white/75 truncate">{network?.short || "Wallet"} · {shortAddr(address)}</span>
           ) : (
-            <span className="text-white/50">Wallet not connected</span>
+            <span className="font-mono text-[11px] text-white/55">Connect wallet · trade on-chain</span>
           )}
-        </div>
-      )}
+        </span>
+        {address ? (
+          <span className="font-mono text-[11px] text-tradeTeal shrink-0">{balance ?? "…"} {nativeSymbol}</span>
+        ) : (
+          <span className="font-mono text-[10px] tracking-[0.1em] uppercase text-tradeTeal shrink-0">Connect</span>
+        )}
+      </button>
 
       {signal && (
         <button onClick={() => setSide(signal.dir === "LONG" ? "buy" : "sell")}
@@ -723,9 +722,10 @@ function OrderPanel({ active, side, setSide, marginMode, setMarginMode, leverage
         </button>
       )}
 
+      {/* Long / Short — taller for the bento layout */}
       <div className="tc-segment">
-        <div className={`tc-segment-btn ${side === "buy" ? "is-active" : ""}`} style={{ padding: "9px 0" }} onClick={() => setSide("buy")}>Long</div>
-        <div className="tc-segment-btn" style={side === "sell" ? { padding: "9px 0", color: "#042024", background: "linear-gradient(135deg,#FF9B91,#F23645)" } : { padding: "9px 0" }} onClick={() => setSide("sell")}>Short</div>
+        <div className={`tc-segment-btn ${side === "buy" ? "is-active" : ""}`} style={{ padding: "13px 0", fontSize: 13, letterSpacing: "0.1em" }} onClick={() => setSide("buy")}>Long</div>
+        <div className="tc-segment-btn" style={side === "sell" ? { padding: "13px 0", fontSize: 13, letterSpacing: "0.1em", color: "#042024", background: "linear-gradient(135deg,#FF9B91,#F23645)" } : { padding: "13px 0", fontSize: 13, letterSpacing: "0.1em" }} onClick={() => setSide("sell")}>Short</div>
       </div>
 
       <div className="flex items-center gap-1.5 p-1 rounded-lg bg-white/[0.025] border border-white/[0.05]">
