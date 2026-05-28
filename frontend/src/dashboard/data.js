@@ -308,15 +308,16 @@ function POSITIONS_SERIESLIKE() {
 
 // ===== VITRIOL =====
 export const VITRIOL = {
-  balance: 0.0,
-  usd: 0.0,
-  staked: 0.0,
-  rewards: 0.0,
+  balance: 1250.0,
+  usd: 17.75,
+  staked: 320.0,
+  rewards: 12.5,
   apr: 24,
   price: "0.0142",
   wallet: "0x716F43Ac0F0b8DF569F7c91D2229cC2ec87A62fe",
   history: [
-    { type: "Reward", amount: "+0.00", date: "—", status: "Pending" },
+    { type: "Stake", amount: "+320.00", date: "May 24, 2026", status: "Confirmed" },
+    { type: "Reward", amount: "+12.50", date: "May 26, 2026", status: "Pending" },
   ],
 };
 

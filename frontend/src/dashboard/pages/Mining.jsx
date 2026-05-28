@@ -3,6 +3,7 @@ import { Pickaxe, Copy, Check, Gift, Layers, Clock, ArrowUpRight } from "lucide-
 import { PageHead, Panel } from "../ui";
 import { MINING } from "../data";
 import { ConfirmModal } from "../components/AccountModals";
+import { useNotifications } from "../NotificationContext";
 
 // Derived figures per contract
 function derive(c) {
@@ -15,14 +16,27 @@ function derive(c) {
 }
 
 export default function Mining() {
+  const { notify } = useNotifications();
   const [claim, setClaim] = useState(false);
   const [copied, setCopied] = useState(false);
 
   const rows = MINING.contracts.map((c) => ({ ...c, ...derive(c) }));
   const totalMined = rows.reduce((a, r) => a + r.accrued, 0);
-  const claimable = rows.filter((r) => r.active).reduce((a, r) => a + r.daily * 1, 0); // unclaimed ~ 1 cycle
   const dailyAccrual = rows.filter((r) => r.active).reduce((a, r) => a + r.daily, 0);
   const activeCount = rows.filter((r) => r.active).length;
+
+  const [claimable, setClaimable] = useState(() => rows.filter((r) => r.active).reduce((a, r) => a + r.daily, 0));
+  const [payouts, setPayouts] = useState(MINING.payouts);
+
+  const today = () => new Date().toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+  const claimRewards = () => {
+    if (claimable <= 0) return;
+    const amt = claimable;
+    setPayouts((p) => [{ date: today(), amountVIT: amt, status: "Paid", tx: "0x" + Math.random().toString(16).slice(2, 6) + "…" + Math.random().toString(16).slice(2, 6) }, ...p]);
+    setClaimable(0);
+    notify({ type: "mining", title: `Claimed ${fmt(amt)} VIT`, body: "Mining rewards sent to your VIT wallet." });
+  };
+  const fmt = (n) => n.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
   const copyAddr = () => {
     navigator.clipboard?.writeText(MINING.walletAddress).catch(() => {});
@@ -30,14 +44,13 @@ export default function Mining() {
     setTimeout(() => setCopied(false), 1500);
   };
 
-  const fmt = (n) => n.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-
   return (
     <div className="tc-fade flex flex-col gap-6">
       <PageHead eyebrow="Earn · Mining Pool" title="Mining Pool"
         desc="Every product and Trading Pool deposit mints a mining contract that pays VIT rewards back to you, daily.">
-        <button className="tc-btn tc-btn-primary" onClick={() => setClaim(true)} data-testid="mining-claim">
-          <Gift className="w-3.5 h-3.5" strokeWidth={2} /> Claim {fmt(claimable)} VIT
+        <button className="tc-btn tc-btn-primary" onClick={() => setClaim(true)} disabled={claimable <= 0}
+          style={claimable <= 0 ? { opacity: 0.5, pointerEvents: "none" } : undefined} data-testid="mining-claim">
+          <Gift className="w-3.5 h-3.5" strokeWidth={2} /> {claimable > 0 ? `Claim ${fmt(claimable)} VIT` : "Claimed"}
         </button>
       </PageHead>
 
@@ -111,8 +124,9 @@ export default function Mining() {
                 {copied ? <Check className="w-3.5 h-3.5 text-tradeTeal" /> : <Copy className="w-3.5 h-3.5" />}
               </button>
             </div>
-            <button className="tc-btn tc-btn-primary w-full mt-3" onClick={() => setClaim(true)}>
-              <Gift className="w-3.5 h-3.5" strokeWidth={2} /> Claim rewards
+            <button className="tc-btn tc-btn-primary w-full mt-3" onClick={() => setClaim(true)} disabled={claimable <= 0}
+              style={claimable <= 0 ? { opacity: 0.5, pointerEvents: "none" } : undefined}>
+              <Gift className="w-3.5 h-3.5" strokeWidth={2} /> {claimable > 0 ? "Claim rewards" : "Rewards claimed"}
             </button>
           </Panel>
 
@@ -140,7 +154,7 @@ export default function Mining() {
           <table className="tc-table">
             <thead><tr><th>Date</th><th>Amount</th><th>Status</th><th>Tx</th></tr></thead>
             <tbody>
-              {MINING.payouts.map((p, i) => (
+              {payouts.map((p, i) => (
                 <tr key={i}>
                   <td className="mono text-white/55">{p.date}</td>
                   <td className="mono text-tradeTeal">+{fmt(p.amountVIT)} VIT</td>
@@ -159,6 +173,7 @@ export default function Mining() {
           sub={`${fmt(claimable)} VIT available`}
           body={`Claim ${fmt(claimable)} VIT to your mining wallet (${MINING.walletAddress.slice(0, 10)}…). Payouts settle on-chain within a few minutes.`}
           confirmLabel="Claim rewards"
+          onConfirm={claimRewards}
           onClose={() => setClaim(false)}
         />
       )}
