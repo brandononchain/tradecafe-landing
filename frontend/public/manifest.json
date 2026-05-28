@@ -1,0 +1,22 @@
+{
+  "name": "TradeCafe — AI Trading Ecosystem",
+  "short_name": "TradeCafe",
+  "description": "A 24/7 AI trading ecosystem — terminal, signals, automation, pooled strategies, and a partner network.",
+  "start_url": "/app",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#02080A",
+  "theme_color": "#02080A",
+  "categories": ["finance", "productivity", "business"],
+  "icons": [
+    { "src": "/tradecafe-logo.png", "sizes": "any", "type": "image/png", "purpose": "any" },
+    { "src": "/tradecafe-logo.png", "sizes": "any", "type": "image/png", "purpose": "maskable" },
+    { "src": "/tradecafe-logo.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ],
+  "shortcuts": [
+    { "name": "Terminal", "url": "/app/terminal", "description": "Open the trading terminal" },
+    { "name": "Signals", "url": "/app/signals", "description": "View AI signals" },
+    { "name": "Trading Pool", "url": "/app/pool", "description": "Manage pool position" }
+  ]
+}

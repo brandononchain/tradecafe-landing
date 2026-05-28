@@ -3045,3 +3045,7 @@ input[type="range"]::-moz-range-thumb {
     cursor: grab;
 }
 input[type="range"]:active::-moz-range-thumb { cursor: grabbing; }
+
+@keyframes tcShimmer {
+    100% { transform: translateX(100%); }
+}

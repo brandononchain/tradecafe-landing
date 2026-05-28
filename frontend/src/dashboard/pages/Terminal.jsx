@@ -4,7 +4,7 @@ import {
   TrendingUp, TrendingDown, Search, Minus, X, ChevronDown, Check,
   CandlestickChart, LineChart as LineIcon, AreaChart as AreaIcon, BarChart3,
   Brain, Sparkles, MousePointer2, MoveUpRight, Type, Square, Magnet, Lock, Eraser, Ruler,
-  Settings2, Keyboard, Star, Plug, Pencil, Share2, Wallet, Loader2,
+  Settings2, Keyboard, Star, Plug, Pencil, Share2, Wallet, Loader2, Bell, LayoutGrid, Columns2, SquareSplitHorizontal,
 } from "lucide-react";
 import TradingChart from "../components/TradingChart";
 import Modal from "../components/Modal";
@@ -12,6 +12,9 @@ import TradeAccountModal from "../components/TradeAccountModal";
 import SharePnlModal from "../components/SharePnlModal";
 import { useWallet } from "../WalletContext";
 import { useNotifications } from "../NotificationContext";
+import { useTicker } from "../TickerContext";
+import { useAlerts } from "../AlertsContext";
+import { CountUp } from "../components/CountUp";
 import { shortAddr } from "../lib/web3";
 import { placeOrder, venueFor } from "../lib/orders";
 import { BrandLogo } from "../lib/brandLogos";
@@ -41,7 +44,11 @@ const DRAW_TOOLS = [
 const LEVERAGE = [1, 2, 3, 5, 10, 20, 25, 50];
 
 export default function Terminal() {
-  const [symbol, setSymbol] = useState("BTCUSDT");
+  const { prices: livePrices, prev: livePrev } = useTicker();
+  const { alertsFor, addAlert, removeAlert } = useAlerts();
+  // `symbol` is the active pane's symbol — derived from chartSymbols
+  // below, exposed via the same setSymbol API so every existing call
+  // site keeps working.
   const [tf, setTf] = useState("1H");
   const [chartType, setChartType] = useState("candles");
   const [overlays, setOverlays] = useState({});
@@ -71,6 +78,22 @@ export default function Terminal() {
   const [sharePnl, setSharePnl] = useState(null);
   const [orderSheet, setOrderSheet] = useState(false); // mobile/tablet order ticket
   const openSheet = (s) => { setSide(s); setOrderSheet(true); };
+  const [alertOpen, setAlertOpen] = useState(false);
+
+  // Multi-chart layout — 1 / 2 / 4 panes, each with its own symbol.
+  // `symbol` continues to be the single source of truth for the active
+  // pane so every existing consumer (header, order ticket, signals,
+  // wallet) works unchanged.
+  const [chartLayout, setChartLayout] = useState(1);
+  const [chartSymbols, setChartSymbols] = useState(["BTCUSDT", "ETHUSDT", "SOLUSDT", "AVAXUSDT"]);
+  const [activeChart, setActiveChart] = useState(0);
+  const symbol = chartSymbols[activeChart];
+  const setSymbol = (sym) => setChartSymbols((arr) => {
+    if (arr[activeChart] === sym) return arr;
+    const next = [...arr];
+    next[activeChart] = sym;
+    return next;
+  });
 
   const toggleFav = (sym) =>
     setFavorites((prev) => (prev.includes(sym) ? prev.filter((s) => s !== sym) : [...prev, sym]));
@@ -147,8 +170,26 @@ export default function Terminal() {
           </span>
         </button>
         <div className="flex items-baseline gap-2">
-          <span className="font-mono text-[19px] font-semibold text-tradeWhite">{active.last}</span>
-          <span className={`font-mono text-[12px] ${active.up ? "text-tradeTeal" : "text-[#FF8A82]"}`}>{active.chg}</span>
+          {(() => {
+            const live = livePrices[active.sym];
+            const prev = livePrev[active.sym] ?? live;
+            const up = live >= prev;
+            const decimals = live >= 1000 ? 2 : live >= 10 ? 3 : 4;
+            return (
+              <>
+                <CountUp value={live ?? 0} decimals={decimals} durationMs={500}
+                  className="font-mono text-[19px] font-semibold transition-colors"
+                  style={{ color: up ? "var(--tc-accent-light)" : "#FF8A82" }} />
+                <span className="inline-flex items-center gap-1 font-mono text-[10px] tracking-[0.14em] uppercase text-tradeTeal">
+                  <span className="trade-pulse-dot inline-block w-1.5 h-1.5 rounded-full bg-tradeTeal" /> Live
+                </span>
+                <button onClick={() => setAlertOpen(true)} className="tc-iconbtn" style={{ width: 30, height: 30 }} title="Set price alert" data-testid="set-alert">
+                  <Bell className="w-3.5 h-3.5" strokeWidth={2} />
+                  {alertsFor(active.sym).length > 0 && <span className="absolute -top-0.5 -right-0.5 min-w-[14px] h-[14px] px-1 rounded-full bg-tradeTeal text-[#042024] font-mono text-[9px] leading-[14px] text-center">{alertsFor(active.sym).length}</span>}
+                </button>
+              </>
+            );
+          })()}
         </div>
         <div className="hidden md:flex items-center gap-6 ml-auto font-mono text-[11px]">
           <Mini label="24h High" value={active.last} />
@@ -281,8 +322,22 @@ export default function Terminal() {
               <Settings2 className="w-3.5 h-3.5" strokeWidth={2} />
             </button>
 
-            {/* Right cluster: AI quick toggles (desktop) + Indicators + AI */}
+            {/* Right cluster: layout switcher + AI quick toggles + Indicators + AI */}
             <div className="ml-auto flex items-center gap-2 shrink-0">
+              <div className="hidden md:flex items-center gap-0.5 p-0.5 rounded-lg bg-white/[0.025]" data-testid="chart-layout">
+                {[
+                  { v: 1, Icon: LayoutGrid, label: "Single" },
+                  { v: 2, Icon: Columns2, label: "Two charts" },
+                  { v: 4, Icon: SquareSplitHorizontal, label: "Four charts" },
+                ].map(({ v, Icon, label }) => (
+                  <button key={v} onClick={() => { setChartLayout(v); if (activeChart >= v) setActiveChart(0); }}
+                    title={label}
+                    className={`flex items-center justify-center rounded-md transition-colors ${chartLayout === v ? "bg-tradeTeal/15 text-tradeTeal" : "text-white/45 hover:text-white/80"}`}
+                    style={{ width: 26, height: 26 }} data-testid={`layout-${v}`}>
+                    <Icon className="w-3.5 h-3.5" strokeWidth={2} />
+                  </button>
+                ))}
+              </div>
               <div className="hidden lg:flex items-center gap-1">
                 {[["Pivot P.", "pivots"], ["TSR", "tsr"], ["B&R", "breaks"], ["Trend F.", "trendFinder"]].map(([lbl, key]) => (
                   <button key={key} onClick={() => setAi((a) => ({ ...a, [key]: !a[key] }))}
@@ -341,8 +396,24 @@ export default function Terminal() {
                 <Eraser className="w-3.5 h-3.5" strokeWidth={2} />
               </button>
             </div>
-            <div className="flex-1 min-w-0 min-h-0">
-              <TradingChart symbol={symbol} timeframe={tf} chartType={chartType} overlays={overlays} oscillator={oscillator} ai={ai} drawTool={locked ? null : drawTool} logScale={logScale} signal={activeSignal && activeSignal.sym === symbol ? activeSignal : null} />
+            <div className={`flex-1 min-w-0 min-h-0 ${chartLayout === 1 ? "" : chartLayout === 2 ? "grid grid-cols-2 gap-1.5" : "grid grid-cols-2 grid-rows-2 gap-1.5"}`}>
+              {chartSymbols.slice(0, chartLayout).map((s, i) => {
+                const isActive = i === activeChart;
+                return (
+                  <div key={i} onClick={() => setActiveChart(i)}
+                    className={`relative min-w-0 min-h-0 ${chartLayout > 1 ? `rounded-lg overflow-hidden cursor-pointer transition-shadow ${isActive ? "ring-1 ring-tradeTeal/50 shadow-[0_0_0_1px_rgba(0,180,166,0.2)]" : "ring-1 ring-white/[0.04] hover:ring-white/[0.1]"}` : ""}`}
+                    data-testid={`chart-pane-${i}`}>
+                    {chartLayout > 1 && (
+                      <span className={`absolute top-2 left-2 z-10 px-2 py-0.5 rounded-md font-mono text-[10px] tracking-[0.06em] ${isActive ? "bg-tradeTeal/15 text-tradeTeal border border-tradeTeal/30" : "bg-surface/80 text-white/65 border border-white/[0.06]"}`}>
+                        {s}
+                      </span>
+                    )}
+                    <TradingChart symbol={s} timeframe={tf} chartType={chartType} overlays={overlays} oscillator={oscillator} ai={ai}
+                      drawTool={isActive && !locked ? drawTool : null} logScale={logScale}
+                      signal={isActive && activeSignal && activeSignal.sym === s ? activeSignal : null} />
+                  </div>
+                );
+              })}
             </div>
           </div>
         </div>
@@ -436,6 +507,16 @@ export default function Terminal() {
       {searchOpen && <SymbolSearch exchange={exchange} onClose={() => setSearchOpen(false)} onPick={(s) => { pickSymbol(s); setSearchOpen(false); }} />}
       {accountOpen && <TradeAccountModal initialMode={accountMode} onClose={() => setAccountOpen(false)} />}
       {sharePnl && <SharePnlModal data={sharePnl} onClose={() => setSharePnl(null)} />}
+      {alertOpen && (
+        <PriceAlertModal
+          symbol={active.sym}
+          livePrice={livePrices[active.sym] ?? 0}
+          existing={alertsFor(active.sym)}
+          onAdd={(condition, price) => addAlert({ symbol: active.sym, condition, price })}
+          onRemove={removeAlert}
+          onClose={() => setAlertOpen(false)}
+        />
+      )}
       {settingsOpen && (
         <Modal title="Terminal settings" sub="Chart preferences" onClose={() => setSettingsOpen(false)}
           footer={<button className="tc-btn tc-btn-primary flex-1" onClick={() => setSettingsOpen(false)}>Done</button>}>
@@ -981,5 +1062,64 @@ function MenuItem({ checked, onClick, children }) {
       </span>
       <span className="flex-1 text-[12.5px] text-white/80">{children}</span>
     </button>
+  );
+}
+
+function PriceAlertModal({ symbol, livePrice, existing, onAdd, onRemove, onClose }) {
+  const initialPrice = livePrice > 0 ? Number(livePrice.toFixed(livePrice >= 1000 ? 2 : livePrice >= 10 ? 3 : 4)) : 0;
+  const [condition, setCondition] = useState("above");
+  const [price, setPrice] = useState(String(initialPrice));
+  const target = parseFloat(price) || 0;
+  const valid = target > 0 && target !== livePrice;
+  const submit = () => {
+    if (!valid) return;
+    onAdd(condition, target);
+    setPrice(String(initialPrice));
+  };
+
+  return (
+    <Modal title={`Price alerts · ${symbol}`} sub={`Live ${Number(livePrice).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:4})}`} width={420} onClose={onClose}
+      footer={
+        <>
+          <button className="tc-btn tc-btn-ghost flex-1" onClick={onClose}>Done</button>
+          <button className="tc-btn tc-btn-primary flex-1" disabled={!valid}
+            style={!valid ? { opacity: 0.5, pointerEvents: "none" } : undefined} onClick={submit} data-testid="alert-add">
+            <Bell className="w-3.5 h-3.5" strokeWidth={2} /> Add alert
+          </button>
+        </>
+      }>
+      <div className="tc-segment mb-4">
+        {["above", "below"].map((c) => (
+          <div key={c} className={`tc-segment-btn ${condition === c ? "is-active" : ""}`} style={{ padding: "8px 0" }} onClick={() => setCondition(c)}>
+            {c === "above" ? "Crosses Above" : "Falls Below"}
+          </div>
+        ))}
+      </div>
+      <div className="font-mono text-[10px] tracking-[0.14em] uppercase text-white/45 mb-2">Target price (USD)</div>
+      <input type="number" step="any" value={price} onChange={(e) => setPrice(e.target.value)} data-testid="alert-price"
+        className="w-full px-3.5 py-2.5 rounded-xl bg-white/[0.03] border border-white/[0.05] text-[14px] outline-none focus:border-tradeTeal/40 transition-colors" />
+      <p className="mt-2 font-mono text-[10.5px] text-white/40">
+        Fires a notification the first time {symbol} {condition === "above" ? "crosses above" : "falls below"} your target.
+      </p>
+
+      {existing.length > 0 && (
+        <div className="mt-5">
+          <div className="font-mono text-[10px] tracking-[0.14em] uppercase text-white/45 mb-2">Active alerts</div>
+          <div className="flex flex-col gap-1.5">
+            {existing.map((a) => (
+              <div key={a.id} className="flex items-center justify-between px-3 py-2 rounded-lg bg-white/[0.025] border border-white/[0.05]">
+                <span className="text-[12.5px] text-white/80">
+                  <span className={a.condition === "above" ? "text-tradeTeal" : "text-[#FF8A82]"}>{a.condition === "above" ? "↑ Above" : "↓ Below"}</span>{" "}
+                  <span className="font-mono">{Number(a.price).toLocaleString()}</span>
+                </span>
+                <button onClick={() => onRemove(a.id)} className="tc-iconbtn" style={{ width: 26, height: 26 }} aria-label="Remove alert">
+                  <X className="w-3 h-3" strokeWidth={2} />
+                </button>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+    </Modal>
   );
 }
