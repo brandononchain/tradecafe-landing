@@ -25,7 +25,7 @@ export default function RiskFramework() {
       eyebrow="Insights · Risk Framework"
       title="Risk is the"
       accent="first feature"
-      sub="Capital logic, position limits, trailing protection, and drawdown controls are enforced on every order — automated, transparent, and always on. Survival before performance."
+      sub="Capital logic, position limits, trailing protection, and drawdown controls are enforced on every order, automated, transparent, and always on. Survival before performance."
       ctas={[
         { label: "Open the Terminal", to: EXTERNAL.launchTerminal, primary: true, testid: "rf-cta-open" },
         { label: "View Automation", to: "/automation", testid: "rf-cta-automation" },

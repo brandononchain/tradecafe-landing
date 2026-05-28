@@ -14,17 +14,17 @@ const STATS = [
 
 const FEATURES = [
   { title: "AI Signal Engine", Icon: Brain, desc: "High-confidence setups with entries, targets, and stops streamed straight to your chart." },
-  { title: "Pro charting", Icon: CandlestickChart, desc: "Drawing tools, indicators, and AI overlays — support/resistance, pivots, and trend channels." },
+  { title: "Pro charting", Icon: CandlestickChart, desc: "Drawing tools, indicators, and AI overlays, support/resistance, pivots, and trend channels." },
   { title: "One-click execution", Icon: Zap, desc: "Route market and limit orders to any connected exchange or on-chain venue in a tap." },
   { title: "Risk guardrails", Icon: ShieldCheck, desc: "Position sizing, leverage limits, and trailing protection enforced on every order." },
-  { title: "Multi-market", Icon: Layers, desc: "Spot, perps, and equities across Binance, Bybit, OKX, and the rest — one terminal." },
-  { title: "Shareable proof", Icon: Share2, desc: "Turn closed trades into proof cards with embedded referral links — credibility that compounds." },
+  { title: "Multi-market", Icon: Layers, desc: "Spot, perps, and equities across Binance, Bybit, OKX, and the rest, one terminal." },
+  { title: "Shareable proof", Icon: Share2, desc: "Turn closed trades into proof cards with embedded referral links, credibility that compounds." },
 ];
 
 const STEPS = [
   { title: "Scan", Icon: Radar, desc: "The engine surfaces setups around the clock, ranked by confidence and context." },
   { title: "Confirm", Icon: CheckCircle2, desc: "Tap a signal to auto-chart it with AI levels so you validate the thesis fast." },
-  { title: "Execute", Icon: Play, desc: "Place the trade from the docked ticket — side, size, and leverage pre-filled." },
+  { title: "Execute", Icon: Play, desc: "Place the trade from the docked ticket, side, size, and leverage pre-filled." },
   { title: "Manage", Icon: Gauge, desc: "Track open positions, PnL, and risk live, then close or share with one click." },
 ];
 
@@ -50,7 +50,7 @@ export default function ActiveTraders() {
       </Section>
 
       <Section>
-        <SectionLabel index="01" title="Your edge, your rules" caption="Every tool a discretionary trader needs — nothing taken away." />
+        <SectionLabel index="01" title="Your edge, your rules" caption="Every tool a discretionary trader needs, nothing taken away." />
         <FeatureGrid items={FEATURES} />
       </Section>
 

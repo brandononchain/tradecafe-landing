@@ -12,10 +12,10 @@ const CATEGORIES = [
 ];
 
 const FAQ = [
-  { q: "Does TradeCafe hold my funds?", a: "No. For on-chain trading you connect a non-custodial wallet and TradeCafe never holds your keys. For exchange trading you provide API keys scoped to read and trade only — never withdrawals." },
+  { q: "Does TradeCafe hold my funds?", a: "No. For on-chain trading you connect a non-custodial wallet and TradeCafe never holds your keys. For exchange trading you provide API keys scoped to read and trade only, never withdrawals." },
   { q: "Which exchanges and brokers are supported?", a: "Crypto exchanges include Binance, Bybit, Bitget, OKX, WEEX, BingX, and KuCoin, plus on-chain venues across EVM chains and Solana. TradFi broker connections (FX) are available for select brokers, with more added over time." },
   { q: "Is this investment advice?", a: "No. TradeCafe provides tools, signals, and infrastructure for informational purposes only. Nothing on the platform is investment advice or a recommendation to trade. Trading involves substantial risk." },
-  { q: "How are signals generated?", a: "Signals come from layered analysis — support/resistance, pivots, trend channels, and breaks & retests — that must show confluence before publishing, each with a confidence score and context. See the AI Methodology page." },
+  { q: "How are signals generated?", a: "Signals come from layered analysis, support/resistance, pivots, trend channels, and breaks & retests, that must show confluence before publishing, each with a confidence score and context. See the AI Methodology page." },
   { q: "What does it cost?", a: "TradeCafe offers tiered subscriptions for individuals and custom engagements for brokers, funds, and managers. Reach out to the team for institutional pricing." },
 ];
 
@@ -26,7 +26,7 @@ export default function Docs() {
       eyebrow="Insights · Docs"
       title="Everything you need to"
       accent="get going"
-      sub="Guides, onboarding, and technical references for the whole ecosystem — from connecting your first account to running automated strategies and growing a partner network."
+      sub="Guides, onboarding, and technical references for the whole ecosystem, from connecting your first account to running automated strategies and growing a partner network."
       ctas={[
         { label: "Open the Terminal", to: EXTERNAL.launchTerminal, primary: true, testid: "docs-cta-open" },
         { label: "Contact Support", to: "/company/support", testid: "docs-cta-support" },

@@ -47,7 +47,7 @@ export default function AmbassadorProgram() {
       </Section>
 
       <Section>
-        <SectionLabel index="01" title="Ambassador perks" caption="More than a referral link — a partnership." />
+        <SectionLabel index="01" title="Ambassador perks" caption="More than a referral link, a partnership." />
         <FeatureGrid items={PERKS} />
       </Section>
 

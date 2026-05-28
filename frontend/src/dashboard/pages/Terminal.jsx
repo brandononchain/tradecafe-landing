@@ -4,7 +4,7 @@ import {
   TrendingUp, TrendingDown, Search, Minus, X, ChevronDown, Check,
   CandlestickChart, LineChart as LineIcon, AreaChart as AreaIcon, BarChart3,
   Brain, Sparkles, MousePointer2, MoveUpRight, Type, Square, Magnet, Lock, Eraser, Ruler,
-  Settings2, Keyboard, Star, Plug, Pencil, Share2, Wallet, Loader2, Bell, LayoutGrid, Columns2, SquareSplitHorizontal,
+  Settings2, Keyboard, Star, Plug, Pencil, Share2, Wallet, Loader2, Bell, BellPlus, LayoutGrid, Columns2, SquareSplitHorizontal,
 } from "lucide-react";
 import TradingChart from "../components/TradingChart";
 import Modal from "../components/Modal";
@@ -46,7 +46,7 @@ const LEVERAGE = [1, 2, 3, 5, 10, 20, 25, 50];
 export default function Terminal() {
   const { prices: livePrices, prev: livePrev } = useTicker();
   const { alertsFor, addAlert, removeAlert } = useAlerts();
-  // `symbol` is the active pane's symbol — derived from chartSymbols
+  // `symbol` is the active pane's symbol, derived from chartSymbols
   // below, exposed via the same setSymbol API so every existing call
   // site keeps working.
   const [tf, setTf] = useState("1H");
@@ -80,7 +80,7 @@ export default function Terminal() {
   const openSheet = (s) => { setSide(s); setOrderSheet(true); };
   const [alertOpen, setAlertOpen] = useState(false);
 
-  // Multi-chart layout — 1 / 2 / 4 panes, each with its own symbol.
+  // Multi-chart layout, 1 / 2 / 4 panes, each with its own symbol.
   // `symbol` continues to be the single source of truth for the active
   // pane so every existing consumer (header, order ticket, signals,
   // wallet) works unchanged.
@@ -183,8 +183,8 @@ export default function Terminal() {
                 <span className="inline-flex items-center gap-1 font-mono text-[10px] tracking-[0.14em] uppercase text-tradeTeal">
                   <span className="trade-pulse-dot inline-block w-1.5 h-1.5 rounded-full bg-tradeTeal" /> Live
                 </span>
-                <button onClick={() => setAlertOpen(true)} className="tc-iconbtn" style={{ width: 30, height: 30 }} title="Set price alert" data-testid="set-alert">
-                  <Bell className="w-3.5 h-3.5" strokeWidth={2} />
+                <button onClick={() => setAlertOpen(true)} className="tc-iconbtn relative" style={{ width: 30, height: 30 }} title="Set price alert" data-testid="set-alert">
+                  <BellPlus className="w-3.5 h-3.5" strokeWidth={2} />
                   {alertsFor(active.sym).length > 0 && <span className="absolute -top-0.5 -right-0.5 min-w-[14px] h-[14px] px-1 rounded-full bg-tradeTeal text-[#042024] font-mono text-[9px] leading-[14px] text-center">{alertsFor(active.sym).length}</span>}
                 </button>
               </>
@@ -317,7 +317,7 @@ export default function Terminal() {
                   data-testid={`tf-${t}`}>{t}</button>
               ))}
             </div>
-            {/* Filter / chart settings — sits where Indicators used to be */}
+            {/* Filter / chart settings, sits where Indicators used to be */}
             <button className="tc-iconbtn shrink-0" style={{ width: 32, height: 32 }} onClick={() => setSettingsOpen(true)} title="Chart settings & filters" data-testid="chart-settings">
               <Settings2 className="w-3.5 h-3.5" strokeWidth={2} />
             </button>
@@ -396,7 +396,7 @@ export default function Terminal() {
                 <Eraser className="w-3.5 h-3.5" strokeWidth={2} />
               </button>
             </div>
-            <div className={`flex-1 min-w-0 min-h-0 ${chartLayout === 1 ? "" : chartLayout === 2 ? "grid grid-cols-2 gap-1.5" : "grid grid-cols-2 grid-rows-2 gap-1.5"}`}>
+            <div className={`flex-1 min-w-0 min-h-0 grid gap-1.5 ${chartLayout === 1 ? "grid-cols-1 grid-rows-1" : chartLayout === 2 ? "grid-cols-2 grid-rows-1" : "grid-cols-2 grid-rows-2"}`}>
               {chartSymbols.slice(0, chartLayout).map((s, i) => {
                 const isActive = i === activeChart;
                 return (
@@ -420,7 +420,7 @@ export default function Terminal() {
 
         {/* Right rail */}
         <div className="order-3 flex flex-col gap-3 xl:h-full xl:min-h-0">
-          {/* Always-on order ticket (desktop) — trade without leaving the signals feed */}
+          {/* Always-on order ticket (desktop), trade without leaving the signals feed */}
           <div className="hidden xl:block xl:shrink-0">
             <OrderPanel
               active={active} side={side} setSide={setSide}
@@ -535,7 +535,7 @@ export default function Terminal() {
         </Modal>
       )}
 
-      {/* Fixed Long/Short bar — mobile & tablet (portaled so it pins to the viewport) */}
+      {/* Fixed Long/Short bar, mobile & tablet (portaled so it pins to the viewport) */}
       {createPortal(
         <div className="xl:hidden fixed bottom-0 left-0 right-0 z-40 flex items-center gap-2 px-3 py-2.5 border-t border-white/[0.06]"
           style={{ background: "rgb(var(--tc-surface-rgb) / 0.96)", backdropFilter: "blur(10px)", paddingBottom: "max(10px, env(safe-area-inset-bottom))" }}>
@@ -748,15 +748,15 @@ function OrderPanel({ active, side, setSide, marginMode, setMarginMode, leverage
       )}
       {onchain && (status === "error" || status === "rejected") && (
         <div className="px-3 py-2 rounded-lg bg-[#F23645]/10 border border-[#F23645]/25 text-[12px] text-[#FF8A82]">
-          {status === "rejected" ? "Signature rejected — order not placed." : "Order failed — please try again."}
+          {status === "rejected" ? "Signature rejected, order not placed." : "Order failed, please try again."}
         </div>
       )}
 
       {onchain ? (
         <div className="grid grid-cols-2 gap-2 font-mono text-[11px] text-white/50">
           <span>Venue</span><span className="text-right text-tradeTeal">{venueObj.name}</span>
-          <span>Network</span><span className="text-right text-white/80">{network?.short || "—"}</span>
-          <span>Wallet</span><span className="text-right text-white/80">{balance ? `${balance} ${nativeSymbol}` : "—"}</span>
+          <span>Network</span><span className="text-right text-white/80">{network?.short || ", "}</span>
+          <span>Wallet</span><span className="text-right text-white/80">{balance ? `${balance} ${nativeSymbol}` : ", "}</span>
           <span>Settlement</span><span className="text-right text-white/80">{network?.ecosystem === "solana" ? "Solana tx" : "EIP-712"}</span>
         </div>
       ) : (
@@ -917,7 +917,7 @@ function SymbolSearch({ onClose, onPick, exchange }) {
   });
 
   // Lock the page behind so it doesn't scroll while the search is open,
-  // and close on Escape — same UX as the shared Modal.
+  // and close on Escape, same UX as the shared Modal.
   useEffect(() => {
     const onKey = (e) => e.key === "Escape" && onClose();
     document.addEventListener("keydown", onKey);
@@ -936,7 +936,7 @@ function SymbolSearch({ onClose, onPick, exchange }) {
         {/* Search field */}
         <div className="flex items-center gap-2.5 px-4 py-3.5 border-b border-white/[0.05]">
           <Search className="w-4 h-4 text-tradeTeal shrink-0" strokeWidth={2} />
-          <input autoFocus placeholder="Search markets — symbol or name…" value={q}
+          <input autoFocus placeholder="Search markets, symbol or name…" value={q}
             onChange={(e) => setQ(e.target.value)}
             onKeyDown={(e) => { if (e.key === "Enter" && results[0]) onPick(results[0].sym); if (e.key === "Escape") onClose(); }}
             className="flex-1 min-w-0 bg-transparent text-[15px] text-white placeholder-white/35 outline-none" />

@@ -10,7 +10,7 @@ const STATS = [
 ];
 
 const VALUES = [
-  { title: "Transparency", Icon: Eye, desc: "We publish performance, methodology, and risk openly — numbers over narratives." },
+  { title: "Transparency", Icon: Eye, desc: "We publish performance, methodology, and risk openly, numbers over narratives." },
   { title: "Risk first", Icon: Scale, desc: "Capital preservation is a feature, not an afterthought. Survival before performance." },
   { title: "Ecosystem", Icon: Network, desc: "Traders, partners, brokers, and funds grow together inside one connected economy." },
 ];
@@ -30,7 +30,7 @@ export default function About() {
       eyebrow="Company · About"
       title="Building the"
       accent="TradeCafe economy"
-      sub="TradeCafe unifies signals, execution, pooled strategies, and a partner network into one AI-driven trading ecosystem — built so every participant, from solo trader to institution, can grow on shared infrastructure."
+      sub="TradeCafe unifies signals, execution, pooled strategies, and a partner network into one AI-driven trading ecosystem, built so every participant, from solo trader to institution, can grow on shared infrastructure."
       ctas={[
         { label: "Launch Terminal", to: EXTERNAL.launchTerminal, primary: true, testid: "ab-cta-launch" },
         { label: "View Roadmap", to: "/company/roadmap", testid: "ab-cta-roadmap" },
@@ -40,8 +40,8 @@ export default function About() {
         <div className="rounded-2xl bg-white/[0.02] border border-white/[0.06] p-6 sm:p-9" data-s="reveal">
           <div className="font-mono text-[10px] tracking-[0.18em] uppercase text-tradeTeal/90 mb-3">Our mission</div>
           <p className="font-heading text-[20px] sm:text-[26px] font-medium leading-[1.4] text-white/90 max-w-[920px]">
-            Make professional-grade trading infrastructure — AI analysis, disciplined execution, and
-            transparent performance — <span className="italic font-light text-tradeTeal">accessible to everyone</span>,
+            Make professional-grade trading infrastructure, AI analysis, disciplined execution, and
+            transparent performance, <span className="italic font-light text-tradeTeal">accessible to everyone</span>,
             and let the people who grow the network share in its success.
           </p>
         </div>

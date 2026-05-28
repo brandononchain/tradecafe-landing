@@ -15,7 +15,7 @@ const STATS = [
 const FEATURES = [
   { title: "Multi-account execution", Icon: Boxes, desc: "Route and manage orders across multiple sub-accounts from a single workflow." },
   { title: "Strategy automation", Icon: Bot, desc: "Encode strategies with risk logic and let the execution engine run them hands-free." },
-  { title: "Performance reporting", Icon: FileBarChart, desc: "Per-account returns, drawdowns, exposure, and attribution — exportable on demand." },
+  { title: "Performance reporting", Icon: FileBarChart, desc: "Per-account returns, drawdowns, exposure, and attribution, exportable on demand." },
   { title: "Risk framework", Icon: ShieldCheck, desc: "Position limits, leverage caps, trailing protection, and drawdown controls enforced." },
   { title: "Pool infrastructure", Icon: Layers, desc: "Stand up managed strategy pools on the same infrastructure that powers TradeCafe." },
   { title: "White-glove onboarding", Icon: Headset, desc: "Dedicated integration support, documentation, and a direct line to our team." },
@@ -35,7 +35,7 @@ export default function FundsManagers() {
       eyebrow="Solutions · Funds & Managers"
       title="Infrastructure for"
       accent="managed strategies"
-      sub="Execution workflows, automated strategy logic, risk tooling, and per-account reporting for funds, managers, and professional desks — on the infrastructure that runs TradeCafe."
+      sub="Execution workflows, automated strategy logic, risk tooling, and per-account reporting for funds, managers, and professional desks, on the infrastructure that runs TradeCafe."
       ctas={[
         { label: "Talk to our team", href: EXTERNAL.contactSales, external: true, primary: true, testid: "fm-cta-contact" },
         { label: "View Trading Pool", to: "/pool", testid: "fm-cta-pool" },

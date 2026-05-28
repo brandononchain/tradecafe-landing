@@ -30,11 +30,11 @@ const PIPELINE = [
 
 const SIGNAL_INCLUDES = [
   { key: "entry",   title: "Entry Level",       Icon: TrendingUp,    accent: "teal",
-    desc: "Exact price to enter — limit or zone — with optional scaled-in laddering." },
+    desc: "Exact price to enter, limit or zone, with optional scaled-in laddering." },
   { key: "tp",      title: "Take Profit",       Icon: Target,        accent: "teal",
     desc: "Tiered TP levels (TP1, TP2, TP3) with suggested partial close ratios." },
   { key: "sl",      title: "Stop Loss",         Icon: Shield,        accent: "orange",
-    desc: "Hard invalidation — structurally placed, not arbitrary percentages." },
+    desc: "Hard invalidation, structurally placed, not arbitrary percentages." },
   { key: "context", title: "Signal Context",    Icon: FileText,      accent: "teal",
     desc: "Plain-language reasoning: what setup, what timeframe, what bias, why now." },
   { key: "conf",    title: "Confidence Layer",  Icon: Gauge,         accent: "teal",
@@ -133,7 +133,7 @@ export default function Signals() {
             </span>
             <p>
               <span className="text-white/80">Not black-box predictions.</span> Every TradeCafe signal is a
-              structured setup — built from references, zones, filters, cross-market
+              structured setup, built from references, zones, filters, cross-market
               confirmation, and exact entry levels you can audit.
             </p>
           </div>

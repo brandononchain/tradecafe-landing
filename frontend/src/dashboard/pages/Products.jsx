@@ -10,7 +10,7 @@ export default function Products() {
   const [buy, setBuy] = useState(null);
   return (
     <div className="tc-fade flex flex-col gap-6">
-      <PageHead eyebrow="Ecosystem" title="Products" desc="The full TradeCafe toolkit — signals, automation, the pro terminal, and the card." />
+      <PageHead eyebrow="Ecosystem" title="Products" desc="The full TradeCafe toolkit, signals, automation, the pro terminal, and the card." />
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
         {PRODUCTS.map((p) => {

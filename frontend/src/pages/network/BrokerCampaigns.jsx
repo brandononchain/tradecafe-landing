@@ -14,7 +14,7 @@ const TYPES = [
   { title: "Deposit race", Icon: Coins, desc: "Reward funded accounts and first deposits with milestone bonuses." },
   { title: "Referral sprint", Icon: Zap, desc: "Short, high-intensity referral pushes with tiered rewards and tracking." },
   { title: "Volume challenge", Icon: BarChart3, desc: "Drive sustained turnover with cumulative volume targets and unlocks." },
-  { title: "Co-branded launch", Icon: Palette, desc: "Your brand inside the terminal — landing pages, proof cards, and UI." },
+  { title: "Co-branded launch", Icon: Palette, desc: "Your brand inside the terminal, landing pages, proof cards, and UI." },
   { title: "Leaderboard series", Icon: Medal, desc: "Recurring seasonal rankings that keep traders engaged campaign after campaign." },
 ];
 
@@ -32,7 +32,7 @@ export default function BrokerCampaigns() {
       eyebrow="Network · Broker Campaigns"
       title="Co-branded campaigns that"
       accent="move volume"
-      sub="Run trading competitions, deposit races, and referral sprints with live scoring and full attribution — co-branded inside the same terminal your traders already use."
+      sub="Run trading competitions, deposit races, and referral sprints with live scoring and full attribution, co-branded inside the same terminal your traders already use."
       ctas={[
         { label: "Talk to our team", href: EXTERNAL.contactSales, external: true, primary: true, testid: "bc-cta-contact" },
         { label: "Brokers & Exchanges", to: "/solutions/brokers-exchanges", testid: "bc-cta-solution" },

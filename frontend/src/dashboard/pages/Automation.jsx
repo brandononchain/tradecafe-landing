@@ -15,7 +15,7 @@ export default function Automation() {
   const shareBot = (b) => setShare({
     source: "auto", sym: b.name, dir: "LONG",
     pnl: b.metrics.find((m) => m.k === "Profit")?.v || "+0%",
-    entry: b.metrics.find((m) => m.k === "Win Rate")?.v || "—",
+    entry: b.metrics.find((m) => m.k === "Win Rate")?.v || ", ",
     exit: `${b.metrics[0].v} ${b.metrics[0].k.toLowerCase()}`,
   });
   const togglePause = (key) => setPaused((p) => ({ ...p, [key]: !p[key] }));
@@ -24,7 +24,7 @@ export default function Automation() {
       <PageHead
         eyebrow="Trading Bots"
         title="Automation"
-        desc="Configure analysis and trade bots that run your strategy 24/7 — while you stay in control."
+        desc="Configure analysis and trade bots that run your strategy 24/7, while you stay in control."
       >
         <button className="tc-btn tc-btn-ghost" onClick={() => setModal("margin")}><Settings2 className="w-3.5 h-3.5" strokeWidth={2} /> Manage</button>
       </PageHead>

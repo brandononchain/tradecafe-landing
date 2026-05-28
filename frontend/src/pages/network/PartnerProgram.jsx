@@ -32,7 +32,7 @@ export default function PartnerProgram() {
       eyebrow="Network · Partner Program"
       title="Recurring income from"
       accent="the whole ecosystem"
-      sub="The TradeCafe Partner Program pays across four streams — subscriptions, trading volume, pool participation, and rank progression — with lifetime attribution and a live earnings console."
+      sub="The TradeCafe Partner Program pays across four streams, subscriptions, trading volume, pool participation, and rank progression, with lifetime attribution and a live earnings console."
       ctas={[
         { label: "Become a Partner", to: EXTERNAL.launchTerminal, primary: true, testid: "pp-cta-join" },
         { label: "Partners & Affiliates", to: "/solutions/partners-affiliates", testid: "pp-cta-solution" },

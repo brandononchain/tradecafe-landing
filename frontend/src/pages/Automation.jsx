@@ -48,7 +48,7 @@ const LEVELS = [
     Icon: Hand,
     accent: "teal",
     tagline: "Your judgment, our execution.",
-    desc: "Every signal arrives pre-sized with full context. One tap to fire, one tap to skip — TradeCafe handles the rest.",
+    desc: "Every signal arrives pre-sized with full context. One tap to fire, one tap to skip, TradeCafe handles the rest.",
     bullets: [
       "Pre-sized orders ready to fire",
       "Manual approval on every trade",
@@ -73,15 +73,15 @@ const LEVELS = [
 
 const RISK_LOGIC = [
   { key: "7030",   title: "70/30 Capital Logic",         Icon: PieChart,
-    desc: "70% steady-state risk, 30% reserved tactical capital — never both deployed at once." },
+    desc: "70% steady-state risk, 30% reserved tactical capital, never both deployed at once." },
   { key: "limits", title: "Position Limits",             Icon: ListChecks,
-    desc: "Hard caps per symbol, per sector, per side — automation refuses to violate them." },
+    desc: "Hard caps per symbol, per sector, per side, automation refuses to violate them." },
   { key: "avg",    title: "Averaging Rules",             Icon: Repeat,
     desc: "Disciplined DCA with structural anchors, not emotional revenge entries." },
   { key: "trail",  title: "Trailing Protection",         Icon: ShieldCheck,
     desc: "Adaptive trailing stops that tighten as winners mature, lock profit by step." },
   { key: "circuit",title: "Drawdown Circuit Breaker",    Icon: AlertOctagon,
-    desc: "Cool-off period auto-triggers at predefined drawdown — protects you from yourself." },
+    desc: "Cool-off period auto-triggers at predefined drawdown, protects you from yourself." },
 ];
 
 const FLOW = [
@@ -171,7 +171,7 @@ export default function Automation() {
               <ShieldCheck className="w-3 h-3 text-tradeTeal" strokeWidth={2.2} />
             </span>
             <p>
-              <span className="text-white/80">Controlled — not reckless.</span> Automation runs inside guardrails
+              <span className="text-white/80">Controlled, not reckless.</span> Automation runs inside guardrails
               you define. Every order passes a risk check, every position sits inside a
               hard limit, and circuit breakers stop runaway drawdowns.
             </p>
@@ -193,7 +193,7 @@ export default function Automation() {
 
         {/* ===== Levels of control ===== */}
         <div className="relative z-20 px-4 sm:px-6 md:px-10 lg:px-14 max-w-[1280px] mx-auto">
-          <SectionLabel index="01" title="Choose your level of control" caption="Three execution modes — same underlying logic, different amounts of hands-on time." />
+          <SectionLabel index="01" title="Choose your level of control" caption="Three execution modes, same underlying logic, different amounts of hands-on time." />
           <div className="tc-levels" data-testid="automation-levels">
             {LEVELS.map((lv) => {
               const Ic = lv.Icon;

@@ -39,7 +39,7 @@ const BOARDS = {
 const FEATURES = [
   { title: "Live rankings", Icon: Flame, desc: "Returns and volume update in real time across CEX and on-chain venues." },
   { title: "Seasons", Icon: Trophy, desc: "Recurring competitions with prize pools, resets, and seasonal hall-of-fame." },
-  { title: "Verified results", Icon: Award, desc: "Rankings are computed from connected accounts — not self-reported claims." },
+  { title: "Verified results", Icon: Award, desc: "Rankings are computed from connected accounts, not self-reported claims." },
   { title: "Social loops", Icon: Users, desc: "Top performers auto-generate proof cards, pulling new traders into the network." },
 ];
 
@@ -54,7 +54,7 @@ export default function Leaderboards() {
       eyebrow="Network · Leaderboards"
       title="Compete on the"
       accent="public tape"
-      sub="Live performance rankings, seasonal competitions, and social loops that turn results into reach. Verified from connected accounts — never self-reported."
+      sub="Live performance rankings, seasonal competitions, and social loops that turn results into reach. Verified from connected accounts, never self-reported."
       ctas={[
         { label: "Join a competition", to: EXTERNAL.launchTerminal, primary: true, testid: "lb-cta-join" },
         { label: "Broker Campaigns", to: "/network/broker-campaigns", testid: "lb-cta-campaigns" },
