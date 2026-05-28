@@ -515,8 +515,8 @@ function ToggleRow({ label, on, onClick }) {
   return (
     <div className="flex items-center justify-between py-2.5">
       <span className="text-[13px] text-white/75">{label}</span>
-      <button onClick={onClick} className={`relative w-11 h-6 rounded-full transition-colors ${on ? "bg-tradeTeal" : "bg-white/12"}`}>
-        <span className="absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white transition-transform" style={{ transform: on ? "translateX(20px)" : "none" }} />
+      <button onClick={onClick} className={`tc-switch ${on ? "is-on" : ""}`} role="switch" aria-checked={on}>
+        <span className="tc-switch-knob" />
       </button>
     </div>
   );
