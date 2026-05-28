@@ -1,10 +1,10 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import {
   TrendingUp, TrendingDown, Search, Minus, X, ChevronDown, Check,
   CandlestickChart, LineChart as LineIcon, AreaChart as AreaIcon, BarChart3,
   Brain, Sparkles, MousePointer2, MoveUpRight, Type, Square, Magnet, Lock, Eraser, Ruler,
-  Settings2, Keyboard, Star, Plug, Pencil, Share2, Wallet, Loader2, Bell, BellPlus, LayoutGrid, Columns2, SquareSplitHorizontal,
+  Settings2, Keyboard, Star, Plug, Pencil, Share2, Wallet, Loader2, Bell, BellPlus, LayoutGrid, Columns2, SquareSplitHorizontal, ArrowRight,
 } from "lucide-react";
 import TradingChart from "../components/TradingChart";
 import Modal from "../components/Modal";
@@ -43,6 +43,14 @@ const DRAW_TOOLS = [
 
 const LEVERAGE = [1, 2, 3, 5, 10, 20, 25, 50];
 
+const TRADE_HISTORY = [
+  { sym: "BTCUSDT", side: "LONG", size: "0.30", entry: "63,420", exit: "67,180", pnl: "+$1,128.00", pct: "+5.93%", up: true, closed: "May 26, 2026" },
+  { sym: "SOLUSDT", side: "SHORT", size: "12.0", entry: "192.40", exit: "178.20", pnl: "+$170.40", pct: "+7.38%", up: true, closed: "May 24, 2026" },
+  { sym: "ETHUSDT", side: "LONG", size: "2.40", entry: "3,580", exit: "3,448", pnl: "-$316.80", pct: "-3.69%", up: false, closed: "May 22, 2026" },
+  { sym: "INJUSDT.P", side: "LONG", size: "200", entry: "22.10", exit: "24.18", pnl: "+$416.00", pct: "+9.41%", up: true, closed: "May 20, 2026" },
+  { sym: "AVAXUSDT", side: "SHORT", size: "30", entry: "44.20", exit: "42.81", pnl: "+$41.70", pct: "+3.14%", up: true, closed: "May 17, 2026" },
+];
+
 export default function Terminal() {
   const { prices: livePrices, prev: livePrev } = useTicker();
   const { alertsFor, addAlert, removeAlert } = useAlerts();
@@ -71,6 +79,7 @@ export default function Terminal() {
   const [favorites, setFavorites] = useState(() => ["BTCUSDT", "ETHUSDT", "SOLUSDT"]);
 
   const [positions, setPositions] = useState(OPEN_POSITIONS);
+  const [tradesTab, setTradesTab] = useState("open");
   const [activeSignal, setActiveSignal] = useState(null);
   const [openTabs, setOpenTabs] = useState(["BTCUSDT", "ETHUSDT", "SOLUSDT"]);
   const [accountOpen, setAccountOpen] = useState(false);
@@ -296,11 +305,11 @@ export default function Terminal() {
           </div>
 
           {/* Toolbar — single row, scrolls horizontally on tight widths instead of wrapping */}
-          <div className="flex items-center gap-1.5 sm:gap-2 px-3 py-2 border-b border-white/[0.04] shrink-0 overflow-x-auto flex-nowrap">
+          <div className="flex items-center flex-wrap gap-1.5 px-3 py-2 border-b border-white/[0.04] shrink-0">
             <div className="flex items-center gap-0.5 p-0.5 rounded-lg bg-white/[0.025] shrink-0">
               {TIMEFRAMES.map((t) => (
                 <button key={t} onClick={() => setTf(t)}
-                  className={`px-2.5 py-1 rounded-md font-mono text-[11px] transition-colors ${t === tf ? "bg-tradeTeal/15 text-tradeTeal" : "text-white/45 hover:text-white/80"}`}
+                  className={`px-2 py-1 rounded-md font-mono text-[10.5px] transition-colors ${t === tf ? "bg-tradeTeal/15 text-tradeTeal" : "text-white/45 hover:text-white/80"}`}
                   data-testid={`tf-${t}`}>{t}</button>
               ))}
             </div>
@@ -310,7 +319,7 @@ export default function Terminal() {
                 return (
                   <button key={c.key} onClick={() => setChartType(c.key)} title={c.label}
                     className={`flex items-center justify-center rounded-md transition-colors ${chartType === c.key ? "bg-tradeTeal/15 text-tradeTeal" : "text-white/45 hover:text-white/80"}`}
-                    style={{ width: 26, height: 26 }} data-testid={`charttype-${c.key}`}>
+                    style={{ width: 24, height: 24 }} data-testid={`charttype-${c.key}`}>
                     <Ic className="w-3.5 h-3.5" strokeWidth={2} />
                   </button>
                 );
@@ -325,12 +334,12 @@ export default function Terminal() {
                 <button key={v} onClick={() => { setChartLayout(v); if (activeChart >= v) setActiveChart(0); }}
                   title={label}
                   className={`flex items-center justify-center rounded-md transition-colors ${chartLayout === v ? "bg-tradeTeal/15 text-tradeTeal" : "text-white/45 hover:text-white/80"}`}
-                  style={{ width: 26, height: 26 }} data-testid={`layout-${v}`}>
+                  style={{ width: 24, height: 24 }} data-testid={`layout-${v}`}>
                   <Icon className="w-3.5 h-3.5" strokeWidth={2} />
                 </button>
               ))}
             </div>
-            <button className="tc-iconbtn shrink-0" style={{ width: 30, height: 30 }} onClick={() => setSettingsOpen(true)} title="Chart settings & filters" data-testid="chart-settings">
+            <button className="tc-iconbtn shrink-0" style={{ width: 28, height: 28 }} onClick={() => setSettingsOpen(true)} title="Chart settings & filters" data-testid="chart-settings">
               <Settings2 className="w-3.5 h-3.5" strokeWidth={2} />
             </button>
 
@@ -437,60 +446,113 @@ export default function Terminal() {
         </div>
       </div>
 
-      {/* Signal history bar */}
-      <div className="tc-panel !py-3">
-        <div className="flex items-center gap-2 mb-2.5">
-          <span className="tc-chip-dot" />
-          <span className="font-mono text-[10px] tracking-[0.14em] uppercase text-white/45">Signal History</span>
-        </div>
-        <div className="flex gap-2 overflow-x-auto pb-1">
-          {SIGNALS.map((s, i) => (
-            <button key={i} onClick={() => chartSignal(s)} className="shrink-0 px-3 py-2 rounded-lg bg-white/[0.02] border border-white/[0.045] hover:border-tradeTeal/30 transition-colors text-left">
-              <div className="flex items-center gap-2">
-                <span className={s.dir === "LONG" ? "tc-tag-long" : "tc-tag-short"}>{s.dir}</span>
-                <span className="text-[12px] font-medium text-white/85">{s.sym}</span>
-              </div>
-              <div className="font-mono text-[10px] text-white/45 mt-1">{s.strat} · {s.tf} · {s.time}</div>
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* Positions */}
-      <div className="tc-panel">
+      {/* Universal Trades panel — Open / History / Signals in one place */}
+      <div className="tc-panel" data-testid="trades-panel">
         <div className="tc-panel-head">
-          <span className="ttl">Open Positions</span>
-          <span className="tc-chip tc-chip-active"><span className="tc-chip-dot" /> {positions.length} Open</span>
+          <span className="ttl">Trades</span>
+          <div className="flex items-center gap-2">
+            <div className="tc-segment" style={{ padding: 3 }}>
+              {[
+                { k: "open", label: "Open", count: positions.length },
+                { k: "history", label: "History", count: TRADE_HISTORY.length },
+                { k: "signals", label: "Signals", count: SIGNALS.length },
+              ].map((t) => (
+                <div key={t.k} onClick={() => setTradesTab(t.k)} data-testid={`trades-tab-${t.k}`}
+                  className={`tc-segment-btn ${tradesTab === t.k ? "is-active" : ""}`}
+                  style={{ padding: "6px 14px", fontSize: 11, letterSpacing: "0.1em" }}>
+                  {t.label}<span className="ml-1.5 font-mono opacity-70">{t.count}</span>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
-        <div className="tc-table-wrap">
-          <table className="tc-table">
-            <thead><tr><th>Symbol</th><th>Side</th><th>Size</th><th>Entry</th><th>Mark</th><th>PnL</th><th></th></tr></thead>
-            <tbody>
-              {positions.map((p, i) => (
-                <tr key={p.sym} data-testid={`pos-${i}`}>
-                  <td className="sym">{p.sym}</td>
-                  <td><span className={p.side === "LONG" ? "tc-tag-long" : "tc-tag-short"}>{p.side === "LONG" ? <TrendingUp className="w-2.5 h-2.5" /> : <TrendingDown className="w-2.5 h-2.5" />} {p.side}</span></td>
-                  <td className="mono">{p.size}</td>
-                  <td className="mono">{p.entry}</td>
-                  <td className="mono">{p.mark}</td>
-                  <td><span className="tc-pl-pos">{p.pnl} · {p.pct}</span></td>
-                  <td className="text-right">
-                    <span className="inline-flex gap-1.5">
-                      <button className="tc-iconbtn" style={{ width: 30, height: 30 }} aria-label="Share PnL" data-testid={`share-pos-${i}`}
-                        onClick={() => setSharePnl({ source: "manual", sym: p.sym, dir: p.side, entry: p.entry, exit: p.mark, pnl: p.pct, pnlAmount: p.pnl, leverage: 10 })}>
+
+        {tradesTab === "open" && (
+          <div className="tc-table-wrap">
+            <table className="tc-table">
+              <thead><tr><th>Symbol</th><th>Side</th><th>Size</th><th>Entry</th><th>Mark</th><th>PnL</th><th></th></tr></thead>
+              <tbody>
+                {positions.map((p, i) => (
+                  <tr key={p.sym} data-testid={`pos-${i}`}>
+                    <td className="sym">{p.sym}</td>
+                    <td><span className={p.side === "LONG" ? "tc-tag-long" : "tc-tag-short"}>{p.side === "LONG" ? <TrendingUp className="w-2.5 h-2.5" /> : <TrendingDown className="w-2.5 h-2.5" />} {p.side}</span></td>
+                    <td className="mono">{p.size}</td>
+                    <td className="mono">{p.entry}</td>
+                    <td className="mono">{p.mark}</td>
+                    <td><span className="tc-pl-pos">{p.pnl} · {p.pct}</span></td>
+                    <td className="text-right">
+                      <span className="inline-flex gap-1.5">
+                        <button className="tc-iconbtn" style={{ width: 30, height: 30 }} aria-label="Share PnL" data-testid={`share-pos-${i}`}
+                          onClick={() => setSharePnl({ source: "manual", sym: p.sym, dir: p.side, entry: p.entry, exit: p.mark, pnl: p.pct, pnlAmount: p.pnl, leverage: 10 })}>
+                          <Share2 className="w-3.5 h-3.5" strokeWidth={2} />
+                        </button>
+                        <button className="tc-iconbtn" style={{ width: 30, height: 30 }} aria-label="Close position" onClick={() => setPositions((ps) => ps.filter((x) => x.sym !== p.sym))}><X className="w-3.5 h-3.5" strokeWidth={2} /></button>
+                      </span>
+                    </td>
+                  </tr>
+                ))}
+                {positions.length === 0 && (
+                  <tr><td colSpan={7} className="text-center text-white/35 py-6">No open positions.</td></tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        )}
+
+        {tradesTab === "history" && (
+          <div className="tc-table-wrap">
+            <table className="tc-table">
+              <thead><tr><th>Symbol</th><th>Side</th><th>Size</th><th>Entry</th><th>Exit</th><th>PnL</th><th>Closed</th><th></th></tr></thead>
+              <tbody>
+                {TRADE_HISTORY.map((h, i) => (
+                  <tr key={i} data-testid={`history-${i}`}>
+                    <td className="sym">{h.sym}</td>
+                    <td><span className={h.side === "LONG" ? "tc-tag-long" : "tc-tag-short"}>{h.side === "LONG" ? <TrendingUp className="w-2.5 h-2.5" /> : <TrendingDown className="w-2.5 h-2.5" />} {h.side}</span></td>
+                    <td className="mono">{h.size}</td>
+                    <td className="mono">{h.entry}</td>
+                    <td className="mono">{h.exit}</td>
+                    <td><span className={h.up ? "tc-pl-pos" : "tc-pl-neg"}>{h.pnl} · {h.pct}</span></td>
+                    <td className="mono text-white/55">{h.closed}</td>
+                    <td className="text-right">
+                      <button className="tc-iconbtn" style={{ width: 30, height: 30 }} aria-label="Share PnL" data-testid={`share-history-${i}`}
+                        onClick={() => setSharePnl({ source: "manual", sym: h.sym, dir: h.side, entry: h.entry, exit: h.exit, pnl: h.pct, pnlAmount: h.pnl, leverage: 10 })}>
                         <Share2 className="w-3.5 h-3.5" strokeWidth={2} />
                       </button>
-                      <button className="tc-iconbtn" style={{ width: 30, height: 30 }} aria-label="Close position" onClick={() => setPositions((ps) => ps.filter((x) => x.sym !== p.sym))}><X className="w-3.5 h-3.5" strokeWidth={2} /></button>
-                    </span>
-                  </td>
-                </tr>
-              ))}
-              {positions.length === 0 && (
-                <tr><td colSpan={7} className="text-center text-white/35 py-6">No open positions.</td></tr>
-              )}
-            </tbody>
-          </table>
-        </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+
+        {tradesTab === "signals" && (
+          <div className="tc-table-wrap">
+            <table className="tc-table">
+              <thead><tr><th>Symbol</th><th>Side</th><th>Strategy</th><th>TF</th><th>Entry</th><th>Target</th><th>Stop</th><th>Confidence</th><th></th></tr></thead>
+              <tbody>
+                {SIGNALS.map((s, i) => (
+                  <tr key={i} data-testid={`signal-row-${i}`}>
+                    <td className="sym">{s.sym}</td>
+                    <td><span className={s.dir === "LONG" ? "tc-tag-long" : "tc-tag-short"}>{s.dir}</span></td>
+                    <td className="text-white/80">{s.strat}</td>
+                    <td className="mono text-white/60">{s.tf}</td>
+                    <td className="mono">{s.price}</td>
+                    <td className="mono text-tradeTeal">{s.target}</td>
+                    <td className="mono text-[#FF8A82]">{s.stop}</td>
+                    <td><span className="font-mono text-[11px] text-tradeTeal">{s.conf}%</span></td>
+                    <td className="text-right">
+                      <button className="tc-iconbtn" style={{ width: 30, height: 30 }} aria-label="Chart signal"
+                        onClick={() => chartSignal(s)}>
+                        <ArrowRight className="w-3.5 h-3.5" strokeWidth={2} />
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
       </div>
 
       {searchOpen && <SymbolSearch exchange={exchange} onClose={() => setSearchOpen(false)} onPick={(s) => { pickSymbol(s); setSearchOpen(false); }} />}
@@ -1019,24 +1081,58 @@ function Field({ label, value, mono }) {
   );
 }
 
-function Dropdown({ label, icon: Icon, badge, testid, children, align = "left" }) {
+function Dropdown({ label, icon: Icon, badge, testid, children, align = "left", width = 224 }) {
   const [open, setOpen] = useState(false);
+  const [pos, setPos] = useState({ top: 0, left: 0 });
+  const btnRef = useRef(null);
+  const menuRef = useRef(null);
+
+  useEffect(() => {
+    if (!open) return;
+    const update = () => {
+      const r = btnRef.current?.getBoundingClientRect();
+      if (!r) return;
+      const left = align === "right" ? r.right - width : r.left;
+      setPos({ top: Math.round(r.bottom + 6), left: Math.round(left) });
+    };
+    update();
+    const onClose = (e) => {
+      if (btnRef.current?.contains(e.target)) return;
+      if (menuRef.current?.contains(e.target)) return;
+      setOpen(false);
+    };
+    const onKey = (e) => e.key === "Escape" && setOpen(false);
+    window.addEventListener("scroll", update, true);
+    window.addEventListener("resize", update);
+    document.addEventListener("mousedown", onClose);
+    document.addEventListener("keydown", onKey);
+    return () => {
+      window.removeEventListener("scroll", update, true);
+      window.removeEventListener("resize", update);
+      document.removeEventListener("mousedown", onClose);
+      document.removeEventListener("keydown", onKey);
+    };
+  }, [open, align, width]);
+
   return (
-    <div className="relative">
-      <button onClick={() => setOpen((v) => !v)} onBlur={() => setTimeout(() => setOpen(false), 150)}
-        className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-[12px] text-white/70 hover:text-white hover:bg-white/[0.04] transition-colors"
+    <>
+      <button ref={btnRef} onClick={() => setOpen((v) => !v)}
+        className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-[12px] text-white/70 hover:text-white hover:bg-white/[0.04] transition-colors shrink-0"
         data-testid={testid}>
         {Icon && <Icon className="w-3.5 h-3.5" strokeWidth={2} />}
         {label}
         {badge != null && <span className="font-mono text-[9px] px-1.5 py-0.5 rounded-full bg-tradeTeal/15 text-tradeTeal">{badge}</span>}
-        <ChevronDown className="w-3 h-3 opacity-60" />
+        <ChevronDown className={`w-3 h-3 opacity-60 transition-transform ${open ? "rotate-180" : ""}`} />
       </button>
-      {open && (
-        <div className={`absolute ${align === "right" ? "right-0" : "left-0"} mt-1.5 w-56 p-1.5 rounded-xl bg-surface border border-white/[0.05] shadow-xl z-50 max-h-[320px] overflow-y-auto`}>
+      {open && createPortal(
+        <div ref={menuRef}
+          className="fixed z-[100] p-1.5 rounded-xl bg-surface border border-white/[0.08] shadow-2xl max-h-[360px] overflow-y-auto"
+          style={{ top: pos.top, left: pos.left, width }}>
           {children}
-        </div>
+        </div>,
+        document.body
       )}
-    </div>
+    </>
   );
 }
 function MenuLabel({ children }) {
