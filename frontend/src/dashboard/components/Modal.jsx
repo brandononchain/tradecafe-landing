@@ -17,10 +17,10 @@ export default function Modal({ title, sub, onClose, children, footer, width = 4
     <div className="fixed inset-0 z-[90] flex items-center justify-center px-4" data-testid="modal">
       <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={onClose} />
       <div
-        className="relative w-full rounded-2xl bg-surface border border-white/[0.05] max-h-[88vh] overflow-y-auto shadow-2xl"
+        className="relative w-full rounded-2xl bg-surface border border-white/[0.05] max-h-[88vh] overflow-hidden shadow-2xl flex flex-col"
         style={{ maxWidth: width }}
       >
-        <div className="flex items-start justify-between gap-4 px-5 py-4 border-b border-white/[0.045] sticky top-0 bg-surface z-10">
+        <div className="flex items-start justify-between gap-4 px-5 py-4 border-b border-white/[0.045] bg-surface shrink-0">
           <div>
             <div className="text-[15px] font-semibold text-tradeWhite">{title}</div>
             {sub && <div className="font-mono text-[10px] tracking-[0.12em] uppercase text-white/40 mt-0.5">{sub}</div>}
@@ -29,8 +29,8 @@ export default function Modal({ title, sub, onClose, children, footer, width = 4
             <X className="w-3.5 h-3.5" strokeWidth={2} />
           </button>
         </div>
-        <div className="p-5">{children}</div>
-        {footer && <div className="px-5 py-4 border-t border-white/[0.045] flex gap-2.5">{footer}</div>}
+        <div className="p-5 flex-1 min-h-0 overflow-y-auto" style={{ scrollbarGutter: "stable" }}>{children}</div>
+        {footer && <div className="px-5 py-4 border-t border-white/[0.045] flex gap-2.5 shrink-0 bg-surface">{footer}</div>}
       </div>
     </div>,
     document.body
