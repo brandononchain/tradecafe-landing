@@ -315,7 +315,7 @@ export default function TradingChart({
     const osc = (color, w = 1.5) => chart.addLineSeries({ color, lineWidth: w, priceLineVisible: false, lastValueVisible: true });
     if (oscillator === "RSI") {
       const s = osc("#9B8AFB"); s.setData(rsi(candles, 14));
-      [30, 70].forEach((lvl) => s.createPriceLine({ price: lvl, color: "rgba(255,255,255,0.18)", lineWidth: 1, lineStyle: LineStyle.Dashed }));
+      [30, 70].forEach((lvl) => s.createPriceLine({ price: lvl, color: `rgba(${light ? "16,26,30" : "255,255,255"},0.2)`, lineWidth: 1, lineStyle: LineStyle.Dashed }));
     } else if (oscillator === "MACD") {
       const m = macd(candles);
       const hist = chart.addHistogramSeries({ priceLineVisible: false });
@@ -326,13 +326,13 @@ export default function TradingChart({
       const s = stochastic(candles);
       const k = osc("#38BDF8"); k.setData(s.k);
       osc("#E8782A").setData(s.d);
-      [20, 80].forEach((lvl) => k.createPriceLine({ price: lvl, color: "rgba(255,255,255,0.18)", lineWidth: 1, lineStyle: LineStyle.Dashed }));
+      [20, 80].forEach((lvl) => k.createPriceLine({ price: lvl, color: `rgba(${light ? "16,26,30" : "255,255,255"},0.2)`, lineWidth: 1, lineStyle: LineStyle.Dashed }));
     } else if (oscillator === "CCI") {
       const s = osc("#9B8AFB"); s.setData(cci(candles, 20));
-      [-100, 100].forEach((lvl) => s.createPriceLine({ price: lvl, color: "rgba(255,255,255,0.18)", lineWidth: 1, lineStyle: LineStyle.Dashed }));
+      [-100, 100].forEach((lvl) => s.createPriceLine({ price: lvl, color: `rgba(${light ? "16,26,30" : "255,255,255"},0.2)`, lineWidth: 1, lineStyle: LineStyle.Dashed }));
     } else if (oscillator === "WILLR") {
       const s = osc("#FF7AB6"); s.setData(williamsR(candles, 14));
-      [-20, -80].forEach((lvl) => s.createPriceLine({ price: lvl, color: "rgba(255,255,255,0.18)", lineWidth: 1, lineStyle: LineStyle.Dashed }));
+      [-20, -80].forEach((lvl) => s.createPriceLine({ price: lvl, color: `rgba(${light ? "16,26,30" : "255,255,255"},0.2)`, lineWidth: 1, lineStyle: LineStyle.Dashed }));
     } else if (oscillator === "ATR") {
       osc("#F0B90B").setData(atrSeries(candles, 14));
     } else if (oscillator === "OBV") {

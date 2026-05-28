@@ -4,6 +4,7 @@ import Sidebar from "./Sidebar";
 import Topbar from "./Topbar";
 import { ThemeProvider, useTheme } from "./ThemeContext";
 import { WalletProvider } from "./WalletContext";
+import { NotificationProvider } from "./NotificationContext";
 import ChatWidget from "./components/ChatWidget";
 import WelcomeModal from "./components/WelcomeModal";
 
@@ -30,7 +31,9 @@ export default function DashboardLayout() {
   return (
     <ThemeProvider>
       <WalletProvider>
-        <DashboardShell />
+        <NotificationProvider>
+          <DashboardShell />
+        </NotificationProvider>
       </WalletProvider>
     </ThemeProvider>
   );

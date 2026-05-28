@@ -5,7 +5,7 @@ import { INVOICE } from "../data";
 
 const fmtTime = (s) => `${String(Math.floor(s / 60)).padStart(2, "0")}:${String(s % 60).padStart(2, "0")}`;
 
-export default function PaymentModal({ item = INVOICE.item, total = INVOICE.total, onClose }) {
+export default function PaymentModal({ item = INVOICE.item, total = INVOICE.total, onClose, onSuccess }) {
   const [stage, setStage] = useState("invoice"); // invoice | verifying | paid
   const [left, setLeft] = useState(INVOICE.minutes * 60);
   const [copied, setCopied] = useState(false);
@@ -15,6 +15,10 @@ export default function PaymentModal({ item = INVOICE.item, total = INVOICE.tota
     const id = setInterval(() => setLeft((s) => (s > 0 ? s - 1 : 0)), 1000);
     return () => clearInterval(id);
   }, [stage]);
+
+  useEffect(() => {
+    if (stage === "paid") onSuccess?.();
+  }, [stage, onSuccess]);
 
   const copy = () => {
     navigator.clipboard?.writeText(INVOICE.address).catch(() => {});

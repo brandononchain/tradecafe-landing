@@ -1,10 +1,9 @@
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
-import { Menu, Bell, ArrowUpRight, Sun, Moon, Radio, Bot, Layers, ShieldCheck, Users } from "lucide-react";
-import { ACCOUNT, NOTIFICATIONS } from "./data";
+import { Menu, Bell, ArrowUpRight, Sun, Moon } from "lucide-react";
+import { ACCOUNT } from "./data";
 import { useTheme } from "./ThemeContext";
-
-const NOTIF_ICON = { signal: Radio, trade: Bot, pool: Layers, system: ShieldCheck, affiliate: Users };
+import { useNotifications, NOTIF_ICON } from "./NotificationContext";
 
 function useClock() {
   const [now, setNow] = useState(() => new Date());
@@ -68,9 +67,8 @@ export default function Topbar({ title, sub, onOpenMobile }) {
 
 function NotificationsMenu() {
   const [open, setOpen] = useState(false);
-  const [items, setItems] = useState(NOTIFICATIONS);
+  const { notifications: items, unread, markAllRead } = useNotifications();
   const ref = useRef(null);
-  const unread = items.filter((n) => n.unread).length;
 
   useEffect(() => {
     const onDoc = (e) => { if (ref.current && !ref.current.contains(e.target)) setOpen(false); };
@@ -88,7 +86,7 @@ function NotificationsMenu() {
         <div className="absolute right-0 mt-2 w-[320px] rounded-xl bg-surface border border-white/[0.05] shadow-xl z-50 overflow-hidden">
           <div className="flex items-center justify-between px-4 py-3 border-b border-white/[0.045]">
             <span className="font-mono text-[10px] tracking-[0.16em] uppercase text-white/50">Notifications</span>
-            <button className="font-mono text-[10px] text-tradeTeal hover:opacity-80" onClick={() => setItems((p) => p.map((n) => ({ ...n, unread: false })))}>
+            <button className="font-mono text-[10px] text-tradeTeal hover:opacity-80" onClick={markAllRead}>
               Mark all read
             </button>
           </div>

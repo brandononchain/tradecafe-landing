@@ -1,11 +1,41 @@
+import { useState } from "react";
 import {
   AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
 } from "recharts";
 import { Layers, ArrowDownToLine, ArrowUpToLine, Info } from "lucide-react";
 import { PageHead, Panel } from "../ui";
+import Modal, { ModalField, ModalInput } from "../components/Modal";
+import { useNotifications } from "../NotificationContext";
+import { usePersistentState } from "../lib/usePersistentState";
 import { POOL } from "../data";
 
+const fmt = (n) => n.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const AVAILABLE = 5000; // demo wallet balance available to allocate
+
 export default function Pool() {
+  const { notify } = useNotifications();
+  const [deposited, setDeposited] = usePersistentState("tc-pool-deposited", POOL.myDeposit);
+  const [modal, setModal] = useState(null); // "deposit" | "withdraw"
+  const [amount, setAmount] = useState("");
+
+  const amt = parseFloat(amount) || 0;
+  const max = modal === "withdraw" ? deposited : AVAILABLE;
+  const valid = amt > 0 && amt <= max;
+  const openModal = (m) => { setModal(m); setAmount(""); };
+  const closeModal = () => { setModal(null); setAmount(""); };
+
+  const confirm = () => {
+    if (!valid) return;
+    if (modal === "deposit") {
+      setDeposited((d) => +(d + amt).toFixed(2));
+      notify({ type: "pool", title: `Deposited $${fmt(amt)} to Trading Pool`, body: `Now earning a ${POOL.apy}% monthly target. A mining contract was minted.` });
+    } else {
+      setDeposited((d) => +(d - amt).toFixed(2));
+      notify({ type: "pool", title: `Withdrew $${fmt(amt)} from Trading Pool`, body: "Funds returned to your available balance." });
+    }
+    closeModal();
+  };
+
   return (
     <div className="tc-fade flex flex-col gap-6">
       <PageHead
@@ -25,8 +55,9 @@ export default function Pool() {
               </div>
             </div>
             <div className="flex gap-2.5">
-              <button className="tc-btn tc-btn-primary"><ArrowDownToLine className="w-4 h-4" strokeWidth={2.2} /> Deposit</button>
-              <button className="tc-btn tc-btn-ghost"><ArrowUpToLine className="w-4 h-4" strokeWidth={2} /> Withdraw</button>
+              <button className="tc-btn tc-btn-primary" onClick={() => openModal("deposit")} data-testid="pool-deposit"><ArrowDownToLine className="w-4 h-4" strokeWidth={2.2} /> Deposit</button>
+              <button className="tc-btn tc-btn-ghost" onClick={() => openModal("withdraw")} disabled={deposited <= 0}
+                style={deposited <= 0 ? { opacity: 0.5, pointerEvents: "none" } : undefined} data-testid="pool-withdraw"><ArrowUpToLine className="w-4 h-4" strokeWidth={2} /> Withdraw</button>
             </div>
           </div>
 
@@ -39,9 +70,9 @@ export default function Pool() {
                     <stop offset="100%" stopColor="#00B4A6" stopOpacity={0} />
                   </linearGradient>
                 </defs>
-                <CartesianGrid stroke="rgba(255,255,255,0.05)" vertical={false} />
-                <XAxis dataKey="t" tick={{ fill: "rgba(255,255,255,0.4)", fontSize: 10, fontFamily: "JetBrains Mono" }} axisLine={false} tickLine={false} />
-                <YAxis tick={{ fill: "rgba(255,255,255,0.4)", fontSize: 10, fontFamily: "JetBrains Mono" }} axisLine={false} tickLine={false} width={38} />
+                <CartesianGrid stroke="rgb(var(--tc-ink-rgb) / 0.07)" vertical={false} />
+                <XAxis dataKey="t" tick={{ fill: "rgb(var(--tc-ink-rgb) / 0.45)", fontSize: 10, fontFamily: "JetBrains Mono" }} axisLine={false} tickLine={false} />
+                <YAxis tick={{ fill: "rgb(var(--tc-ink-rgb) / 0.45)", fontSize: 10, fontFamily: "JetBrains Mono" }} axisLine={false} tickLine={false} width={38} />
                 <Tooltip
                   contentStyle={{ background: "#041014", border: "1px solid rgba(0,180,166,0.3)", borderRadius: 8, fontSize: 12 }}
                   labelStyle={{ color: "rgba(255,255,255,0.5)" }}
@@ -55,10 +86,10 @@ export default function Pool() {
         <Panel icon={Layers} title="Your Position" className="flex flex-col">
           <div className="text-center py-3">
             <div className="font-mono text-[10px] tracking-[0.16em] uppercase text-white/45">Deposited</div>
-            <div className="font-heading text-[34px] font-bold tracking-[-0.02em] text-tradeWhite mt-1">
-              ${POOL.myDeposit.toFixed(2)}
+            <div className="font-heading text-[34px] font-bold tracking-[-0.02em] text-tradeWhite mt-1" data-testid="pool-deposited">
+              ${fmt(deposited)}
             </div>
-            <div className="font-mono text-[11px] text-white/40 mt-1">0.00 earned this month</div>
+            <div className="font-mono text-[11px] text-white/40 mt-1">${fmt(deposited * POOL.apy / 100)} target this month</div>
           </div>
           <div className="mt-auto p-3 rounded-xl bg-tradeTeal/5 border border-tradeTeal/15 flex items-start gap-2.5">
             <Info className="w-4 h-4 text-tradeTeal shrink-0 mt-0.5" strokeWidth={2} />
@@ -75,6 +106,39 @@ export default function Pool() {
         <Stat label="MTD Return" value={POOL.mtd} teal />
         <Stat label="APY (Target)" value={`${POOL.apy * 12}%`} teal />
       </div>
+
+      {modal && (
+        <Modal
+          title={modal === "deposit" ? "Deposit into Trading Pool" : "Withdraw from Trading Pool"}
+          sub={modal === "deposit" ? `${POOL.apy}% monthly target` : "Returns to available balance"}
+          onClose={closeModal}
+          footer={
+            <button className="tc-btn tc-btn-primary flex-1" disabled={!valid}
+              style={!valid ? { opacity: 0.5, pointerEvents: "none" } : undefined}
+              onClick={confirm} data-testid="pool-confirm">
+              {modal === "deposit" ? "Deposit now" : "Withdraw now"}
+            </button>
+          }>
+          <ModalField label="Amount (USD)">
+            <ModalInput type="number" min="0" placeholder="0.00" value={amount} onChange={(e) => setAmount(e.target.value)} data-testid="pool-amount" />
+          </ModalField>
+          <div className="flex items-center justify-between font-mono text-[11px] text-white/45 mb-4">
+            <span>{modal === "deposit" ? "Available" : "Deposited"}</span>
+            <button className="text-white/80 hover:text-tradeTeal transition-colors" onClick={() => setAmount(String(max))}>
+              ${fmt(max)} · Max
+            </button>
+          </div>
+          {amt > max && <div className="text-[11.5px] text-[#FF8A82] mb-3">Amount exceeds your {modal === "deposit" ? "available balance" : "pool position"}.</div>}
+          <div className="flex items-start gap-2.5 p-3 rounded-xl bg-tradeTeal/5 border border-tradeTeal/15">
+            <Info className="w-4 h-4 text-tradeTeal shrink-0 mt-0.5" strokeWidth={2} />
+            <p className="text-[11.5px] text-white/55 leading-[1.5]">
+              {modal === "deposit"
+                ? "Deposits open a mining contract automatically. Returns are a target, not guaranteed."
+                : "Withdrawals settle to your available balance. Open mining contracts continue accruing."}
+            </p>
+          </div>
+        </Modal>
+      )}
     </div>
   );
 }

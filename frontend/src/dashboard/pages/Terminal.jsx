@@ -11,6 +11,7 @@ import Modal from "../components/Modal";
 import TradeAccountModal from "../components/TradeAccountModal";
 import SharePnlModal from "../components/SharePnlModal";
 import { useWallet } from "../WalletContext";
+import { useNotifications } from "../NotificationContext";
 import { shortAddr } from "../lib/web3";
 import { placeOrder, venueFor } from "../lib/orders";
 import { BrandLogo } from "../lib/brandLogos";
@@ -514,8 +515,8 @@ function ToggleRow({ label, on, onClick }) {
   return (
     <div className="flex items-center justify-between py-2.5">
       <span className="text-[13px] text-white/75">{label}</span>
-      <button onClick={onClick} className={`relative w-11 h-6 rounded-full transition-colors ${on ? "bg-tradeTeal" : "bg-white/12"}`}>
-        <span className="absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white transition-transform" style={{ transform: on ? "translateX(20px)" : "none" }} />
+      <button onClick={onClick} className={`tc-switch ${on ? "is-on" : ""}`} role="switch" aria-checked={on}>
+        <span className="tc-switch-knob" />
       </button>
     </div>
   );
@@ -524,6 +525,7 @@ function ToggleRow({ label, on, onClick }) {
 /* ===== Order panel ===== */
 function OrderPanel({ active, side, setSide, marginMode, setMarginMode, leverage, setLeverage, onConnectWallet, bare, compact, signal }) {
   const wallet = useWallet() || {};
+  const { notify } = useNotifications();
   const { address, balance, network, nativeSymbol } = wallet;
   const venueObj = venueFor(network);
   const [venue, setVenue] = useState("cex"); // cex | onchain
@@ -533,6 +535,7 @@ function OrderPanel({ active, side, setSide, marginMode, setMarginMode, leverage
 
   const submit = () => {
     setPlaced(true);
+    notify({ type: "trade", title: `${side === "buy" ? "Long" : "Short"} order submitted · ${active.sym}`, body: `Market order · ${leverage}× · @ ${active.last}` });
     setTimeout(() => setPlaced(false), 2400);
   };
 
@@ -544,6 +547,7 @@ function OrderPanel({ active, side, setSide, marginMode, setMarginMode, leverage
     if (res.ok) {
       setSig(res.signature ? `${res.signature.slice(0, 10)}…${res.signature.slice(-6)}` : "0xsigned");
       setStatus("done");
+      notify({ type: "trade", title: `${side === "buy" ? "Long" : "Short"} routed to ${venueObj.name}`, body: `${active.sym} · ${leverage}× · signed on ${network?.short || "chain"}` });
       setTimeout(() => setStatus("idle"), 5000);
     } else {
       setStatus(res.error === "REJECTED" ? "rejected" : "error");

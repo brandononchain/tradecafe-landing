@@ -124,13 +124,14 @@ export function ReferralModal({ onClose }) {
 }
 
 /* ===== Generic confirm ===== */
-export function ConfirmModal({ title, sub, body, confirmLabel = "Confirm", danger, onClose }) {
+export function ConfirmModal({ title, sub, body, confirmLabel = "Confirm", danger, onClose, onConfirm }) {
+  const confirm = () => { onConfirm?.(); onClose(); };
   return (
     <Modal title={title} sub={sub} onClose={onClose}
       footer={
         <>
           <button className="tc-btn tc-btn-ghost flex-1" onClick={onClose}>Cancel</button>
-          <button className="tc-btn flex-1" onClick={onClose}
+          <button className="tc-btn flex-1" onClick={confirm}
             style={danger ? { color: "#042024", background: "linear-gradient(135deg,#FF9B91,#F23645)" } : { color: "#042024", background: "linear-gradient(135deg,var(--tc-accent-light),var(--tc-accent))" }}>
             {confirmLabel}
           </button>

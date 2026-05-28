@@ -109,8 +109,8 @@ export default function VitWorld() {
             </div>
             <div className="flex items-center justify-between p-3 rounded-xl bg-white/[0.02] border border-white/[0.04] mb-3">
               <span className="text-[13px] font-medium text-white/85">Show me on VITworld</span>
-              <button onClick={() => setVisible((v) => !v)} className={`relative w-11 h-6 rounded-full transition-colors ${visible ? "bg-tradeTeal" : "bg-white/12"}`}>
-                <span className="absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white transition-transform" style={{ transform: visible ? "translateX(20px)" : "none" }} />
+              <button onClick={() => setVisible((v) => !v)} className={`tc-switch ${visible ? "is-on" : ""}`} role="switch" aria-checked={visible}>
+                <span className="tc-switch-knob" />
               </button>
             </div>
             {visible && PRIVACY_FIELDS.map((f) => (
