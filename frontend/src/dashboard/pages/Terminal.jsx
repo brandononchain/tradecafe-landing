@@ -157,48 +157,7 @@ export default function Terminal() {
 
   return (
     <div className="tc-fade flex flex-col gap-4 pb-20 xl:pb-0">
-
-      {/* Symbol header */}
-      <div className="tc-panel flex flex-wrap items-center gap-x-8 gap-y-3 !py-3.5">
-        <button className="flex items-center gap-2.5 hover:opacity-80" onClick={() => setSearchOpen(true)} data-testid="open-symbol-search">
-          <span className="text-left">
-            <span className="flex items-center gap-2">
-              <span className="font-heading text-[19px] font-semibold tracking-[-0.02em] text-tradeWhite">{active.sym}</span>
-              <ChevronDown className="w-4 h-4 text-white/40" />
-            </span>
-            <span className="block font-mono text-[10px] tracking-[0.06em] text-white/40 mt-0.5">{active.name} · {exchange.name} · {active.cat}</span>
-          </span>
-        </button>
-        <div className="flex items-baseline gap-2">
-          {(() => {
-            const live = livePrices[active.sym];
-            const prev = livePrev[active.sym] ?? live;
-            const up = live >= prev;
-            const decimals = live >= 1000 ? 2 : live >= 10 ? 3 : 4;
-            return (
-              <>
-                <CountUp value={live ?? 0} decimals={decimals} durationMs={500}
-                  className="font-mono text-[19px] font-semibold transition-colors"
-                  style={{ color: up ? "var(--tc-accent-light)" : "#FF8A82" }} />
-                <span className="inline-flex items-center gap-1 font-mono text-[10px] tracking-[0.14em] uppercase text-tradeTeal">
-                  <span className="trade-pulse-dot inline-block w-1.5 h-1.5 rounded-full bg-tradeTeal" /> Live
-                </span>
-                <button onClick={() => setAlertOpen(true)} className="tc-iconbtn relative" style={{ width: 30, height: 30 }} title="Set price alert" data-testid="set-alert">
-                  <BellPlus className="w-3.5 h-3.5" strokeWidth={2} />
-                  {alertsFor(active.sym).length > 0 && <span className="absolute -top-0.5 -right-0.5 min-w-[14px] h-[14px] px-1 rounded-full bg-tradeTeal text-[#042024] font-mono text-[9px] leading-[14px] text-center">{alertsFor(active.sym).length}</span>}
-                </button>
-              </>
-            );
-          })()}
-        </div>
-        <div className="hidden md:flex items-center gap-6 ml-auto font-mono text-[11px]">
-          <Mini label="24h High" value={active.last} />
-          <Mini label="24h Vol" value="1.24B" />
-          <Mini label="Funding" value="0.011%" teal />
-        </div>
-      </div>
-
-      <div className="grid grid-cols-1 xl:grid-cols-[260px_1fr_320px] gap-3 xl:gap-4 xl:h-[760px]">
+      <div className="grid grid-cols-1 xl:grid-cols-[240px_1fr_360px] gap-3 xl:gap-4 xl:h-[760px]">
         {/* Watchlist */}
         <div className="tc-panel !p-3 order-2 xl:order-1 xl:h-full xl:flex xl:flex-col xl:min-h-0">
           {/* Exchange selector */}
@@ -296,56 +255,86 @@ export default function Terminal() {
 
         {/* Chart + toolbar + drawing rail */}
         <div className="tc-panel !p-0 overflow-hidden order-1 xl:order-2 flex flex-col h-[calc(100dvh-313px)] min-h-[320px] xl:h-full xl:min-h-0">
-          {/* Toolbar */}
-          <div className="flex items-center gap-2 px-3 py-2 border-b border-white/[0.04] flex-wrap shrink-0">
-            <div className="flex items-center gap-0.5 p-0.5 rounded-lg bg-white/[0.025]">
+          {/* Compact symbol header */}
+          <div className="flex items-center gap-3 px-3 sm:px-4 py-2.5 border-b border-white/[0.04] shrink-0">
+            <button className="flex items-center gap-2 min-w-0 hover:opacity-80 shrink-0" onClick={() => setSearchOpen(true)} data-testid="open-symbol-search">
+              <span className="text-left min-w-0">
+                <span className="flex items-center gap-1.5">
+                  <span className="font-heading text-[15px] sm:text-[16px] font-semibold tracking-[-0.02em] text-tradeWhite">{active.sym}</span>
+                  <ChevronDown className="w-3.5 h-3.5 text-white/40" />
+                </span>
+                <span className="hidden sm:block font-mono text-[9.5px] tracking-[0.06em] text-white/40 truncate">{active.name} · {exchange.name} · {active.cat}</span>
+              </span>
+            </button>
+            <span className="hidden sm:inline-block w-px h-7 bg-white/[0.06]" />
+            <div className="flex items-baseline gap-2 min-w-0">
+              {(() => {
+                const live = livePrices[active.sym];
+                const prev = livePrev[active.sym] ?? live;
+                const up = live >= prev;
+                const decimals = live >= 1000 ? 2 : live >= 10 ? 3 : 4;
+                return (
+                  <>
+                    <CountUp value={live ?? 0} decimals={decimals} durationMs={500}
+                      className="font-mono text-[16px] sm:text-[18px] font-semibold transition-colors tabular-nums"
+                      style={{ color: up ? "var(--tc-accent-light)" : "#FF8A82" }} />
+                    <span className="inline-flex items-center gap-1 font-mono text-[9px] tracking-[0.14em] uppercase text-tradeTeal">
+                      <span className="trade-pulse-dot inline-block w-1.5 h-1.5 rounded-full bg-tradeTeal" /> Live
+                    </span>
+                  </>
+                );
+              })()}
+              <button onClick={() => setAlertOpen(true)} className="tc-iconbtn relative ml-1" style={{ width: 28, height: 28 }} title="Set price alert" data-testid="set-alert">
+                <BellPlus className="w-3.5 h-3.5" strokeWidth={2} />
+                {alertsFor(active.sym).length > 0 && <span className="absolute -top-0.5 -right-0.5 min-w-[14px] h-[14px] px-1 rounded-full bg-tradeTeal text-[#042024] font-mono text-[9px] leading-[14px] text-center">{alertsFor(active.sym).length}</span>}
+              </button>
+            </div>
+            <div className="hidden lg:flex items-center gap-5 ml-auto font-mono text-[10.5px] shrink-0">
+              <Mini label="24h Vol" value="1.24B" />
+              <Mini label="Funding" value="0.011%" teal />
+            </div>
+          </div>
+
+          {/* Toolbar — single row, scrolls horizontally on tight widths instead of wrapping */}
+          <div className="flex items-center gap-1.5 sm:gap-2 px-3 py-2 border-b border-white/[0.04] shrink-0 overflow-x-auto flex-nowrap">
+            <div className="flex items-center gap-0.5 p-0.5 rounded-lg bg-white/[0.025] shrink-0">
+              {TIMEFRAMES.map((t) => (
+                <button key={t} onClick={() => setTf(t)}
+                  className={`px-2.5 py-1 rounded-md font-mono text-[11px] transition-colors ${t === tf ? "bg-tradeTeal/15 text-tradeTeal" : "text-white/45 hover:text-white/80"}`}
+                  data-testid={`tf-${t}`}>{t}</button>
+              ))}
+            </div>
+            <div className="flex items-center gap-0.5 p-0.5 rounded-lg bg-white/[0.025] shrink-0">
               {CHART_TYPES.map((c) => {
                 const Ic = c.icon;
                 return (
                   <button key={c.key} onClick={() => setChartType(c.key)} title={c.label}
                     className={`flex items-center justify-center rounded-md transition-colors ${chartType === c.key ? "bg-tradeTeal/15 text-tradeTeal" : "text-white/45 hover:text-white/80"}`}
-                    style={{ width: 30, height: 30 }} data-testid={`charttype-${c.key}`}>
+                    style={{ width: 26, height: 26 }} data-testid={`charttype-${c.key}`}>
                     <Ic className="w-3.5 h-3.5" strokeWidth={2} />
                   </button>
                 );
               })}
             </div>
-            <div className="flex items-center gap-0.5 p-0.5 rounded-lg bg-white/[0.025]">
-              {TIMEFRAMES.map((t) => (
-                <button key={t} onClick={() => setTf(t)}
-                  className={`px-2.5 py-1.5 rounded-md font-mono text-[11px] transition-colors ${t === tf ? "bg-tradeTeal/15 text-tradeTeal" : "text-white/45 hover:text-white/80"}`}
-                  data-testid={`tf-${t}`}>{t}</button>
+            <div className="hidden md:flex items-center gap-0.5 p-0.5 rounded-lg bg-white/[0.025] shrink-0" data-testid="chart-layout">
+              {[
+                { v: 1, Icon: LayoutGrid, label: "Single" },
+                { v: 2, Icon: Columns2, label: "Two charts" },
+                { v: 4, Icon: SquareSplitHorizontal, label: "Four charts" },
+              ].map(({ v, Icon, label }) => (
+                <button key={v} onClick={() => { setChartLayout(v); if (activeChart >= v) setActiveChart(0); }}
+                  title={label}
+                  className={`flex items-center justify-center rounded-md transition-colors ${chartLayout === v ? "bg-tradeTeal/15 text-tradeTeal" : "text-white/45 hover:text-white/80"}`}
+                  style={{ width: 26, height: 26 }} data-testid={`layout-${v}`}>
+                  <Icon className="w-3.5 h-3.5" strokeWidth={2} />
+                </button>
               ))}
             </div>
-            {/* Filter / chart settings, sits where Indicators used to be */}
-            <button className="tc-iconbtn shrink-0" style={{ width: 32, height: 32 }} onClick={() => setSettingsOpen(true)} title="Chart settings & filters" data-testid="chart-settings">
+            <button className="tc-iconbtn shrink-0" style={{ width: 30, height: 30 }} onClick={() => setSettingsOpen(true)} title="Chart settings & filters" data-testid="chart-settings">
               <Settings2 className="w-3.5 h-3.5" strokeWidth={2} />
             </button>
 
-            {/* Right cluster: layout switcher + AI quick toggles + Indicators + AI */}
             <div className="ml-auto flex items-center gap-2 shrink-0">
-              <div className="hidden md:flex items-center gap-0.5 p-0.5 rounded-lg bg-white/[0.025]" data-testid="chart-layout">
-                {[
-                  { v: 1, Icon: LayoutGrid, label: "Single" },
-                  { v: 2, Icon: Columns2, label: "Two charts" },
-                  { v: 4, Icon: SquareSplitHorizontal, label: "Four charts" },
-                ].map(({ v, Icon, label }) => (
-                  <button key={v} onClick={() => { setChartLayout(v); if (activeChart >= v) setActiveChart(0); }}
-                    title={label}
-                    className={`flex items-center justify-center rounded-md transition-colors ${chartLayout === v ? "bg-tradeTeal/15 text-tradeTeal" : "text-white/45 hover:text-white/80"}`}
-                    style={{ width: 26, height: 26 }} data-testid={`layout-${v}`}>
-                    <Icon className="w-3.5 h-3.5" strokeWidth={2} />
-                  </button>
-                ))}
-              </div>
-              <div className="hidden lg:flex items-center gap-1">
-                {[["Pivot P.", "pivots"], ["TSR", "tsr"], ["B&R", "breaks"], ["Trend F.", "trendFinder"]].map(([lbl, key]) => (
-                  <button key={key} onClick={() => setAi((a) => ({ ...a, [key]: !a[key] }))}
-                    className={`px-2 py-1.5 rounded-md font-mono text-[10px] tracking-[0.04em] transition-colors ${ai[key] ? "bg-tradeTeal/15 text-tradeTeal" : "text-white/45 hover:text-white/80"}`}
-                    data-testid={`ai-quick-${key}`}>{lbl}</button>
-                ))}
-                <span className="w-px h-5 bg-white/[0.06] mx-1" />
-              </div>
               <Dropdown label="Indicators" align="right" badge={activeIndicatorCount || null} testid="menu-indicators">
                 <MenuLabel>Overlays</MenuLabel>
                 {OVERLAYS.map((o) => (
@@ -434,7 +423,7 @@ export default function Terminal() {
           {/* Context tabs: research while the ticket stays put */}
           <div className="tc-segment xl:shrink-0">
             {["signals", "ai", "connect"].map((t) => (
-              <div key={t} className={`tc-segment-btn ${rightTab === t ? "is-active" : ""}`} style={{ padding: "8px 0", fontSize: 11 }} onClick={() => setRightTab(t)} data-testid={`righttab-${t}`}>
+              <div key={t} className={`tc-segment-btn ${rightTab === t ? "is-active" : ""}`} style={{ padding: "11px 0", fontSize: 12.5, letterSpacing: "0.12em" }} onClick={() => setRightTab(t)} data-testid={`righttab-${t}`}>
                 {t === "ai" ? "AI" : t.charAt(0).toUpperCase() + t.slice(1)}
               </div>
             ))}

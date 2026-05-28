@@ -2770,22 +2770,27 @@ code {
 @keyframes tcFadeUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; } }
 .tc-fade { animation: tcFadeUp 0.5s cubic-bezier(.2,.7,.2,1) both; }
 
-/* ===== Branded scrollbars (entire app) ===== */
+/* ===== Scrollbars — almost invisible at rest, subtle on hover ===== */
 * {
     scrollbar-width: thin;
-    scrollbar-color: rgb(var(--tc-accent-rgb) / 0.42) transparent;
+    scrollbar-color: rgb(var(--tc-ink-rgb) / 0.08) transparent;
 }
-*::-webkit-scrollbar { width: 10px; height: 10px; }
+*::-webkit-scrollbar { width: 8px; height: 8px; }
 *::-webkit-scrollbar-track { background: transparent; }
 *::-webkit-scrollbar-thumb {
-    background: rgb(var(--tc-accent-rgb) / 0.30);
+    background: transparent;
     border-radius: 999px;
     border: 2px solid transparent;
     background-clip: padding-box;
-    transition: background 0.2s ease;
+    transition: background-color 0.2s ease;
+}
+/* Show a faint thumb while the scroll host (or any ancestor) is hovered. */
+*:hover::-webkit-scrollbar-thumb {
+    background: rgb(var(--tc-ink-rgb) / 0.14);
+    background-clip: padding-box;
 }
 *::-webkit-scrollbar-thumb:hover {
-    background: rgb(var(--tc-accent-rgb) / 0.55);
+    background: rgb(var(--tc-ink-rgb) / 0.28);
     background-clip: padding-box;
 }
 *::-webkit-scrollbar-corner { background: transparent; }
