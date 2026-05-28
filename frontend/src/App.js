@@ -54,12 +54,10 @@ const AppVitWorld = lazy(() => import("./dashboard/pages/VitWorld"));
 const AppProducts = lazy(() => import("./dashboard/pages/Products"));
 const AppCard = lazy(() => import("./dashboard/pages/Card"));
 
+import { AppShellSkeleton } from "./dashboard/components/Skeletons";
+
 function AppLoader() {
-  return (
-    <div className="min-h-screen bg-[#02080A] flex items-center justify-center">
-      <span className="w-6 h-6 rounded-full border-2 border-tradeTeal/30 border-t-tradeTeal animate-spin" />
-    </div>
-  );
+  return <AppShellSkeleton />;
 }
 
 const VIDEO_SRC = "/tradecafebackground.mp4";
