@@ -18,6 +18,12 @@ export function ThemeProvider({ children }) {
     } catch {
       /* ignore */
     }
+    // Mirror the theme onto <html> so portaled overlays (modals, sheets,
+    // toasts appended to document.body — outside .tc-app) inherit the
+    // light/dark CSS variables too. Cleared on unmount so the always-dark
+    // marketing pages keep the :root defaults.
+    document.documentElement.setAttribute("data-theme", mode);
+    return () => document.documentElement.removeAttribute("data-theme");
   }, [mode]);
 
   const toggle = () => setMode((m) => (m === "dark" ? "light" : "dark"));

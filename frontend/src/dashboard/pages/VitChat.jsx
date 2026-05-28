@@ -33,7 +33,7 @@ export default function VitChat() {
   const showChat = view !== "requests"; // right pane is chat unless requests
 
   return (
-    <div className="tc-fade flex flex-col gap-3 lg:gap-6 h-[calc(100dvh-92px)] lg:h-auto">
+    <div className="tc-fade flex flex-col gap-3 lg:gap-6 h-full min-h-0">
       <div className={mobileChatOpen ? "hidden lg:block" : "block"}>
         <PageHead eyebrow="Community" title="VITchat" desc="Message fellow traders, share setups, and grow your circle.">
           <button className="tc-btn tc-btn-ghost" onClick={() => setView(view === "requests" ? "chat" : "requests")}>
@@ -43,7 +43,7 @@ export default function VitChat() {
         </PageHead>
       </div>
 
-      <div className="flex-1 min-h-0 flex flex-col gap-4 lg:grid lg:grid-cols-[300px_1fr] lg:gap-4 lg:flex-none lg:min-h-[560px]">
+      <div className="flex-1 min-h-0 flex flex-col gap-4 lg:grid lg:grid-cols-[300px_1fr] lg:gap-4">
         {/* Friend list */}
         <div className={`tc-panel !p-3 flex-col min-h-0 ${mobileChatOpen ? "hidden lg:flex" : "flex flex-1 lg:flex-none"}`}>
           <div className="flex items-center gap-2.5 p-2 mb-2">

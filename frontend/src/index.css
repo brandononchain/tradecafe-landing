@@ -2023,7 +2023,10 @@ code {
     --tc-panel-bg: rgb(var(--tc-ink-rgb) / 0.022);
 }
 
-/* Light mode — keeps the TradeCafe teal accent, flips ink + surfaces. */
+/* Light mode — keeps the TradeCafe teal accent, flips ink + surfaces.
+   Also matches :root[data-theme="light"] (set on <html>) so portaled
+   overlays appended to document.body inherit the light palette. */
+:root[data-theme="light"],
 .tc-app[data-theme="light"] {
     --tc-accent: #00897e;
     --tc-accent-light: #00b4a6;
@@ -2248,7 +2251,11 @@ code {
     position: relative;
     z-index: 10;
     margin-left: 256px;
-    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;          /* fallback */
+    height: 100dvh;         /* fixed app shell — content scrolls internally */
+    overflow: hidden;
     transition: margin-left 0.35s cubic-bezier(.2,.7,.2,1);
 }
 .tc-app-main.is-collapsed { margin-left: 76px; }
@@ -2340,6 +2347,10 @@ code {
 
 /* ===== Content area ===== */
 .tc-content {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+    width: 100%;
     padding: 22px;
     max-width: 1360px;
     margin: 0 auto;
