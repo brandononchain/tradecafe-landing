@@ -6,6 +6,7 @@ import { Layers, ArrowDownToLine, ArrowUpToLine, Info } from "lucide-react";
 import { PageHead, Panel } from "../ui";
 import Modal, { ModalField, ModalInput } from "../components/Modal";
 import { useNotifications } from "../NotificationContext";
+import { usePersistentState } from "../lib/usePersistentState";
 import { POOL } from "../data";
 
 const fmt = (n) => n.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
@@ -13,7 +14,7 @@ const AVAILABLE = 5000; // demo wallet balance available to allocate
 
 export default function Pool() {
   const { notify } = useNotifications();
-  const [deposited, setDeposited] = useState(POOL.myDeposit);
+  const [deposited, setDeposited] = usePersistentState("tc-pool-deposited", POOL.myDeposit);
   const [modal, setModal] = useState(null); // "deposit" | "withdraw"
   const [amount, setAmount] = useState("");
 

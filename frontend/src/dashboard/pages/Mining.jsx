@@ -4,6 +4,7 @@ import { PageHead, Panel } from "../ui";
 import { MINING } from "../data";
 import { ConfirmModal } from "../components/AccountModals";
 import { useNotifications } from "../NotificationContext";
+import { usePersistentState } from "../lib/usePersistentState";
 
 // Derived figures per contract
 function derive(c) {
@@ -25,8 +26,8 @@ export default function Mining() {
   const dailyAccrual = rows.filter((r) => r.active).reduce((a, r) => a + r.daily, 0);
   const activeCount = rows.filter((r) => r.active).length;
 
-  const [claimable, setClaimable] = useState(() => rows.filter((r) => r.active).reduce((a, r) => a + r.daily, 0));
-  const [payouts, setPayouts] = useState(MINING.payouts);
+  const [claimable, setClaimable] = usePersistentState("tc-mining-claimable", rows.filter((r) => r.active).reduce((a, r) => a + r.daily, 0));
+  const [payouts, setPayouts] = usePersistentState("tc-mining-payouts", MINING.payouts);
 
   const today = () => new Date().toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
   const claimRewards = () => {

@@ -2,6 +2,7 @@ import { createContext, useContext, useState, useCallback } from "react";
 import { createPortal } from "react-dom";
 import { Radio, Bot, Layers, ShieldCheck, Users, Bell, CheckCircle2, Gem, Pickaxe, X } from "lucide-react";
 import { NOTIFICATIONS } from "./data";
+import { usePersistentState } from "./lib/usePersistentState";
 
 export const NOTIF_ICON = {
   signal: Radio, trade: Bot, pool: Layers, system: ShieldCheck,
@@ -15,7 +16,7 @@ export const useNotifications = () =>
 let seq = 0;
 
 export function NotificationProvider({ children }) {
-  const [notifications, setNotifications] = useState(NOTIFICATIONS);
+  const [notifications, setNotifications] = usePersistentState("tc-notifications", NOTIFICATIONS);
   const [toasts, setToasts] = useState([]);
 
   const dismissToast = useCallback((id) => setToasts((t) => t.filter((x) => x.id !== id)), []);

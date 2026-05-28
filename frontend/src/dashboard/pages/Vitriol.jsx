@@ -3,6 +3,7 @@ import { Gem, ArrowUpRight, Copy, Check, Lock, Gift } from "lucide-react";
 import { PageHead, Panel } from "../ui";
 import Modal, { ModalField, ModalInput } from "../components/Modal";
 import { useNotifications } from "../NotificationContext";
+import { usePersistentState } from "../lib/usePersistentState";
 import { VITRIOL } from "../data";
 
 const fmt = (n) => n.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
@@ -15,10 +16,10 @@ export default function Vitriol() {
   const [amount, setAmount] = useState("");
   const [copied, setCopied] = useState(false);
 
-  const [balance, setBalance] = useState(VITRIOL.balance);
-  const [staked, setStaked] = useState(VITRIOL.staked);
-  const [rewards, setRewards] = useState(VITRIOL.rewards);
-  const [history, setHistory] = useState(VITRIOL.history);
+  const [balance, setBalance] = usePersistentState("tc-vitriol-balance", VITRIOL.balance);
+  const [staked, setStaked] = usePersistentState("tc-vitriol-staked", VITRIOL.staked);
+  const [rewards, setRewards] = usePersistentState("tc-vitriol-rewards", VITRIOL.rewards);
+  const [history, setHistory] = usePersistentState("tc-vitriol-history", VITRIOL.history);
 
   const usd = balance * parseFloat(VITRIOL.price);
   const amt = parseFloat(amount) || 0;
