@@ -3,10 +3,12 @@ import { useNavigate } from "react-router-dom";
 import { Copy, Check, MessageSquare, Download, Link2 } from "lucide-react";
 import Modal from "./Modal";
 import ProofCard from "../../components/ProofCard";
+import { useTheme } from "../ThemeContext";
 import { ACCOUNT } from "../data";
 
 export default function SharePnlModal({ data, onClose }) {
   const navigate = useNavigate();
+  const { mode } = useTheme();
   const [copied, setCopied] = useState(false);
   const code = (ACCOUNT.username || "TRADER").slice(0, 7).toUpperCase();
   const link = `https://tradecafe.ai/r/${code}?s=${encodeURIComponent(data.sym)}`;
@@ -31,7 +33,7 @@ export default function SharePnlModal({ data, onClose }) {
       }
     >
       <div className="flex justify-center mb-4">
-        <ProofCard {...data} handle={`@${ACCOUNT.username}`} code={code} />
+        <ProofCard {...data} handle={`@${ACCOUNT.username}`} code={code} light={mode === "light"} />
       </div>
       <div className="flex items-center gap-2 p-3 rounded-xl bg-white/[0.02] border border-white/[0.05]">
         <Link2 className="w-3.5 h-3.5 text-white/40 shrink-0" strokeWidth={2} />

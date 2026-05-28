@@ -232,11 +232,11 @@ export function MarginSettingsModal({ onClose }) {
       </Section>
       <Section label="Leverage">
         <div className="flex justify-between font-mono text-[11px] mb-2"><span className="text-white/55">Default leverage</span><span className="text-tradeTeal">{lev}×</span></div>
-        <input type="range" min={1} max={50} value={lev} onChange={(e) => setLev(Number(e.target.value))} className="w-full accent-[color:var(--tc-accent)]" />
+        <input type="range" min={1} max={50} value={lev} onChange={(e) => setLev(Number(e.target.value))} className="w-full" style={{ "--val": `${((lev - 1) / 49) * 100}%` }} />
       </Section>
       <Section label="Exposure">
         <div className="flex justify-between font-mono text-[11px] mb-2"><span className="text-white/55">Max position size</span><span className="text-tradeTeal">{maxSize}%</span></div>
-        <input type="range" min={5} max={100} value={maxSize} onChange={(e) => setMaxSize(Number(e.target.value))} className="w-full accent-[color:var(--tc-accent)]" />
+        <input type="range" min={5} max={100} value={maxSize} onChange={(e) => setMaxSize(Number(e.target.value))} className="w-full" style={{ "--val": `${((maxSize - 5) / 95) * 100}%` }} />
       </Section>
       <p className="text-[11.5px] text-white/45 leading-[1.5]">Higher leverage increases liquidation risk. Use isolated margin to cap losses per position.</p>
     </Modal>

@@ -835,10 +835,23 @@ function SymbolSearch({ onClose, onPick, exchange }) {
     return inCat && match;
   });
 
+  // Lock the page behind so it doesn't scroll while the search is open,
+  // and close on Escape — same UX as the shared Modal.
+  useEffect(() => {
+    const onKey = (e) => e.key === "Escape" && onClose();
+    document.addEventListener("keydown", onKey);
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.removeEventListener("keydown", onKey);
+      document.body.style.overflow = prev;
+    };
+  }, [onClose]);
+
   return createPortal(
-    <div className="fixed inset-0 z-[80] flex items-start justify-center pt-[8vh] sm:pt-[11vh] px-3 sm:px-4" data-testid="symbol-search-modal">
+    <div className="fixed inset-0 z-[80] flex items-start justify-center pt-[6dvh] pb-[6dvh] px-3 sm:px-4 sm:items-start sm:pt-[10dvh]" data-testid="symbol-search-modal">
       <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={onClose} />
-      <div className="relative w-full max-w-[520px] rounded-2xl bg-surface border border-white/[0.06] overflow-hidden shadow-2xl flex flex-col max-h-[82vh]">
+      <div className="relative w-full max-w-[520px] rounded-2xl bg-surface border border-white/[0.06] overflow-hidden shadow-2xl flex flex-col" style={{ maxHeight: "88dvh" }}>
         {/* Search field */}
         <div className="flex items-center gap-2.5 px-4 py-3.5 border-b border-white/[0.05]">
           <Search className="w-4 h-4 text-tradeTeal shrink-0" strokeWidth={2} />

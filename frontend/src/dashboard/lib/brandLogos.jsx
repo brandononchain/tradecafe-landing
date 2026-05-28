@@ -1,29 +1,35 @@
-// Self-contained brand marks for exchanges, TradFi brokers, and Web3 wallets.
-// Rendered as inline SVG (geometric brands) or branded monogram tiles
-// (wordmark brands) so they work offline, stay theme-aware, and never break.
+import { useState } from "react";
+
+// Brand marks for exchanges, TradFi brokers, and Web3 wallets.
+//
+// At runtime BrandLogo loads the publisher's official mark from a CDN
+// (simple-icons via cdn.simpleicons.org) when a `slug` is known, and
+// gracefully falls back to the offline geometric SVG / branded monogram
+// for brands the CDN doesn't carry — so the connect UI always shows
+// something on-brand even when the network is restricted.
 
 export const BRANDS = {
   // ---- Crypto exchanges (CEX) ----
-  binance: { name: "Binance", color: "#F0B90B" },
-  bybit: { name: "Bybit", color: "#F7A600", mark: "B" },
-  bitget: { name: "Bitget", color: "#00E0CE", mark: "B" },
-  okx: { name: "OKX", color: "#C9CDD4" },
+  binance: { name: "Binance", color: "#F0B90B", slug: "binance" },
+  bybit: { name: "Bybit", color: "#F7A600", mark: "B", slug: "bybit" },
+  bitget: { name: "Bitget", color: "#00E0CE", mark: "B", slug: "bitget" },
+  okx: { name: "OKX", color: "#C9CDD4", slug: "okx" },
   weex: { name: "WEEX", color: "#00E0A0", mark: "W" },
   bingx: { name: "BingX", color: "#2B6FF6", mark: "B" },
-  kucoin: { name: "KuCoin", color: "#24AE8F", mark: "K" },
+  kucoin: { name: "KuCoin", color: "#24AE8F", mark: "K", slug: "kucoin" },
 
   // ---- TradFi / FX brokers ----
-  ibkr: { name: "Interactive Brokers", color: "#D81222", mark: "IB" },
+  ibkr: { name: "Interactive Brokers", color: "#D81222", mark: "IB", slug: "interactivebrokers" },
   oanda: { name: "OANDA", color: "#C8102E", mark: "O" },
   forexcom: { name: "Forex.com", color: "#0B82C8", mark: "FX" },
   ig: { name: "IG", color: "#E4002B", mark: "IG" },
   pepperstone: { name: "Pepperstone", color: "#E2231A", mark: "P" },
-  saxo: { name: "Saxo", color: "#3C77C2", mark: "S" },
+  saxo: { name: "Saxo", color: "#3C77C2", mark: "S", slug: "saxobank" },
 
   // ---- Web3 wallets ----
-  metamask: { name: "MetaMask", color: "#E2761B", mark: "M" },
-  phantom: { name: "Phantom", color: "#AB9FF2" },
-  coinbase: { name: "Coinbase", color: "#0052FF" },
+  metamask: { name: "MetaMask", color: "#E2761B", mark: "M", slug: "metamask" },
+  phantom: { name: "Phantom", color: "#AB9FF2", slug: "phantom" },
+  coinbase: { name: "Coinbase", color: "#0052FF", slug: "coinbase" },
   rabby: { name: "Rabby", color: "#7084FF", mark: "R" },
   solflare: { name: "Solflare", color: "#FC8E2B" },
   backpack: { name: "Backpack", color: "#E33E3F" },
@@ -87,14 +93,31 @@ const GLYPHS = {
 export function BrandLogo({ id, size = 30, radius }) {
   const b = BRANDS[id] || { name: id, color: "#1FB8A6" };
   const glyph = GLYPHS[id];
+  const [imgFailed, setImgFailed] = useState(false);
+  const inner = Math.round(size * 0.62);
+  // Real official mark when the brand has a known CDN slug; falls back
+  // to the offline geometric/monogram mark on error or when no slug.
+  const cdnSrc = b.slug ? `https://cdn.simpleicons.org/${b.slug}/${b.color.replace("#", "")}` : null;
+
   return (
     <span aria-hidden="true" className="inline-flex items-center justify-center shrink-0"
       style={{
         width: size, height: size, borderRadius: radius ?? Math.round(size * 0.32),
         background: `${b.color}1F`, border: `1px solid ${b.color}40`, color: b.color,
       }}>
-      {glyph ? (
-        <svg viewBox="0 0 24 24" width={Math.round(size * 0.62)} height={Math.round(size * 0.62)} fill="currentColor">
+      {cdnSrc && !imgFailed ? (
+        <img
+          src={cdnSrc}
+          alt=""
+          width={inner}
+          height={inner}
+          loading="lazy"
+          referrerPolicy="no-referrer"
+          onError={() => setImgFailed(true)}
+          style={{ display: "block" }}
+        />
+      ) : glyph ? (
+        <svg viewBox="0 0 24 24" width={inner} height={inner} fill="currentColor">
           {glyph}
         </svg>
       ) : (
