@@ -133,25 +133,7 @@ export default function Terminal() {
   const activeIndicatorCount = Object.keys(overlays).length + (oscillator ? 1 : 0);
 
   return (
-    <div className="tc-fade flex flex-col gap-3 pb-20 xl:pb-0">
-      {/* Multi-symbol tabs */}
-      <div className="flex items-center gap-1 overflow-x-auto pb-0.5" data-testid="symbol-tabs">
-        {openTabs.map((s) => (
-          <div key={s} onClick={() => pickSymbol(s)}
-            className={`group flex items-center gap-2 px-3 py-2 rounded-lg cursor-pointer shrink-0 transition-colors border ${s === symbol ? "bg-tradeTeal/10 border-tradeTeal/30" : "bg-white/[0.02] border-white/[0.04] hover:bg-white/[0.04]"}`}
-            data-testid={`tab-${s}`}>
-            <span className={`text-[12px] font-medium ${s === symbol ? "text-tradeTeal" : "text-white/70"}`}>{s}</span>
-            {openTabs.length > 1 && (
-              <button onClick={(e) => { e.stopPropagation(); closeTab(s); }} className="text-white/30 hover:text-white/70" aria-label={`Close ${s}`}>
-                <X className="w-3 h-3" strokeWidth={2.5} />
-              </button>
-            )}
-          </div>
-        ))}
-        <button onClick={() => setSearchOpen(true)} className="shrink-0 w-8 h-8 rounded-lg flex items-center justify-center text-white/40 hover:text-tradeTeal hover:bg-white/[0.04] transition-colors" aria-label="Add symbol">
-          <Search className="w-3.5 h-3.5" strokeWidth={2} />
-        </button>
-      </div>
+    <div className="tc-fade flex flex-col gap-4 pb-20 xl:pb-0">
 
       {/* Symbol header */}
       <div className="tc-panel flex flex-wrap items-center gap-x-8 gap-y-3 !py-3.5">
@@ -175,9 +157,9 @@ export default function Terminal() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 xl:grid-cols-[250px_1fr_300px] gap-3">
+      <div className="grid grid-cols-1 xl:grid-cols-[260px_1fr_320px] gap-3 xl:gap-4 xl:h-[760px]">
         {/* Watchlist */}
-        <div className="tc-panel !p-3 order-2 xl:order-1">
+        <div className="tc-panel !p-3 order-2 xl:order-1 xl:h-full xl:flex xl:flex-col xl:min-h-0">
           {/* Exchange selector */}
           <div className="relative mb-2.5">
             <button
@@ -235,7 +217,7 @@ export default function Terminal() {
             <input placeholder="Search symbol or name…" value={query} onChange={(e) => setQuery(e.target.value)} />
           </div>
 
-          <div className="flex flex-col gap-0.5 max-h-[520px] xl:max-h-[640px] overflow-y-auto">
+          <div className="flex flex-col gap-0.5 max-h-[520px] xl:max-h-none xl:flex-1 xl:min-h-0 overflow-y-auto">
             {list.map((w) => {
               const fav = favorites.includes(w.sym);
               return (
@@ -272,7 +254,7 @@ export default function Terminal() {
         </div>
 
         {/* Chart + toolbar + drawing rail */}
-        <div className="tc-panel !p-0 overflow-hidden order-1 xl:order-2 flex flex-col h-[calc(100dvh-313px)] min-h-[320px] xl:h-auto xl:min-h-0">
+        <div className="tc-panel !p-0 overflow-hidden order-1 xl:order-2 flex flex-col h-[calc(100dvh-313px)] min-h-[320px] xl:h-full xl:min-h-0">
           {/* Toolbar */}
           <div className="flex items-center gap-2 px-3 py-2 border-b border-white/[0.04] flex-wrap shrink-0">
             <div className="flex items-center gap-0.5 p-0.5 rounded-lg bg-white/[0.025]">
@@ -359,16 +341,16 @@ export default function Terminal() {
                 <Eraser className="w-3.5 h-3.5" strokeWidth={2} />
               </button>
             </div>
-            <div className="flex-1 min-w-0 min-h-0 xl:h-[720px]">
+            <div className="flex-1 min-w-0 min-h-0">
               <TradingChart symbol={symbol} timeframe={tf} chartType={chartType} overlays={overlays} oscillator={oscillator} ai={ai} drawTool={locked ? null : drawTool} logScale={logScale} signal={activeSignal && activeSignal.sym === symbol ? activeSignal : null} />
             </div>
           </div>
         </div>
 
         {/* Right rail */}
-        <div className="order-3 flex flex-col gap-3">
+        <div className="order-3 flex flex-col gap-3 xl:h-full xl:min-h-0">
           {/* Always-on order ticket (desktop) — trade without leaving the signals feed */}
-          <div className="hidden xl:block">
+          <div className="hidden xl:block xl:shrink-0">
             <OrderPanel
               active={active} side={side} setSide={setSide}
               marginMode={marginMode} setMarginMode={setMarginMode}
@@ -379,7 +361,7 @@ export default function Terminal() {
           </div>
 
           {/* Context tabs: research while the ticket stays put */}
-          <div className="tc-segment">
+          <div className="tc-segment xl:shrink-0">
             {["signals", "ai", "connect"].map((t) => (
               <div key={t} className={`tc-segment-btn ${rightTab === t ? "is-active" : ""}`} style={{ padding: "8px 0", fontSize: 11 }} onClick={() => setRightTab(t)} data-testid={`righttab-${t}`}>
                 {t === "ai" ? "AI" : t.charAt(0).toUpperCase() + t.slice(1)}
@@ -387,9 +369,11 @@ export default function Terminal() {
             ))}
           </div>
 
-          {rightTab === "signals" && <SignalsRail onPick={chartSignal} activeSym={activeSignal?.sym} />}
-          {rightTab === "connect" && <ConnectPanel onManage={() => { setAccountMode("exchange"); setAccountOpen(true); }} onConnectWallet={() => { setAccountMode("web3"); setAccountOpen(true); }} />}
-          {rightTab === "ai" && <AIRail ai={ai} setAi={setAi} symbol={symbol} timeframe={tf} />}
+          <div className="xl:flex-1 xl:min-h-0 xl:overflow-y-auto">
+            {rightTab === "signals" && <SignalsRail onPick={chartSignal} activeSym={activeSignal?.sym} />}
+            {rightTab === "connect" && <ConnectPanel onManage={() => { setAccountMode("exchange"); setAccountOpen(true); }} onConnectWallet={() => { setAccountMode("web3"); setAccountOpen(true); }} />}
+            {rightTab === "ai" && <AIRail ai={ai} setAi={setAi} symbol={symbol} timeframe={tf} />}
+          </div>
         </div>
       </div>
 
@@ -721,7 +705,7 @@ function SignalsRail({ onPick, activeSym }) {
             className={`px-3 py-1.5 rounded-full font-mono text-[9.5px] tracking-[0.1em] uppercase border transition-colors ${mkt === m ? "bg-tradeTeal/15 text-tradeTeal border-tradeTeal/30" : "text-white/50 border-white/[0.05]"}`}>{m}</button>
         ))}
       </div>
-      <div className="flex flex-col gap-2 max-h-[460px] overflow-y-auto">
+      <div className="flex flex-col gap-2 max-h-[460px] xl:max-h-none overflow-y-auto xl:overflow-visible">
         {SIGNALS.map((s, i) => (
           <button key={i} onClick={() => onPick && onPick(s)}
             className={`p-3 rounded-xl border text-left transition-colors ${activeSym === s.sym ? "bg-tradeTeal/10 border-tradeTeal/35" : "bg-white/[0.02] border-white/[0.045] hover:border-tradeTeal/25"}`}
