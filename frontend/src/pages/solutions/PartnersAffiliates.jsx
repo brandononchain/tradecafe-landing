@@ -17,7 +17,7 @@ const FEATURES = [
   { title: "Turnover bonus", Icon: Repeat, desc: "Earn from the trading volume your network generates across automation and signals." },
   { title: "Pool sharing", Icon: Layers, desc: "When your network participates in the Trading Pool, you share network-level rewards." },
   { title: "Rank rewards", Icon: Trophy, desc: "Hit milestones to unlock multipliers, recognition, and exclusive partner programs." },
-  { title: "Proof cards", Icon: BadgeCheck, desc: "Auto-generated, share-ready cards from your network's wins — passive credibility." },
+  { title: "Proof cards", Icon: BadgeCheck, desc: "Auto-generated, share-ready cards from your network's wins, passive credibility." },
   { title: "Partner dashboard", Icon: Gauge, desc: "Live view of network size, earnings, conversions, pool exposure, and rank progress." },
 ];
 
@@ -35,7 +35,7 @@ export default function PartnersAffiliates() {
       eyebrow="Solutions · Partners & Affiliates"
       title="Turn your audience into"
       accent="recurring income"
-      sub="Invite traders, creators, and communities into TradeCafe. Earn from subscriptions, network trading volume, pool participation, and rank progression — all tracked and attributed automatically."
+      sub="Invite traders, creators, and communities into TradeCafe. Earn from subscriptions, network trading volume, pool participation, and rank progression, all tracked and attributed automatically."
       ctas={[
         { label: "Become a Partner", to: EXTERNAL.launchTerminal, primary: true, testid: "pa-cta-join" },
         { label: "View Partner Network", to: "/partners", testid: "pa-cta-network" },

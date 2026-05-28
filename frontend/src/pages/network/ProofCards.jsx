@@ -4,7 +4,7 @@ import ProofCard from "../../components/ProofCard";
 import { SolutionLayout, Section, SectionLabel, FeatureGrid, StepFlow, FinalCTA } from "../solutions/SolutionLayout";
 
 const TYPES = [
-  { title: "PnL cards", Icon: TrendingUp, desc: "Closed-trade results with entry, exit, and return — clean enough to post anywhere." },
+  { title: "PnL cards", Icon: TrendingUp, desc: "Closed-trade results with entry, exit, and return, clean enough to post anywhere." },
   { title: "Milestone cards", Icon: Flag, desc: "Rank-ups, streaks, and account milestones rendered as share-ready graphics." },
   { title: "Signal cards", Icon: Radar, desc: "Snapshot a live AI setup with entry, target, and stop to share your edge." },
   { title: "Referral-embedded", Icon: Link2, desc: "Every card carries your attribution link so shares convert into signups." },
@@ -15,7 +15,7 @@ const TYPES = [
 const STEPS = [
   { title: "Trigger", Icon: Radar, desc: "Close a trade, hit a milestone, or pick a live signal worth sharing." },
   { title: "Generate", Icon: Image, desc: "A proof card renders automatically with your handle and referral code." },
-  { title: "Share", Icon: Share2, desc: "Post to social or send directly — every view carries your link." },
+  { title: "Share", Icon: Share2, desc: "Post to social or send directly, every view carries your link." },
   { title: "Convert", Icon: Link2, desc: "Clicks are attributed to you and credited across the partner streams." },
 ];
 
@@ -26,7 +26,7 @@ export default function ProofCards() {
       eyebrow="Network · Proof Cards"
       title="Social proof that"
       accent="compounds"
-      sub="Shareable PnL, milestone, and signal cards with embedded referral links. Turn every win into credibility — and every share into attributed network growth."
+      sub="Shareable PnL, milestone, and signal cards with embedded referral links. Turn every win into credibility, and every share into attributed network growth."
       ctas={[
         { label: "Open the Terminal", to: EXTERNAL.launchTerminal, primary: true, testid: "pc-cta-open" },
         { label: "Partner Program", to: "/network/partner-program", testid: "pc-cta-program" },

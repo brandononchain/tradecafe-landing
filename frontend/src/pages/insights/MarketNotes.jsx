@@ -4,11 +4,11 @@ import { SolutionLayout, Section, SectionLabel, FinalCTA } from "../solutions/So
 
 const NOTES = [
   { tag: "Recap", tone: "teal", title: "Weekly recap: rotation into majors as funding cools", excerpt: "BTC and ETH led the tape while perp funding normalized. The engine trimmed exposure into strength and rebuilt on the retest.", date: "May 26, 2026", read: "4 min" },
-  { tag: "Signal note", tone: "violet", title: "Anatomy of a high-confidence SOL long", excerpt: "Walking through the confluence — trend channel, retest, and TSR alignment — behind a +12% swing setup.", date: "May 22, 2026", read: "6 min" },
+  { tag: "Signal note", tone: "violet", title: "Anatomy of a high-confidence SOL long", excerpt: "Walking through the confluence, trend channel, retest, and TSR alignment, behind a +12% swing setup.", date: "May 22, 2026", read: "6 min" },
   { tag: "Ecosystem", tone: "teal", title: "Pool cycle update: Q2 posture and exposure", excerpt: "How the managed pool is positioned this quarter, where risk is capped, and what the reporting cadence looks like.", date: "May 18, 2026", read: "5 min" },
   { tag: "Macro", tone: "orange", title: "Volatility regime: what changed this month", excerpt: "Realized vol compressed across majors. We unpack what that means for position sizing and signal cadence.", date: "May 12, 2026", read: "7 min" },
   { tag: "Product", tone: "violet", title: "Drawing tools and AI overlays: a quick tour", excerpt: "A short walkthrough of the terminal's anchored drawing engine and the AI layers that redraw on every candle.", date: "May 6, 2026", read: "3 min" },
-  { tag: "Recap", tone: "teal", title: "Monthly review: win rate, R, and lessons", excerpt: "The numbers behind the month — profit factor, average R, and the trades that taught us the most.", date: "Apr 30, 2026", read: "8 min" },
+  { tag: "Recap", tone: "teal", title: "Monthly review: win rate, R, and lessons", excerpt: "The numbers behind the month, profit factor, average R, and the trades that taught us the most.", date: "Apr 30, 2026", read: "8 min" },
 ];
 
 const TONES = {
@@ -24,7 +24,7 @@ export default function MarketNotes() {
       eyebrow="Insights · Market Notes"
       title="Trading insights,"
       accent="shared openly"
-      sub="Recaps, signal breakdowns, ecosystem updates, and macro reads from the TradeCafe desk — written to teach, not to hype."
+      sub="Recaps, signal breakdowns, ecosystem updates, and macro reads from the TradeCafe desk, written to teach, not to hype."
       ctas={[
         { label: "Open the Terminal", to: EXTERNAL.launchTerminal, primary: true, testid: "mn-cta-open" },
         { label: "View Performance", to: "/insights/performance", testid: "mn-cta-perf" },

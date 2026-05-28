@@ -23,7 +23,7 @@ import { WithdrawModal, SupportModal, TwoFAModal, ReferralModal, ConfirmModal } 
 const ACTIONS = [
   { key: "twofa", icon: ShieldCheck, title: "2FA", sub: ACCOUNT.twoFA ? "Enabled" : "Disabled" },
   { key: "support", icon: MessageSquare, title: "Support Request", sub: "Send a request to our team" },
-  { key: "referrer", icon: UserPlus, title: "Referrer", sub: ACCOUNT.referrer || "Not set — tap to bind" },
+  { key: "referrer", icon: UserPlus, title: "Referrer", sub: ACCOUNT.referrer || "Not set, tap to bind" },
   { key: "delete", icon: Trash2, title: "Delete Account", sub: "Request permanent deletion", danger: true },
 ];
 
@@ -34,7 +34,7 @@ export default function Overview() {
       <PageHead
         eyebrow="My Account"
         title={`Welcome back, ${ACCOUNT.username}`}
-        desc="Your calm command center — balances, subscriptions, pools, and account health at a glance."
+        desc="Your calm command center, balances, subscriptions, pools, and account health at a glance."
       />
 
       {/* Account + Balance */}

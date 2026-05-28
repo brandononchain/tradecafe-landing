@@ -10,9 +10,9 @@ const CHANNELS = [
 ];
 
 const FAQ = [
-  { q: "How do I connect my exchange or wallet?", a: "Open the Terminal, go to Connect, and choose an exchange (API keys), a TradFi broker, or a Web3 wallet. Exchange keys should be scoped to read and trade only — never withdrawals." },
+  { q: "How do I connect my exchange or wallet?", a: "Open the Terminal, go to Connect, and choose an exchange (API keys), a TradFi broker, or a Web3 wallet. Exchange keys should be scoped to read and trade only, never withdrawals." },
   { q: "I need help with billing or my subscription.", a: "Email support@tradecafe.ai from your account address and the team will sort it out. Include your account handle and a short description of the issue." },
-  { q: "Is my account and data secure?", a: "On-chain trading is fully non-custodial — TradeCafe never holds your keys. Exchange API keys are stored encrypted and used only for trading. We recommend enabling IP binding where your exchange supports it." },
+  { q: "Is my account and data secure?", a: "On-chain trading is fully non-custodial, TradeCafe never holds your keys. Exchange API keys are stored encrypted and used only for trading. We recommend enabling IP binding where your exchange supports it." },
   { q: "How fast is support?", a: "Most account and technical questions are answered within one business day. Brokers, funds, and managers receive prioritized, white-glove support." },
 ];
 
@@ -23,7 +23,7 @@ export default function Support() {
       eyebrow="Company · Support"
       title="Help, whenever"
       accent="you need it"
-      sub="Account assistance, onboarding help, and a live look at system status — plus a community of traders and a team that actually answers."
+      sub="Account assistance, onboarding help, and a live look at system status, plus a community of traders and a team that actually answers."
       ctas={[
         { label: "Email support", href: "mailto:support@tradecafe.ai", external: true, primary: true, testid: "sp-cta-email" },
         { label: "Browse Docs", to: "/insights/docs", testid: "sp-cta-docs" },

@@ -4,7 +4,7 @@ import gsap from "gsap";
 import { ArrowUpRight, ArrowRight, ChevronDown } from "lucide-react";
 import Nav from "../../components/Nav";
 
-/* Shared scaffold for the marketing Solutions pages — atmospheric
+/* Shared scaffold for the marketing Solutions pages, atmospheric
    background, nav, animated hero, and a set of section primitives that
    reuse the site's existing tc-* component classes. Responsive across
    mobile → desktop via the same breakpoints used by the platform pages. */

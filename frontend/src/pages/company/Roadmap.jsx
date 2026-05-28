@@ -8,7 +8,7 @@ const PHASES = [
     items: [
       "AI Signal Engine with confidence scoring",
       "Pro terminal: charting, drawing tools, AI overlays",
-      "Cross-chain wallet — EVM + Solana on-chain perps",
+      "Cross-chain wallet, EVM + Solana on-chain perps",
       "Partner network, proof cards, and leaderboards",
     ],
   },
@@ -54,7 +54,7 @@ export default function Roadmap() {
       eyebrow="Company · Roadmap"
       title="Where TradeCafe is"
       accent="headed"
-      sub="What we've shipped, what we're building, and what's next. Upcoming features, integrations, and ecosystem expansion — in the open."
+      sub="What we've shipped, what we're building, and what's next. Upcoming features, integrations, and ecosystem expansion, in the open."
       ctas={[
         { label: "Launch Terminal", to: EXTERNAL.launchTerminal, primary: true, testid: "rm-cta-launch" },
         { label: "About TradeCafe", to: "/company/about", testid: "rm-cta-about" },

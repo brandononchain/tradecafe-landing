@@ -13,7 +13,7 @@ const STATS = [
 ];
 
 const FEATURES = [
-  { title: "Transparent reporting", Icon: Eye, desc: "Returns, drawdowns, and allocation changes reported on a defined cadence — no black box." },
+  { title: "Transparent reporting", Icon: Eye, desc: "Returns, drawdowns, and allocation changes reported on a defined cadence, no black box." },
   { title: "Defined terms", Icon: FileSignature, desc: "Lock periods, allocation limits, fees, and exit windows are all agreed up front." },
   { title: "No skill required", Icon: Sparkle, desc: "You don't watch charts or place trades. The strategy team manages everything." },
   { title: "Risk-managed", Icon: ShieldCheck, desc: "Position limits, exposure caps, and drawdown controls run on the pool continuously." },
@@ -24,7 +24,7 @@ const FEATURES = [
 const STEPS = [
   { title: "Allocate", Icon: Wallet, desc: "Commit capital into the pool under TradeCafe's defined participation terms." },
   { title: "Strategy runs", Icon: Cpu, desc: "Capital is deployed by the strategy logic across markets and timeframes." },
-  { title: "Returns accrue", Icon: TrendingUp, desc: "Performance — positive or negative — is reported transparently through the term." },
+  { title: "Returns accrue", Icon: TrendingUp, desc: "Performance, positive or negative, is reported transparently through the term." },
   { title: "Withdraw", Icon: LogOut, desc: "At term end, allocations and accrued performance settle for withdrawal." },
 ];
 
@@ -59,7 +59,7 @@ export default function PassiveParticipants() {
       </Section>
 
       <Section>
-        <SectionLabel index="01" title="Why go passive" caption="Process and transparency — not promises." />
+        <SectionLabel index="01" title="Why go passive" caption="Process and transparency, not promises." />
         <FeatureGrid items={FEATURES} />
       </Section>
 

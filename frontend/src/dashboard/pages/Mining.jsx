@@ -136,7 +136,7 @@ export default function Mining() {
               {[
                 "Buy a bot, the Terminal, or deposit into a Trading Pool.",
                 "A mining contract mints automatically for that purchase.",
-                "It accrues VIT daily — a % of the principal — until fully paid.",
+                "It accrues VIT daily, a % of the principal, until fully paid.",
                 "Claim to your VIT wallet anytime; staking VIT boosts the rate.",
               ].map((t, i) => (
                 <li key={i} className="flex items-start gap-2.5 text-[12.5px] text-white/60 leading-[1.5]">
@@ -160,7 +160,7 @@ export default function Mining() {
                   <td className="mono text-white/55">{p.date}</td>
                   <td className="mono text-tradeTeal">+{fmt(p.amountVIT)} VIT</td>
                   <td><span className={p.status === "Paid" ? "tc-tag-long" : "tc-chip tc-chip-active"}>{p.status}</span></td>
-                  <td className="mono text-white/45">{p.tx || "—"}</td>
+                  <td className="mono text-white/45">{p.tx || ", "}</td>
                 </tr>
               ))}
             </tbody>

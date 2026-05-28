@@ -37,9 +37,9 @@ const OPEN_POSITIONS = [
 ];
 
 const AI_INSIGHTS = [
-  { t: "now",  text: "BTC volatility regime shift detected — tightening stops by 12%.",        icon: Brain },
+  { t: "now",  text: "BTC volatility regime shift detected, tightening stops by 12%.",        icon: Brain },
   { t: "2m",   text: "Routing 3 signals through high-confidence filter (conf > 85%).",        icon: Sparkles },
-  { t: "8m",   text: "ETH momentum cluster forming on 4H — partial entry executed.",          icon: Activity },
+  { t: "8m",   text: "ETH momentum cluster forming on 4H, partial entry executed.",          icon: Activity },
   { t: "14m",  text: "Risk model dampened SOL exposure after correlation spike.",             icon: Shield },
 ];
 
@@ -57,7 +57,7 @@ export default function Terminal() {
 
   return (
     <div className="relative min-h-screen bg-black text-tradeWhite font-body" data-testid="terminal-page">
-      {/* Atmospheric background — static poster + tints, no video */}
+      {/* Atmospheric background, static poster + tints, no video */}
       <div className="fixed inset-0 z-0 pointer-events-none" aria-hidden>
         <div
           className="absolute inset-0 opacity-[0.42]"
@@ -86,7 +86,7 @@ export default function Terminal() {
         />
       </div>
 
-      {/* Page card wrapper — same hero-frame shell for visual continuity */}
+      {/* Page card wrapper, same hero-frame shell for visual continuity */}
       <section className="hero-frame !min-h-[unset] relative z-10 pb-12 sm:pb-16 md:pb-20">
         <Nav />
 
@@ -160,7 +160,7 @@ export default function Terminal() {
             {/* Grid of modules */}
             <div className="tc-dashboard-grid">
 
-              {/* Live Signal Feed — large */}
+              {/* Live Signal Feed, large */}
               <Module data-t="module" className="md:col-span-2 md:row-span-2" testid="mod-signal-feed"
                 icon={Radio} title="Live Signal Feed" status="STREAMING">
                 <ul className="flex flex-col gap-2 mt-1">
@@ -247,7 +247,7 @@ export default function Terminal() {
                 </div>
               </Module>
 
-              {/* AI Insight Log — wide */}
+              {/* AI Insight Log, wide */}
               <Module data-t="module" className="md:col-span-2" testid="mod-ai-insights" icon={Brain} title="AI Insight Log" status="LIVE">
                 <ul className="flex flex-col gap-2 mt-1">
                   {AI_INSIGHTS.map((it, i) => {

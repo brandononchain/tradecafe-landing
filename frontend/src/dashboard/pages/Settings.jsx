@@ -76,7 +76,7 @@ export default function Settings() {
 
         <Panel icon={ShieldCheck} title="Security">
           <div className="flex flex-col gap-3">
-            <Row icon={ShieldCheck} title="Two-Factor Auth" sub={twoFA ? "Enabled" : "Disabled — recommended"}>
+            <Row icon={ShieldCheck} title="Two-Factor Auth" sub={twoFA ? "Enabled" : "Disabled, recommended"}>
               <Toggle on={twoFA} onClick={toggle2FA} />
             </Row>
             <Row icon={KeyRound} title="API Keys" sub="Connect exchanges for auto-trading">

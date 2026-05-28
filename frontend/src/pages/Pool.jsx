@@ -27,7 +27,7 @@ import { EXTERNAL } from "../lib/brand";
 const POOL_STEPS = [
   { key: "alloc",  n: "01", title: "Allocate",            Icon: Wallet,    desc: "Commit capital into the pool through TradeCafe's defined participation terms." },
   { key: "run",    n: "02", title: "Strategy Runs",       Icon: Cpu,       desc: "Pool capital is deployed by TradeCafe's strategy logic across markets and timeframes." },
-  { key: "accrue", n: "03", title: "Returns Accumulate",  Icon: TrendingUp,desc: "Performance — positive or negative — is reported transparently throughout the term." },
+  { key: "accrue", n: "03", title: "Returns Accumulate",  Icon: TrendingUp,desc: "Performance, positive or negative, is reported transparently throughout the term." },
   { key: "draw",   n: "04", title: "Withdraw After Term", Icon: LogOut,    desc: "At the end of the agreed term, allocations and accrued performance settle for withdrawal." },
 ];
 
@@ -127,7 +127,7 @@ export default function Pool() {
             </span>
             <p>
               <span className="text-white/80">Not guaranteed income.</span> The Pool is passive
-              exposure to a live trading strategy. Performance — positive or negative —
+              exposure to a live trading strategy. Performance, positive or negative , 
               is reported transparently and capital is subject to market risk.
             </p>
           </div>
@@ -234,7 +234,7 @@ export default function Pool() {
 
         {/* ===== Trust section ===== */}
         <div className="relative z-20 px-4 sm:px-6 md:px-10 lg:px-14 max-w-[1280px] mx-auto mt-20 sm:mt-24">
-          <SectionLabel index="03" title="What the Pool guarantees" caption="Process and transparency — not returns." />
+          <SectionLabel index="03" title="What the Pool guarantees" caption="Process and transparency, not returns." />
           <div className="tc-includes" data-testid="pool-trust">
             {TRUST_CARDS.map((t) => {
               const Ic = t.Icon;

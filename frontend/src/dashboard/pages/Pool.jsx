@@ -41,7 +41,7 @@ export default function Pool() {
       <PageHead
         eyebrow="Pooled Strategies"
         title="Trading Pool"
-        desc="Deposit funds into pooled AI strategies and earn a target yield — managed end-to-end."
+        desc="Deposit funds into pooled AI strategies and earn a target yield, managed end-to-end."
       />
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">

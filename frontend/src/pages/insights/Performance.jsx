@@ -33,7 +33,7 @@ export default function Performance() {
       eyebrow="Insights · Performance"
       title="Transparency"
       accent="by design"
-      sub="Win rate, trade history, uptime, signals, and managed volume — documented and shared openly. Numbers, not narratives."
+      sub="Win rate, trade history, uptime, signals, and managed volume, documented and shared openly. Numbers, not narratives."
       ctas={[
         { label: "Open the Terminal", to: EXTERNAL.launchTerminal, primary: true, testid: "perf-cta-open" },
         { label: "AI Methodology", to: "/insights/ai-methodology", testid: "perf-cta-method" },

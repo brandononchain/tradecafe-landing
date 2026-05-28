@@ -36,7 +36,7 @@ const GROW_WAYS = [
     key: "turn",
     title: "Turnover Bonus",
     Icon: Repeat,
-    desc: "Earn from the trading volume your network generates — automation, signals, and execution.",
+    desc: "Earn from the trading volume your network generates, automation, signals, and execution.",
     stat: "Per volume",
     tag: "Recurring",
   },
@@ -59,10 +59,10 @@ const GROW_WAYS = [
 ];
 
 const PARTNER_OS = [
-  { key: "landing",  title: "Partner Landing Page", Icon: Globe2,       desc: "A branded TradeCafe landing page assigned to you — share it, and every signup is attributed back." },
+  { key: "landing",  title: "Partner Landing Page", Icon: Globe2,       desc: "A branded TradeCafe landing page assigned to you, share it, and every signup is attributed back." },
   { key: "attr",     title: "Referral Attribution", Icon: GitBranch,    desc: "Every click, signup, subscription, and trade is tracked, attributed, and credited to your line." },
   { key: "dash",     title: "Partner Dashboard",    Icon: Gauge,        desc: "Live view of network size, earnings, conversions, pool exposure, and rank progress." },
-  { key: "proof",    title: "Proof Cards",          Icon: BadgeCheck,   desc: "Auto-generated, share-ready proof cards from your network's wins — earn credibility passively." },
+  { key: "proof",    title: "Proof Cards",          Icon: BadgeCheck,   desc: "Auto-generated, share-ready proof cards from your network's wins, earn credibility passively." },
   { key: "edu",      title: "Education Loop",       Icon: GraduationCap,desc: "Drop-in education content, onboarding flows, and partner playbooks that scale your work." },
 ];
 

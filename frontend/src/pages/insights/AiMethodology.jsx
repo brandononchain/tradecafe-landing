@@ -25,14 +25,14 @@ export default function AiMethodology() {
       eyebrow="Insights · AI Methodology"
       title="How TradeCafe"
       accent="reads the market"
-      sub="Setups are identified through layered references, filters, and confirmations — not a single indicator. Every signal carries the context behind it, computed client-side from live candles."
+      sub="Setups are identified through layered references, filters, and confirmations, not a single indicator. Every signal carries the context behind it, computed client-side from live candles."
       ctas={[
         { label: "View Signal Engine", to: "/signals", primary: true, testid: "am-cta-signals" },
         { label: "See Performance", to: "/insights/performance", testid: "am-cta-perf" },
       ]}
     >
       <Section>
-        <SectionLabel index="01" title="The analysis layers" caption="Confluence across many lenses — not one." />
+        <SectionLabel index="01" title="The analysis layers" caption="Confluence across many lenses, not one." />
         <FeatureGrid items={LAYERS} />
       </Section>
 
