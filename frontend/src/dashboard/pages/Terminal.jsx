@@ -685,24 +685,6 @@ function OrderPanel({ active, side, setSide, marginMode, setMarginMode, leverage
 
   return (
     <div className={`flex flex-col gap-4 ${bare ? "" : "tc-panel"} ${fill ? "flex-1 min-h-0 overflow-y-auto" : ""}`}>
-      {/* Wallet status / connect — compact pill at the top */}
-      <button onClick={onConnectWallet}
-        className="flex items-center justify-between gap-2 px-3 py-2 rounded-lg bg-white/[0.025] border border-white/[0.05] hover:border-tradeTeal/30 transition-colors text-left"
-        data-testid="wallet-pill">
-        <span className="flex items-center gap-2 min-w-0">
-          <Wallet className="w-3.5 h-3.5 text-tradeTeal shrink-0" strokeWidth={2} />
-          {address ? (
-            <span className="font-mono text-[11px] text-white/75 truncate">{network?.short || "Wallet"} · {shortAddr(address)}</span>
-          ) : (
-            <span className="font-mono text-[11px] text-white/55">Connect wallet · trade on-chain</span>
-          )}
-        </span>
-        {address ? (
-          <span className="font-mono text-[11px] text-tradeTeal shrink-0">{balance ?? "…"} {nativeSymbol}</span>
-        ) : (
-          <span className="font-mono text-[10px] tracking-[0.1em] uppercase text-tradeTeal shrink-0">Connect</span>
-        )}
-      </button>
 
       {signal && (
         <button onClick={() => setSide(signal.dir === "LONG" ? "buy" : "sell")}
@@ -826,18 +808,18 @@ function SignalsRail({ onPick, activeSym }) {
   const [mkt, setMkt] = useState("All");
   const markets = ["All", "Crypto"];
   return (
-    <div className="tc-panel flex flex-col gap-3">
-      <div className="flex items-center gap-2">
+    <div className="tc-panel flex flex-col gap-3 xl:flex-1 xl:min-h-0">
+      <div className="flex items-center gap-2 shrink-0">
         <span className="font-mono text-[9px] tracking-[0.14em] uppercase text-white/40">Tap a signal to chart it</span>
         <Sparkles className="w-3 h-3 text-tradeTeal" strokeWidth={2} />
       </div>
-      <div className="flex gap-1.5">
+      <div className="flex gap-1.5 shrink-0">
         {markets.map((m) => (
           <button key={m} onClick={() => setMkt(m)}
             className={`px-3 py-1.5 rounded-full font-mono text-[9.5px] tracking-[0.1em] uppercase border transition-colors ${mkt === m ? "bg-tradeTeal/15 text-tradeTeal border-tradeTeal/30" : "text-white/50 border-white/[0.05]"}`}>{m}</button>
         ))}
       </div>
-      <div className="flex flex-col gap-2 max-h-[460px] xl:max-h-none overflow-y-auto xl:overflow-visible">
+      <div className="flex flex-col gap-2 max-h-[460px] xl:max-h-none xl:flex-1 xl:min-h-0 overflow-y-auto">
         {SIGNALS.map((s, i) => (
           <button key={i} onClick={() => onPick && onPick(s)}
             className={`p-3 rounded-xl border text-left transition-colors ${activeSym === s.sym ? "bg-tradeTeal/10 border-tradeTeal/35" : "bg-white/[0.02] border-white/[0.045] hover:border-tradeTeal/25"}`}
