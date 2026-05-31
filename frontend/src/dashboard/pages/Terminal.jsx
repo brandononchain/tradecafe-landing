@@ -656,7 +656,9 @@ function OrderPanel({ active, side, setSide, marginMode, setMarginMode, leverage
 
   const submit = () => {
     setPlaced(true);
-    notify({ type: "trade", title: `${side === "buy" ? "Long" : "Short"} order submitted · ${active.sym}`, body: `Market order · ${leverage}× · @ ${active.last}` });
+    const px = orderType === "limit" ? limitPrice : active.last;
+    const sz = marginMode === "percent" ? `${sizeValue}%` : `${usdAmount} USDT`;
+    notify({ type: "trade", title: `${side === "buy" ? "Long" : "Short"} ${orderType} · ${active.sym}`, body: `${sz} · ${leverage}× · @ ${px}` });
     setTimeout(() => setPlaced(false), 2400);
   };
 
@@ -676,12 +678,20 @@ function OrderPanel({ active, side, setSide, marginMode, setMarginMode, leverage
     }
   };
 
-  const dca = [
-    { lvl: "Entry", mult: "×1" },
-    { lvl: "Avg 1", mult: "×1.5" },
-    { lvl: "Avg 2", mult: "×2" },
-    { lvl: "Avg 3", mult: "×3" },
-  ];
+  const [orderType, setOrderType] = useState("market"); // "market" | "limit"
+  const [limitPrice, setLimitPrice] = useState(String(active.last).replace(/,/g, ""));
+  const [sizeValue, setSizeValue] = useState("10");
+  const [usdAmount, setUsdAmount] = useState("0.00");
+  const [dca, setDca] = useState([
+    { lvl: "Entry", mult: 1 },
+    { lvl: "Avg 1", mult: 1.5 },
+    { lvl: "Avg 2", mult: 2 },
+    { lvl: "Avg 3", mult: 3 },
+  ]);
+  const updateDca = (i, v) => {
+    const n = parseFloat(v);
+    setDca((prev) => prev.map((d, idx) => idx === i ? { ...d, mult: Number.isFinite(n) ? n : 0 } : d));
+  };
 
   return (
     <div className={`flex flex-col gap-4 ${bare ? "" : "tc-panel"} ${fill ? "flex-1 min-h-0 overflow-y-auto" : ""}`}>
@@ -719,9 +729,65 @@ function OrderPanel({ active, side, setSide, marginMode, setMarginMode, leverage
         ))}
       </div>
 
-      {!compact && <Field label="Order Type" value="Market" />}
-      <Field label="Price" value={active.last} mono />
-      <Field label={marginMode === "percent" ? "Size (% balance)" : "Amount (USDT)"} value={marginMode === "percent" ? "10%" : "0.00"} mono />
+      {!compact && (
+        <div>
+          <div className="font-mono text-[10px] tracking-[0.1em] uppercase text-white/45 mb-2">Order Type</div>
+          <div className="flex items-center gap-1.5 p-1 rounded-lg bg-white/[0.025] border border-white/[0.05]">
+            {["market", "limit"].map((t) => (
+              <button key={t} onClick={() => setOrderType(t)} data-testid={`order-type-${t}`}
+                className={`flex-1 py-1.5 rounded-md font-mono text-[10px] tracking-[0.1em] uppercase transition-colors ${orderType === t ? "bg-tradeTeal/15 text-tradeTeal" : "text-white/50"}`}>
+                {t}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
+      <div>
+        <div className="flex justify-between font-mono text-[10px] tracking-[0.1em] uppercase text-white/45 mb-2">
+          <span>Price</span>
+          {orderType === "limit" && <span className="text-white/35 normal-case tracking-normal">mkt {active.last}</span>}
+        </div>
+        {orderType === "limit" ? (
+          <input
+            type="number"
+            value={limitPrice}
+            onChange={(e) => setLimitPrice(e.target.value)}
+            data-testid="order-limit-price"
+            className="w-full px-3 py-2.5 rounded-lg bg-white/[0.025] border border-tradeTeal/30 text-[13px] text-white/90 font-mono outline-none focus:border-tradeTeal/60"
+          />
+        ) : (
+          <div className="px-3 py-2.5 rounded-lg bg-white/[0.025] border border-white/[0.05] text-[13px] text-white/85 font-mono">{active.last}</div>
+        )}
+      </div>
+
+      <div>
+        <div className="font-mono text-[10px] tracking-[0.1em] uppercase text-white/45 mb-2">
+          {marginMode === "percent" ? "Size (% balance)" : "Amount (USDT)"}
+        </div>
+        <div className="relative">
+          <input
+            type="number"
+            value={marginMode === "percent" ? sizeValue : usdAmount}
+            onChange={(e) => marginMode === "percent" ? setSizeValue(e.target.value) : setUsdAmount(e.target.value)}
+            data-testid="order-size-input"
+            className="w-full px-3 py-2.5 pr-12 rounded-lg bg-white/[0.025] border border-white/[0.05] text-[13px] text-white/90 font-mono outline-none focus:border-tradeTeal/40"
+          />
+          <span className="absolute right-3 top-1/2 -translate-y-1/2 font-mono text-[10px] text-white/40">
+            {marginMode === "percent" ? "%" : "USDT"}
+          </span>
+        </div>
+        {marginMode === "percent" && (
+          <div className="flex items-center gap-1 mt-1.5">
+            {["10", "25", "50", "75", "100"].map((p) => (
+              <button key={p} onClick={() => setSizeValue(p)}
+                className={`flex-1 py-1 rounded font-mono text-[10px] transition-colors ${sizeValue === p ? "bg-tradeTeal/20 text-tradeTeal" : "text-white/45 hover:text-white/75"}`}>
+                {p}%
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
 
       <div>
         <div className="flex justify-between font-mono text-[10px] tracking-[0.1em] uppercase text-white/45 mb-2">
@@ -739,10 +805,21 @@ function OrderPanel({ active, side, setSide, marginMode, setMarginMode, leverage
         <div>
           <div className="font-mono text-[10px] tracking-[0.1em] uppercase text-white/45 mb-2">DCA / Averaging</div>
           <div className="grid grid-cols-4 gap-1.5">
-            {dca.map((d) => (
+            {dca.map((d, i) => (
               <div key={d.lvl} className="p-2 rounded-lg bg-white/[0.02] border border-white/[0.04] text-center">
                 <div className="font-mono text-[8.5px] tracking-[0.08em] uppercase text-white/40">{d.lvl}</div>
-                <div className="font-mono text-[12px] text-tradeTeal mt-0.5">{d.mult}</div>
+                <div className="flex items-baseline justify-center gap-0.5 mt-0.5">
+                  <span className="font-mono text-[10px] text-white/50">×</span>
+                  <input
+                    type="number"
+                    step="0.1"
+                    min="0"
+                    value={d.mult}
+                    onChange={(e) => updateDca(i, e.target.value)}
+                    data-testid={`dca-${i}`}
+                    className="w-10 bg-transparent text-center font-mono text-[12px] text-tradeTeal outline-none focus:text-white"
+                  />
+                </div>
               </div>
             ))}
           </div>

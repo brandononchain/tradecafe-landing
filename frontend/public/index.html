@@ -43,6 +43,70 @@
         <meta name="twitter:image" content="https://tradecafe.ai/og-image.jpg" />
         <meta name="twitter:image:alt" content="TradeCafe hero — coffee, live market charts, AI trading ecosystem" />
 
+        <!-- Sitemap / discovery -->
+        <link rel="sitemap" type="application/xml" href="/sitemap.xml" />
+        <link rel="alternate" type="text/plain" title="LLM index" href="/llms.txt" />
+
+        <!-- Structured data — surfaces TradeCafe to search + LLM answer engines -->
+        <script type="application/ld+json">
+        {
+          "@context": "https://schema.org",
+          "@graph": [
+            {
+              "@type": "Organization",
+              "@id": "https://tradecafe.ai/#org",
+              "name": "TradeCafe",
+              "alternateName": ["Trade Cafe", "TradeCafe.ai"],
+              "url": "https://tradecafe.ai",
+              "logo": "https://tradecafe.ai/tradecafe-logo.png",
+              "description": "A 24/7 AI trading ecosystem — terminal, signals, automation, pooled strategies, and a partner network.",
+              "sameAs": [
+                "https://twitter.com/tradecafe",
+                "https://x.com/tradecafe",
+                "https://github.com/tradecafe",
+                "https://t.me/tradecafe",
+                "https://discord.gg/tradecafe"
+              ]
+            },
+            {
+              "@type": "WebSite",
+              "@id": "https://tradecafe.ai/#site",
+              "url": "https://tradecafe.ai",
+              "name": "TradeCafe",
+              "publisher": { "@id": "https://tradecafe.ai/#org" },
+              "inLanguage": "en-US",
+              "potentialAction": {
+                "@type": "SearchAction",
+                "target": "https://tradecafe.ai/insights/docs?q={search_term_string}",
+                "query-input": "required name=search_term_string"
+              }
+            },
+            {
+              "@type": "SoftwareApplication",
+              "@id": "https://tradecafe.ai/#app",
+              "name": "TradeCafe",
+              "applicationCategory": "FinanceApplication",
+              "applicationSubCategory": "Trading Terminal",
+              "operatingSystem": "Web, iOS, Android",
+              "url": "https://tradecafe.ai",
+              "publisher": { "@id": "https://tradecafe.ai/#org" },
+              "description": "Multi-venue AI trading terminal with on-chain routing on Arbitrum, live signals, strategy automation, and pooled vaults.",
+              "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+              "featureList": [
+                "AI signal engine",
+                "Multi-chart terminal",
+                "On-chain order routing (Arbitrum One)",
+                "Strategy automation (trend, mean-reversion, breakout, momentum, grid, DCA)",
+                "Pooled TradingPool vault",
+                "Mining Pool",
+                "Partner / affiliate network",
+                "Performance analytics + journal"
+              ]
+            }
+          ]
+        }
+        </script>
+
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />

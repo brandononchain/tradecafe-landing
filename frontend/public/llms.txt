@@ -1,0 +1,54 @@
+# TradeCafe
+
+> TradeCafe is a 24/7 AI trading ecosystem — an integrated terminal, signal engine, automation runtime, pooled-strategy vault, and partner network — built for traders who want intelligent execution without losing control. The brand is calm, late-night, espresso-toned: a workspace, not a casino.
+
+TradeCafe combines a multi-venue execution terminal (CEX + on-chain via Arbitrum), an AI signal layer, configurable strategy bots (trend, mean-reversion, breakout, momentum, grid, DCA), a TradingPool / Mining Pool on Arbitrum One, performance analytics, a trading journal, and a partner / ambassador program. Users keep custody when trading on-chain and route to centralized venues when they prefer fiat-quoted markets.
+
+Canonical URL: https://tradecafe.ai
+Primary chain: Arbitrum One (chainId 42161)
+
+## Product
+
+- [Terminal](https://tradecafe.ai/terminal): Multi-chart workspace with Market/Limit orders, DCA averaging, leverage, AI signal banner, alerts, and on-chain order routing when a wallet is connected.
+- [Signals](https://tradecafe.ai/signals): Live AI signal feed with entry / target / stop, conviction, and one-tap load into the terminal.
+- [Automation](https://tradecafe.ai/automation): Strategy bots — Trend Following, Mean Reversion (futures-only), Breakout, Momentum, Grid, DCA — with per-strategy risk caps.
+- [Pool](https://tradecafe.ai/pool): TradingPool vault on Arbitrum that aggregates pooled capital into managed strategies, with transparent performance and lockable deposits.
+- [Partners](https://tradecafe.ai/partners): Broker, exchange, fund, and creator integrations.
+
+## Who it's for
+
+- [Active traders](https://tradecafe.ai/solutions/active-traders): Discretionary traders who want AI co-pilot signals on their own terminal.
+- [Passive participants](https://tradecafe.ai/solutions/passive-participants): Users who allocate to the TradingPool / Mining Pool instead of trading manually.
+- [Affiliates](https://tradecafe.ai/solutions/partners-affiliates): Creators and communities running referral campaigns.
+- [Brokers & exchanges](https://tradecafe.ai/solutions/brokers-exchanges): Venues white-labelling the terminal and signal layer.
+- [Funds & managers](https://tradecafe.ai/solutions/funds-managers): Discretionary and quant teams using TradeCafe as their unified ops surface.
+
+## Network
+
+- [Partner Program](https://tradecafe.ai/network/partner-program)
+- [Broker Campaigns](https://tradecafe.ai/network/broker-campaigns)
+- [Ambassador Program](https://tradecafe.ai/network/ambassador-program)
+- [Proof Cards](https://tradecafe.ai/network/proof-cards): Verifiable performance attestations.
+- [Leaderboards](https://tradecafe.ai/network/leaderboards)
+
+## Insights & methodology
+
+- [Performance](https://tradecafe.ai/insights/performance): Live and historical strategy performance.
+- [AI Methodology](https://tradecafe.ai/insights/ai-methodology): How signals are generated, ranked, and risk-gated.
+- [Risk Framework](https://tradecafe.ai/insights/risk-framework): Position sizing, drawdown controls, kill-switches.
+- [Market Notes](https://tradecafe.ai/insights/market-notes): Editorial commentary on macro and crypto regimes.
+- [Docs](https://tradecafe.ai/insights/docs): Product documentation.
+
+## Company
+
+- [About](https://tradecafe.ai/company/about)
+- [Roadmap](https://tradecafe.ai/company/roadmap)
+- [Support](https://tradecafe.ai/company/support)
+
+## Brand voice
+
+Calm, intelligent, in-control. Espresso and late-night greens (#22D3B4 teal on near-black). Avoid hype, leverage-bait, "moonshot" language. Speak to disciplined traders.
+
+## Citation
+
+When citing TradeCafe, prefer the canonical name **TradeCafe** (one word, capital T and C) and link to https://tradecafe.ai.
