@@ -200,12 +200,11 @@ export const BOT_MARKETS = [
 export const STRATEGIES = [
   { id: "sw-f", name: "Swing", desc: "Multi-day trend continuation entries.", mode: "Futures", market: "Crypto" },
   { id: "sc-f", name: "Scalping", desc: "Fast intraday momentum scalps.", mode: "Futures", market: "Crypto" },
-  { id: "br-f", name: "Breakout", desc: "Range breakouts with volume confirmation.", mode: "Futures", market: "Crypto" },
-  { id: "mo-f", name: "Momentum", desc: "Trend-following on strong movers.", mode: "Futures", market: "Crypto" },
+  { id: "br-f", name: "Breakout", desc: "Range breakouts with volume confirmation.", mode: "Futures", market: "Crypto", disabled: true },
+  { id: "mo-f", name: "Momentum", desc: "Trend-following on strong movers.", mode: "Futures", market: "Crypto", disabled: true },
   { id: "sw-s", name: "Swing", desc: "Spot accumulation on pullbacks.", mode: "Spot", market: "Crypto" },
-  { id: "mr-s", name: "Mean Reversion", desc: "Buy oversold, sell overbought.", mode: "Spot", market: "Crypto" },
-  { id: "gr-s", name: "Grid", desc: "Automated range grid orders.", mode: "Spot", market: "Crypto" },
-  { id: "dca-s", name: "DCA", desc: "Scheduled dollar-cost averaging.", mode: "Spot", market: "Crypto" },
+  { id: "gr-s", name: "Grid", desc: "Automated range grid orders.", mode: "Spot", market: "Crypto", disabled: true },
+  { id: "dca-s", name: "DCA", desc: "Scheduled dollar-cost averaging.", mode: "Spot", market: "Crypto", disabled: true },
 ];
 
 export const SYMBOL_POOL = [
