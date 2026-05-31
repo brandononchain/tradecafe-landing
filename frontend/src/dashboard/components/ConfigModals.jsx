@@ -63,14 +63,27 @@ function BotConfig({ kind, onClose, onOpenAccount }) {
 
   const StratCard = ({ s }) => {
     const on = strategyIds.includes(s.id);
+    const disabled = !!s.disabled;
     return (
-      <button onClick={() => setStrategyIds((p) => toggleIn(p, s.id))}
-        className={`p-3 rounded-xl border text-left transition-colors ${on ? "bg-tradeTeal/10 border-tradeTeal/35" : "bg-white/[0.02] border-white/[0.05] hover:border-white/[0.1]"}`}>
-        <div className="flex items-center justify-between">
-          <span className="text-[13px] font-semibold text-tradeWhite">{s.name}</span>
-          {on && <Check className="w-3.5 h-3.5 text-tradeTeal" strokeWidth={3} />}
+      <button
+        onClick={() => !disabled && setStrategyIds((p) => toggleIn(p, s.id))}
+        disabled={disabled}
+        title={disabled ? `${s.name} is coming soon` : undefined}
+        data-testid={`strat-${s.id}`}
+        className={`p-3 rounded-xl border text-left transition-colors ${
+          disabled
+            ? "bg-white/[0.015] border-white/[0.04] opacity-50 cursor-not-allowed"
+            : on
+              ? "bg-tradeTeal/10 border-tradeTeal/35"
+              : "bg-white/[0.02] border-white/[0.05] hover:border-white/[0.1]"
+        }`}>
+        <div className="flex items-center justify-between gap-2">
+          <span className={`text-[13px] font-semibold ${disabled ? "text-white/55" : "text-tradeWhite"}`}>{s.name}</span>
+          {disabled
+            ? <span className="font-mono text-[8.5px] tracking-[0.08em] uppercase px-1.5 py-0.5 rounded bg-white/[0.04] text-white/40">Soon</span>
+            : on && <Check className="w-3.5 h-3.5 text-tradeTeal" strokeWidth={3} />}
         </div>
-        <div className="text-[11px] text-white/45 mt-1 leading-[1.4]">{s.desc}</div>
+        <div className={`text-[11px] mt-1 leading-[1.4] ${disabled ? "text-white/30" : "text-white/45"}`}>{s.desc}</div>
         <div className="flex gap-1.5 mt-2">
           <span className="font-mono text-[8.5px] tracking-[0.06em] uppercase px-1.5 py-0.5 rounded bg-white/[0.04] text-white/50">{s.mode}</span>
           <span className="font-mono text-[8.5px] tracking-[0.06em] uppercase px-1.5 py-0.5 rounded bg-white/[0.04] text-white/50">{s.market}</span>
