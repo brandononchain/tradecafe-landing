@@ -332,11 +332,11 @@ function MonthlyBars() {
 
   return (
     <div data-testid="journal-monthly">
-      <div className="flex items-baseline justify-between mb-2.5">
-        <span className="font-mono text-[10px] tracking-[0.12em] uppercase text-white/45">
-          {activeMonth ? activeMonth.m : "Year to date"}
-        </span>
-        <span className={`font-heading text-[18px] font-semibold ${summary.v >= 0 ? "text-tradeTeal" : "text-[#FF8A82]"}`}>
+      <div className="flex justify-end mb-2.5">
+        <span className={`inline-flex items-baseline gap-2 font-heading text-[18px] font-semibold ${summary.v >= 0 ? "text-tradeTeal" : "text-[#FF8A82]"}`}>
+          <span className="font-mono text-[10px] tracking-[0.12em] uppercase text-white/45">
+            {activeMonth ? activeMonth.m : "YTD"}
+          </span>
           {fmtMoney(summary.v)}
         </span>
       </div>
@@ -351,14 +351,9 @@ function MonthlyBars() {
               title={`${m.m} · ${fmtMoney(m.v)}`}
               data-testid={`bar-${m.m}`}
               className="group flex-1 flex flex-col items-center justify-end h-full gap-1 cursor-pointer">
-              <div className="w-full flex-1 flex flex-col justify-end relative">
+              <div className="w-full flex-1 flex flex-col justify-end">
                 <div className={`w-full rounded-sm transition-all ${m.v >= 0 ? "bg-tradeTeal/70 group-hover:bg-tradeTeal" : "bg-[#F23645]/60 group-hover:bg-[#F23645]/85"} ${isActive ? "ring-1 ring-white/30" : ""}`}
                   style={{ height: `${h}%` }} />
-                {isActive && (
-                  <div className={`absolute left-1/2 -translate-x-1/2 -top-5 font-mono text-[9px] font-semibold whitespace-nowrap ${m.v >= 0 ? "text-tradeTeal" : "text-[#FF8A82]"}`}>
-                    {fmtMoney(m.v)}
-                  </div>
-                )}
               </div>
               <span className={`font-mono text-[9px] transition-colors ${isActive ? "text-tradeTeal" : "text-white/45 group-hover:text-white/70"}`}>{m.m}</span>
             </button>
