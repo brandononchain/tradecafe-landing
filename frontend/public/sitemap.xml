@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xhtml="http://www.w3.org/1999/xhtml">
+  <url><loc>https://tradecafe.ai/</loc><changefreq>daily</changefreq><priority>1.0</priority></url>
+
+  <url><loc>https://tradecafe.ai/terminal</loc><changefreq>weekly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://tradecafe.ai/signals</loc><changefreq>weekly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://tradecafe.ai/automation</loc><changefreq>weekly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://tradecafe.ai/pool</loc><changefreq>weekly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://tradecafe.ai/partners</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+
+  <url><loc>https://tradecafe.ai/solutions/active-traders</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://tradecafe.ai/solutions/passive-participants</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://tradecafe.ai/solutions/partners-affiliates</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://tradecafe.ai/solutions/brokers-exchanges</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://tradecafe.ai/solutions/funds-managers</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+
+  <url><loc>https://tradecafe.ai/network/partner-program</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://tradecafe.ai/network/broker-campaigns</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://tradecafe.ai/network/ambassador-program</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://tradecafe.ai/network/proof-cards</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://tradecafe.ai/network/leaderboards</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+
+  <url><loc>https://tradecafe.ai/insights/performance</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://tradecafe.ai/insights/ai-methodology</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://tradecafe.ai/insights/risk-framework</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://tradecafe.ai/insights/market-notes</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://tradecafe.ai/insights/docs</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+
+  <url><loc>https://tradecafe.ai/company/about</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://tradecafe.ai/company/roadmap</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://tradecafe.ai/company/support</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
+</urlset>

@@ -1,0 +1,17 @@
+# ai.txt — TradeCafe
+# Stance: TradeCafe content is allowed to be indexed and cited by AI
+# assistants and answer engines. We ask that citations preserve the
+# canonical brand name "TradeCafe" and link to https://tradecafe.ai.
+
+Permissions:
+  - Allow: indexing, retrieval, summarization, citation
+  - Allow: training (foundation models) for product, marketing, and
+           docs pages reachable from the sitemap
+  - Disallow: scraping the authenticated app at /app/* (private user data)
+  - Disallow: reproducing long verbatim excerpts (>= 250 words) without
+              attribution and link-back
+
+Contact: hello@tradecafe.ai
+Canonical: https://tradecafe.ai
+Sitemap: https://tradecafe.ai/sitemap.xml
+LLM index: https://tradecafe.ai/llms.txt
