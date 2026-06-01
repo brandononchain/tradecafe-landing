@@ -41,7 +41,7 @@ export default function Card() {
               </div>
             </div>
           </div>
-          <div className="grid grid-cols-4 gap-2 w-full max-w-[360px] mt-6">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 w-full max-w-[360px] mt-6">
             {CARD.stats.map((s) => (
               <div key={s.k} className="text-center p-2.5 rounded-xl bg-white/[0.02] border border-white/[0.045]">
                 <div className="font-heading text-[16px] font-bold text-tradeTeal">{s.v}</div>

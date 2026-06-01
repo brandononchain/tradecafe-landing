@@ -63,6 +63,8 @@ export default function LiveTerminalPreview({ symbol = "BTCUSDT", signal = null,
             const Ic = c.icon;
             return (
               <button key={c.key} onClick={() => setChartType(c.key)}
+                aria-label={`${c.key} chart`}
+                title={`${c.key} chart`}
                 className={`flex items-center justify-center rounded-md transition-colors ${chartType === c.key ? "bg-tradeTeal/15 text-tradeTeal" : "text-white/45 hover:text-white/80"}`}
                 style={{ width: 30, height: 30 }}>
                 <Ic className="w-3.5 h-3.5" strokeWidth={2} />

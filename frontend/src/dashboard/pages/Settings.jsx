@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { User, ShieldCheck, KeyRound, Bell, Globe } from "lucide-react";
+import { User, ShieldCheck, KeyRound, Bell, Globe, AlertTriangle } from "lucide-react";
 import { PageHead, Panel } from "../ui";
 import Modal, { ModalField, ModalInput } from "../components/Modal";
 import TradeAccountModal from "../components/TradeAccountModal";
@@ -75,6 +75,14 @@ export default function Settings() {
         </Panel>
 
         <Panel icon={ShieldCheck} title="Security">
+          {!twoFA && (
+            <div className="flex items-start gap-2 mb-3 px-3 py-2.5 rounded-lg bg-amber-500/10 border border-amber-500/30" data-testid="2fa-warning">
+              <AlertTriangle className="w-4 h-4 text-amber-300 shrink-0 mt-0.5" strokeWidth={2} />
+              <span className="text-[12px] text-amber-100/90 leading-[1.5]">
+                Two-factor authentication is off. Enable it to protect withdrawals, API keys, and account changes.
+              </span>
+            </div>
+          )}
           <div className="flex flex-col gap-3">
             <Row icon={ShieldCheck} title="Two-Factor Auth" sub={twoFA ? "Enabled" : "Disabled, recommended"}>
               <Toggle on={twoFA} onClick={toggle2FA} />

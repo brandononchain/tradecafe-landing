@@ -87,3 +87,4 @@ credentials.json
 *.key
 .credentials
 frontend/audit/
+frontend/audit-v2/
