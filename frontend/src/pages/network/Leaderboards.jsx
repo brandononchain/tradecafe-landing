@@ -110,6 +110,52 @@ export default function Leaderboards() {
       </Section>
 
       <Section>
+        <SectionLabel index="02" title="Season scoring" caption="Same rules. Same window. Same data." />
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+          {[
+            { k: "Window", v: "30 days", d: "Rolling, anchored to UTC. Season closes the moment it opens for the next cohort." },
+            { k: "Eligibility", v: "Verified trades", d: "Only fills routed through a connected venue or signed on-chain count toward score." },
+            { k: "Score", v: "Risk-weighted PnL", d: "Net PnL discounted by drawdown and concentration so consistent traders win." },
+            { k: "Tiebreak", v: "Lower max DD", d: "When two scores match, the smaller peak-to-trough drawdown takes the rank." },
+          ].map((c) => (
+            <div key={c.k} className="rounded-2xl bg-white/[0.02] border border-white/[0.05] p-5">
+              <div className="font-mono text-[9.5px] tracking-[0.16em] uppercase text-tradeTeal/80 mb-2">{c.k}</div>
+              <div className="font-heading text-[18px] font-semibold text-white leading-snug">{c.v}</div>
+              <p className="text-[12.5px] text-white/55 leading-[1.55] mt-2">{c.d}</p>
+            </div>
+          ))}
+        </div>
+      </Section>
+
+      <Section>
+        <SectionLabel index="03" title="Season prizes" caption="Tier rewards plus an open prize pool funded by the network." />
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          {[
+            { rank: "01 · Champion", pool: "$5,000", perks: ["Cash prize", "Featured Proof Card", "30 days of Plus"], color: "#F5C451" },
+            { rank: "02 · Runner-up", pool: "$2,500", perks: ["Cash prize", "Proof Card highlight", "14 days of Plus"], color: "#C7CBD1" },
+            { rank: "03 · Podium", pool: "$1,000", perks: ["Cash prize", "Proof Card highlight", "7 days of Plus"], color: "#D08A4E" },
+          ].map((t) => (
+            <div key={t.rank} className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5">
+              <div className="flex items-center justify-between mb-3">
+                <span className="font-mono text-[10px] tracking-[0.16em] uppercase text-white/55">{t.rank}</span>
+                <span className="w-2 h-2 rounded-full" style={{ background: t.color, boxShadow: `0 0 14px ${t.color}66` }} />
+              </div>
+              <div className="font-heading text-[26px] font-semibold tracking-tight text-white">{t.pool}</div>
+              <div className="font-mono text-[10px] tracking-[0.14em] uppercase text-white/40 mt-1">Cash pool</div>
+              <ul className="mt-4 flex flex-col gap-1.5">
+                {t.perks.map((p) => (
+                  <li key={p} className="text-[12.5px] text-white/65 flex items-center gap-2">
+                    <span className="w-1 h-1 rounded-full bg-tradeTeal" /> {p}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </div>
+        <p className="mt-4 font-mono text-[10.5px] text-white/35">Prize pools are illustrative. Final amounts are published at the start of each season.</p>
+      </Section>
+
+      <Section>
         <FinalCTA
           kicker="Seasons run continuously" KickerIcon={Zap}
           title="Put your results on" accent="the board."

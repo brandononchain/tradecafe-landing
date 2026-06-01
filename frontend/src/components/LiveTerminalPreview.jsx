@@ -25,7 +25,12 @@ export default function LiveTerminalPreview({ symbol = "BTCUSDT", signal = null,
   const [chartType, setChartType] = useState("candles");
   const [tf, setTf] = useState("1H");
   const [overlays, setOverlays] = useState({ EMA: { period: 20 } });
-  const [osc, setOsc] = useState("RSI");
+  // Default the oscillator pane OFF on small screens so the preview stays a
+  // single clean chart; users can still toggle it on.
+  const [osc, setOsc] = useState(() => {
+    if (typeof window !== "undefined" && window.matchMedia && window.matchMedia("(max-width: 768px)").matches) return null;
+    return "RSI";
+  });
   const [ai, setAi] = useState({ sr: true, pivots: !!signal });
 
   const toggleOverlay = (k) =>
@@ -58,6 +63,8 @@ export default function LiveTerminalPreview({ symbol = "BTCUSDT", signal = null,
             const Ic = c.icon;
             return (
               <button key={c.key} onClick={() => setChartType(c.key)}
+                aria-label={`${c.key} chart`}
+                title={`${c.key} chart`}
                 className={`flex items-center justify-center rounded-md transition-colors ${chartType === c.key ? "bg-tradeTeal/15 text-tradeTeal" : "text-white/45 hover:text-white/80"}`}
                 style={{ width: 30, height: 30 }}>
                 <Ic className="w-3.5 h-3.5" strokeWidth={2} />

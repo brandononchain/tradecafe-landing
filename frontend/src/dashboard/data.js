@@ -343,7 +343,7 @@ export const AFFILIATE = {
 // ===== Subscriptions =====
 export const PLANS = [
   {
-    name: "Signal Bot", price: "$49", period: "/mo", active: true,
+    name: "Signal Bot", price: "$49", period: "/mo", active: false,
     features: ["24/7 AI signal feed", "Confidence scoring", "Push & webhook alerts", "Mining Pool eligibility"],
   },
   {

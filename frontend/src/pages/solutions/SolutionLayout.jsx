@@ -118,8 +118,20 @@ export function SectionLabel({ index, title, caption }) {
 }
 
 export function FeatureGrid({ items }) {
+  // Pick a lg column count that doesn't leave an orphan card on a new row.
+  // 6 -> 3, 8 -> 4, others fall back to .tc-includes (5 cols at lg).
+  const n = items.length;
+  // Static class strings so Tailwind's JIT can see them.
+  const lgClass =
+    n % 5 === 0 ? null :
+    n === 6 || n === 9 ? "lg:grid-cols-3" :
+    n === 4 || n === 8 ? "lg:grid-cols-4" :
+    null;
+  const cls = lgClass
+    ? `grid grid-cols-1 sm:grid-cols-2 ${lgClass} gap-3.5`
+    : "tc-includes";
   return (
-    <div className="tc-includes">
+    <div className={cls}>
       {items.map((it) => {
         const Ic = it.Icon;
         return (

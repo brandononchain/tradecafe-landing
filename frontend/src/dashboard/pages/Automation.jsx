@@ -69,7 +69,7 @@ export default function Automation() {
               <button className="tc-btn tc-btn-primary flex-1" onClick={() => setModal(b.key)} data-testid={`configure-${b.key}`}>
                 <Settings2 className="w-3.5 h-3.5" strokeWidth={2} /> Configure
               </button>
-              <button className="tc-btn tc-btn-ghost" style={{ padding: "0 12px" }} onClick={() => shareBot(b)} aria-label="Share PnL" data-testid={`share-bot-${b.key}`}>
+              <button className="tc-btn tc-btn-ghost" style={{ padding: "0 16px", minWidth: 44 }} onClick={() => shareBot(b)} aria-label="Share PnL" title="Share PnL" data-testid={`share-bot-${b.key}`}>
                 <Share2 className="w-3.5 h-3.5" strokeWidth={2} />
               </button>
             </div>

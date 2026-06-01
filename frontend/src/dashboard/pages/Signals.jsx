@@ -44,7 +44,7 @@ export default function Signals() {
 
       <div className="tc-statgrid">
         <Stat label="Active Signals" value={SIGNALS.length} />
-        <Stat label="Long / Short" value={`${longs} / ${SIGNALS.length - longs}`} />
+        <Stat label="Long / Short" value={`${longs} long · ${SIGNALS.length - longs} short`} />
         <Stat label="Avg Confidence" value={`${avgConf}%`} teal />
         <Stat label="Win Rate · 30d" value="81%" teal />
       </div>

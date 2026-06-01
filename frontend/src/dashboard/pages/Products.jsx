@@ -29,7 +29,7 @@ export default function Products() {
 
               <p className="text-[13px] text-white/60 leading-[1.55] mt-4">{p.lead}</p>
 
-              <div className="grid grid-cols-4 gap-2 mt-4">
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mt-4">
                 {p.stats.map((s) => (
                   <div key={s.k} className="p-2.5 rounded-xl bg-white/[0.02] border border-white/[0.04] text-center">
                     <div className="font-mono text-[14px] font-semibold text-tradeWhite">{s.v}</div>

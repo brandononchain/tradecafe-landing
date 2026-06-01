@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, lazy, Suspense } from "react";
-import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Link, Outlet } from "react-router-dom";
 import gsap from "gsap";
 import {
   ArrowUpRight,
@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import "@/App.css";
 import Nav from "./components/Nav";
+import Footer from "./components/Footer";
 import { TRUST_METRICS, EXTERNAL } from "./lib/brand";
 import Terminal from "./pages/Terminal";
 import Signals from "./pages/Signals";
@@ -444,6 +445,104 @@ function HomePage() {
       </main>
       </section>
       {/* ===== /hero-frame ===== */}
+
+      <HomeBody />
+    </div>
+  );
+}
+
+function HomeBody() {
+  return (
+    <div className="relative z-20 bg-black">
+      {/* Pillars */}
+      <section className="max-w-[1280px] mx-auto px-6 sm:px-8 lg:px-12 pt-20 sm:pt-28 pb-12">
+        <div className="flex items-end justify-between gap-6 mb-9 px-2">
+          <div>
+            <div className="font-mono text-[10.5px] uppercase tracking-[0.22em] text-tradeTeal/85 mb-2">01 · Platform</div>
+            <h2 className="font-heading text-[24px] sm:text-[32px] font-semibold tracking-tight text-white">One workspace for every part of trading.</h2>
+          </div>
+          <p className="hidden sm:block text-[13px] text-white/55 max-w-[360px] text-right">Terminal, signals, automation, and pooled strategies — calmly connected.</p>
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+          {[
+            { eyebrow: "Terminal", title: "Pro multi-chart desk", body: "Charts, order tickets, alerts, and AI signals in one bento layout.", to: "/terminal" },
+            { eyebrow: "Signals", title: "Live AI signal feed", body: "Entry, target, stop, conviction — one tap to load into the terminal.", to: "/signals" },
+            { eyebrow: "Automation", title: "Strategies that work overnight", body: "Trend, breakout, momentum, grid, DCA — with strict risk caps.", to: "/automation" },
+            { eyebrow: "Trading Pool", title: "Pooled, transparent alpha", body: "Allocate to managed strategies with reported performance on Arbitrum.", to: "/pool" },
+          ].map((c) => (
+            <Link key={c.eyebrow} to={c.to} className="rounded-2xl bg-white/[0.025] border border-white/[0.06] p-5 hover:border-tradeTeal/30 transition-colors group">
+              <div className="font-mono text-[10px] tracking-[0.16em] uppercase text-tradeTeal/80 mb-3">{c.eyebrow}</div>
+              <div className="font-heading text-[18px] font-semibold text-white leading-snug mb-2">{c.title}</div>
+              <p className="text-[13px] text-white/55 leading-[1.55]">{c.body}</p>
+              <div className="mt-5 inline-flex items-center gap-1 text-[12px] text-white/70 group-hover:text-tradeTeal">Explore <ArrowUpRight className="w-3.5 h-3.5" strokeWidth={2.2} /></div>
+            </Link>
+          ))}
+        </div>
+      </section>
+
+      {/* Proof strip */}
+      <section className="max-w-[1280px] mx-auto px-6 sm:px-8 lg:px-12 py-12">
+        <div className="rounded-2xl bg-gradient-to-br from-tradeTeal/[0.06] to-transparent border border-tradeTeal/15 px-6 sm:px-10 py-8 sm:py-10 grid grid-cols-2 md:grid-cols-4 gap-6">
+          {[
+            { v: "$3.12M", l: "Managed in Pool" },
+            { v: "81%", l: "Avg signal win rate" },
+            { v: "20K+", l: "Trades placed" },
+            { v: "24/7", l: "AI coverage" },
+          ].map((m) => (
+            <div key={m.l}>
+              <div className="font-heading text-[28px] sm:text-[34px] font-semibold text-white tracking-tight">{m.v}</div>
+              <div className="font-mono text-[10.5px] uppercase tracking-[0.18em] text-white/55 mt-1">{m.l}</div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* Ecosystem */}
+      <section className="max-w-[1280px] mx-auto px-6 sm:px-8 lg:px-12 py-16">
+        <div className="flex items-end justify-between gap-6 mb-9 px-2">
+          <div>
+            <div className="font-mono text-[10.5px] uppercase tracking-[0.22em] text-tradeTeal/85 mb-2">02 · Ecosystem</div>
+            <h2 className="font-heading text-[24px] sm:text-[32px] font-semibold tracking-tight text-white">Built for traders who stay in control.</h2>
+          </div>
+          <p className="hidden sm:block text-[13px] text-white/55 max-w-[360px] text-right">Centralized, on-chain, and pooled — your custody and your rules.</p>
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+          {[
+            { t: "Multi-venue execution", b: "Route to CEX accounts or sign on-chain via Arbitrum One — same terminal, same workflow." },
+            { t: "AI signal layer", b: "Conviction-scored signals, risk-gated, with a one-tap load into a live order ticket." },
+            { t: "Strategy automation", b: "Battle-tested strategies with per-bot risk caps, kill-switches, and audit trails." },
+            { t: "Pooled vaults", b: "Allocate to managed strategies with on-chain transparency and defined exit windows." },
+            { t: "Performance & journal", b: "Equity curves, drawdown analytics, and a trade journal that learns with you." },
+            { t: "Partner network", b: "Brokers, ambassadors, and creators with verifiable proof cards and clean payouts." },
+          ].map((c, i) => (
+            <div key={c.t} className="rounded-2xl bg-white/[0.02] border border-white/[0.05] p-5">
+              <div className="font-mono text-[10px] tracking-[0.16em] uppercase text-tradeTeal/80 mb-3">0{i + 1}</div>
+              <div className="font-heading text-[16px] font-semibold text-white mb-1.5">{c.t}</div>
+              <p className="text-[13px] text-white/55 leading-[1.55]">{c.b}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* Final CTA band */}
+      <section className="max-w-[1280px] mx-auto px-6 sm:px-8 lg:px-12 pt-8 pb-20">
+        <div className="rounded-2xl bg-tradeTeal/[0.08] border border-tradeTeal/25 px-6 sm:px-12 py-10 sm:py-14 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6">
+          <div>
+            <div className="font-mono text-[10.5px] uppercase tracking-[0.22em] text-tradeTeal/85 mb-2">// READY WHEN YOU ARE</div>
+            <h3 className="font-heading text-[24px] sm:text-[30px] font-semibold tracking-tight text-white max-w-[640px] leading-[1.2]">
+              Open the terminal. Stay in control.
+            </h3>
+          </div>
+          <div className="flex flex-col sm:flex-row gap-3 shrink-0">
+            <Link to="/app/terminal" className="cta-primary justify-center">
+              Launch Terminal <ArrowUpRight className="w-4 h-4" strokeWidth={2.4} />
+            </Link>
+            <Link to="/insights/docs" className="cta-ghost justify-center">
+              Read the docs <ArrowUpRight className="w-4 h-4" strokeWidth={2} />
+            </Link>
+          </div>
+        </div>
+      </section>
     </div>
   );
 }
@@ -460,10 +559,20 @@ function MetricIcon({ i }) {
   return icons[((i % icons.length) + icons.length) % icons.length];
 }
 
+function MarketingShell() {
+  return (
+    <>
+      <Outlet />
+      <Footer />
+    </>
+  );
+}
+
 function App() {
   return (
     <BrowserRouter>
       <Routes>
+        <Route element={<MarketingShell />}>
         <Route path="/" element={<HomePage />} />
         <Route path="/terminal" element={<Terminal />} />
         <Route path="/signals" element={<Signals />} />
@@ -496,6 +605,7 @@ function App() {
         <Route path="/company/about" element={<About />} />
         <Route path="/company/roadmap" element={<Roadmap />} />
         <Route path="/company/support" element={<Support />} />
+        </Route>
 
         {/* ===== Dashboard app ===== */}
         <Route

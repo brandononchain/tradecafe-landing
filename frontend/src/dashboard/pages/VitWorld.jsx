@@ -91,10 +91,58 @@ export default function VitWorld() {
             </div>
           </Panel>
         ) : (
-          <Panel className="flex flex-col items-center justify-center text-center">
-            <span className="tc-soon-ico mb-4"><Globe className="w-7 h-7" strokeWidth={1.6} /></span>
-            <div className="text-[14px] font-semibold text-tradeWhite">Explore the network</div>
-            <p className="text-[12.5px] text-white/50 mt-2 max-w-[240px]">Tap any beam on the globe to view a trader and connect.</p>
+          <Panel className="flex flex-col gap-4">
+            <div className="flex items-center gap-2.5">
+              <span className="tc-soon-ico" style={{ width: 36, height: 36 }}><Globe className="w-4 h-4" strokeWidth={1.8} /></span>
+              <div>
+                <div className="text-[13.5px] font-semibold text-tradeWhite">Explore the network</div>
+                <p className="text-[11.5px] text-white/50 mt-0.5">Tap a beam to view a trader.</p>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-2">
+              {[
+                { k: "Online", v: online },
+                { k: "Countries", v: new Set(VITWORLD_USERS.map((u) => u.country)).size },
+                { k: "Visible to you", v: VITWORLD_USERS.length },
+                { k: "Your friends", v: requested.length },
+              ].map((s) => (
+                <div key={s.k} className="text-center p-2.5 rounded-lg bg-white/[0.02] border border-white/[0.04]">
+                  <div className="font-heading text-[18px] font-semibold text-tradeWhite">{s.v}</div>
+                  <div className="font-mono text-[9px] tracking-[0.1em] uppercase text-white/40 mt-0.5">{s.k}</div>
+                </div>
+              ))}
+            </div>
+
+            <div>
+              <div className="font-mono text-[9.5px] tracking-[0.16em] uppercase text-white/40 mb-2">Top regions</div>
+              <div className="flex flex-col gap-1.5">
+                {Object.entries(
+                  VITWORLD_USERS.reduce((m, u) => ({ ...m, [u.country]: (m[u.country] || 0) + 1 }), {})
+                )
+                  .sort((a, b) => b[1] - a[1])
+                  .slice(0, 5)
+                  .map(([c, n]) => (
+                    <div key={c} className="flex items-center justify-between px-2.5 py-1.5 rounded-lg bg-white/[0.015] border border-white/[0.03]">
+                      <span className="text-[12px] text-white/75">{c}</span>
+                      <span className="font-mono text-[10.5px] text-tradeTeal">{n}</span>
+                    </div>
+                  ))}
+              </div>
+            </div>
+
+            <div>
+              <div className="font-mono text-[9.5px] tracking-[0.16em] uppercase text-white/40 mb-2">Recently online</div>
+              <div className="flex flex-col gap-1.5">
+                {VITWORLD_USERS.filter((u) => u.online).slice(0, 4).map((u) => (
+                  <button key={u.id} onClick={() => setSelected(u)} className="flex items-center gap-2 px-2.5 py-1.5 rounded-lg bg-white/[0.015] border border-white/[0.03] hover:bg-white/[0.03] hover:border-tradeTeal/20 transition-colors text-left">
+                    <span className="w-1.5 h-1.5 rounded-full bg-tradeTeal" />
+                    <span className="text-[12px] text-white/80 flex-1 truncate">{u.username}</span>
+                    <span className="font-mono text-[10px] text-white/40">{u.country}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
           </Panel>
         )}
       </div>
