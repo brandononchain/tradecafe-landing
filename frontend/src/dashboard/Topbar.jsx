@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { Menu, Bell, ArrowUpRight, Sun, Moon } from "lucide-react";
 import { ACCOUNT } from "./data";
 import { useTheme } from "./ThemeContext";
@@ -16,6 +16,8 @@ function useClock() {
 
 export default function Topbar({ title, sub, onOpenMobile }) {
   const time = useClock();
+  const { pathname } = useLocation();
+  const onTerminal = pathname.startsWith("/app/terminal");
 
   return (
     <header className="tc-topbar" data-testid="app-topbar">
@@ -49,17 +51,19 @@ export default function Topbar({ title, sub, onOpenMobile }) {
         <ModeToggle />
         <NotificationsMenu />
 
-        <span className="hidden lg:inline-flex">
-          <Link
-            to="/app/terminal"
-            className="tc-btn tc-btn-primary"
-            style={{ padding: "9px 16px", fontSize: 12.5 }}
-            data-testid="topbar-launch"
-          >
-            Launch Terminal
-            <ArrowUpRight className="w-3.5 h-3.5" strokeWidth={2.4} />
-          </Link>
-        </span>
+        {!onTerminal && (
+          <span className="hidden lg:inline-flex">
+            <Link
+              to="/app/terminal"
+              className="tc-btn tc-btn-ghost"
+              style={{ padding: "9px 16px", fontSize: 12.5 }}
+              data-testid="topbar-launch"
+            >
+              Launch Terminal
+              <ArrowUpRight className="w-3.5 h-3.5" strokeWidth={2.4} />
+            </Link>
+          </span>
+        )}
       </div>
     </header>
   );
@@ -80,7 +84,7 @@ function NotificationsMenu() {
     <div className="relative" ref={ref}>
       <button className="tc-iconbtn relative" aria-label="Notifications" onClick={() => setOpen((v) => !v)} data-testid="topbar-notifications">
         <Bell className="w-4 h-4" strokeWidth={2} />
-        {unread > 0 && <span className="absolute -top-0.5 -right-0.5 min-w-[15px] h-[15px] px-1 rounded-full bg-tradeTeal text-[#042024] font-mono text-[9px] leading-[15px] text-center">{unread}</span>}
+        {unread > 0 && <span className="absolute -top-1 -right-1 min-w-[16px] h-[16px] px-1 rounded-full bg-tradeTeal text-[#042024] font-mono text-[9px] leading-[16px] text-center ring-2 ring-[var(--tc-surface,#0a1418)]">{unread}</span>}
       </button>
       {open && (
         <div className="absolute right-0 mt-2 w-[320px] rounded-xl bg-surface border border-white/[0.05] shadow-xl z-50 overflow-hidden">

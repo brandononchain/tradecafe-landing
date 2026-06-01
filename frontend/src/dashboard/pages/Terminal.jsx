@@ -842,7 +842,7 @@ function OrderPanel({ active, side, setSide, marginMode, setMarginMode, leverage
           style={side === "sell" ? { color: "#042024", background: "linear-gradient(135deg,#FF9B91,#F23645)" } : undefined}
           onClick={submit}
           data-testid="order-submit">
-          {side === "buy" ? "Buy / Long" : "Sell / Short"} {active.sym}
+          {side === "buy" ? "Long" : "Short"} {active.sym}
         </button>
       )}
 

@@ -25,7 +25,12 @@ export default function LiveTerminalPreview({ symbol = "BTCUSDT", signal = null,
   const [chartType, setChartType] = useState("candles");
   const [tf, setTf] = useState("1H");
   const [overlays, setOverlays] = useState({ EMA: { period: 20 } });
-  const [osc, setOsc] = useState("RSI");
+  // Default the oscillator pane OFF on small screens so the preview stays a
+  // single clean chart; users can still toggle it on.
+  const [osc, setOsc] = useState(() => {
+    if (typeof window !== "undefined" && window.matchMedia && window.matchMedia("(max-width: 768px)").matches) return null;
+    return "RSI";
+  });
   const [ai, setAi] = useState({ sr: true, pivots: !!signal });
 
   const toggleOverlay = (k) =>

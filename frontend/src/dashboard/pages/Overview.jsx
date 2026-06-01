@@ -77,9 +77,15 @@ export default function Overview() {
             </span>
           </div>
           <div className="mt-auto pt-5 flex gap-2.5">
-            <button className="tc-btn tc-btn-primary flex-1" data-testid="btn-withdraw" onClick={() => setModal("withdraw")}>
-              <ArrowDownToLine className="w-4 h-4" strokeWidth={2.2} /> Withdraw
-            </button>
+            {ACCOUNT.balance > 0 ? (
+              <button className="tc-btn tc-btn-primary flex-1" data-testid="btn-withdraw" onClick={() => setModal("withdraw")}>
+                <ArrowDownToLine className="w-4 h-4" strokeWidth={2.2} /> Withdraw
+              </button>
+            ) : (
+              <Link to="/app/settings#funding" className="tc-btn tc-btn-primary flex-1" data-testid="btn-deposit">
+                <ArrowDownToLine className="w-4 h-4 rotate-180" strokeWidth={2.2} /> Deposit
+              </Link>
+            )}
             <button className="tc-btn tc-btn-ghost" onClick={() => setModal("history")}>
               <History className="w-4 h-4" strokeWidth={2} /> History
             </button>

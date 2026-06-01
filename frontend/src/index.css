@@ -1713,7 +1713,41 @@ code {
 }
 .tc-compare-row:last-child { border-bottom: none; }
 
-@media (max-width: 768px) {
+@media (max-width: 640px) {
+    .tc-compare-row {
+        grid-template-columns: 1fr;
+    }
+    .tc-compare-row .tc-compare-cell-label {
+        background: rgba(0, 180, 166, 0.05);
+        padding-top: 16px;
+        padding-bottom: 8px;
+    }
+    .tc-compare-cell {
+        border-left: none;
+        border-top: 1px solid rgb(var(--tc-ink-rgb) / 0.035);
+    }
+    .tc-compare-cell-label { border-top: none; }
+    /* Inline column hints so users know which column is which when stacked */
+    .tc-compare-row:not(.tc-compare-head) .tc-compare-cell:nth-child(2)::before {
+        content: "Trading Bot · ";
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 10px;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: rgb(var(--tc-ink-rgb) / 0.5);
+        margin-right: 4px;
+    }
+    .tc-compare-row:not(.tc-compare-head) .tc-compare-cell-pool::before {
+        content: "Trading Pool · ";
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 10px;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: rgba(0, 180, 166, 0.9);
+        margin-right: 4px;
+    }
+}
+@media (min-width: 641px) and (max-width: 768px) {
     .tc-compare-row {
         grid-template-columns: 1fr 1fr;
     }

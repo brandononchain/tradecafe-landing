@@ -84,13 +84,23 @@ export default function Pool() {
         </Panel>
 
         <Panel icon={Layers} title="Your Position" className="flex flex-col">
-          <div className="text-center py-3">
-            <div className="font-mono text-[10px] tracking-[0.16em] uppercase text-white/45">Deposited</div>
-            <div className="font-heading text-[34px] font-bold tracking-[-0.02em] text-tradeWhite mt-1" data-testid="pool-deposited">
-              ${fmt(deposited)}
+          {deposited > 0 ? (
+            <div className="text-center py-3">
+              <div className="font-mono text-[10px] tracking-[0.16em] uppercase text-white/45">Deposited</div>
+              <div className="font-heading text-[34px] font-bold tracking-[-0.02em] text-tradeWhite mt-1" data-testid="pool-deposited">
+                ${fmt(deposited)}
+              </div>
+              <div className="font-mono text-[11px] text-white/40 mt-1">${fmt(deposited * POOL.apy / 100)} target this month</div>
             </div>
-            <div className="font-mono text-[11px] text-white/40 mt-1">${fmt(deposited * POOL.apy / 100)} target this month</div>
-          </div>
+          ) : (
+            <div className="text-center py-3" data-testid="pool-empty-state">
+              <div className="font-mono text-[10px] tracking-[0.16em] uppercase text-white/45">Not deposited yet</div>
+              <div className="font-heading text-[22px] font-semibold text-white/85 mt-2 leading-tight">Open a position to start earning</div>
+              <button onClick={() => openModal("deposit")} className="tc-btn tc-btn-primary mt-4 inline-flex" data-testid="pool-empty-deposit">
+                Deposit now
+              </button>
+            </div>
+          )}
           <div className="mt-auto p-3 rounded-xl bg-tradeTeal/5 border border-tradeTeal/15 flex items-start gap-2.5">
             <Info className="w-4 h-4 text-tradeTeal shrink-0 mt-0.5" strokeWidth={2} />
             <p className="text-[11.5px] text-white/55 leading-[1.5]">
