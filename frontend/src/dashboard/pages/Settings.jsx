@@ -7,13 +7,14 @@ import { useNotifications } from "../NotificationContext";
 import { usePersistentState } from "../lib/usePersistentState";
 import { ACCOUNT } from "../data";
 
-function Toggle({ on, onClick }) {
+function Toggle({ on, onClick, label }) {
   return (
     <button
       onClick={onClick}
       className={`tc-switch ${on ? "is-on" : ""}`}
       role="switch"
       aria-checked={on}
+      aria-label={label || (on ? "Disable" : "Enable")}
     >
       <span className="tc-switch-knob" />
     </button>

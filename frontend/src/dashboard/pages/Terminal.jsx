@@ -166,6 +166,7 @@ export default function Terminal() {
 
   return (
     <div className="tc-fade flex flex-col gap-4 pb-20 xl:pb-0">
+      <h1 className="sr-only">Trading Terminal</h1>
       <div className="grid grid-cols-1 xl:grid-cols-[240px_1fr_360px] gap-3 xl:gap-4 xl:h-[760px]">
         {/* Watchlist */}
         <div className="tc-panel !p-3 order-2 xl:order-1 xl:h-full xl:flex xl:flex-col xl:min-h-0">

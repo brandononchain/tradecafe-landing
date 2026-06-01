@@ -50,8 +50,10 @@ function DashboardShell() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const { pathname } = useLocation();
   const { mode } = useTheme();
+  // Only ever offer the welcome modal on the Overview route — first-time
+  // deep-links to /app/terminal etc. should not be interrupted by it.
   const [welcome, setWelcome] = useState(() => {
-    try { return !localStorage.getItem("tc-onboarded"); } catch { return false; }
+    try { return pathname === "/app" && !localStorage.getItem("tc-onboarded"); } catch { return false; }
   });
   const dismissWelcome = () => {
     try { localStorage.setItem("tc-onboarded", "1"); } catch { /* ignore */ }

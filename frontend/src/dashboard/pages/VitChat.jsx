@@ -177,7 +177,7 @@ export default function VitChat() {
         {!showChat ? (
           <div className={`tc-panel min-h-0 overflow-y-auto ${mobileChatOpen ? "flex-1 lg:flex-none" : "hidden lg:block"}`}>
             <div className="flex items-center gap-2 mb-4">
-              <button className="tc-iconbtn lg:hidden" style={{ width: 32, height: 32 }} onClick={() => setView("chat")}><ChevronLeft className="w-4 h-4" /></button>
+              <button className="tc-iconbtn lg:hidden" style={{ width: 32, height: 32 }} onClick={() => setView("chat")} aria-label="Back to chats"><ChevronLeft className="w-4 h-4" /></button>
               <span className="font-mono text-[10px] tracking-[0.16em] uppercase text-white/45">Friend Requests</span>
             </div>
             <div className="flex flex-col gap-2">

@@ -94,7 +94,7 @@ export default function ProofCard({
       <div className="relative">
         <div className="flex items-center justify-between">
           <span className="flex items-center gap-2">
-            <img src="/tradecafe-logo.png" alt="" className="w-5 h-5" style={{ filter: light ? "none" : "drop-shadow(0 0 6px rgba(0,180,166,0.6))" }} />
+            <img src="/tradecafe-logo.png" alt="" aria-hidden="true" className="w-5 h-5" style={{ filter: light ? "none" : "drop-shadow(0 0 6px rgba(0,180,166,0.6))" }} />
             <span className="font-mono text-[10px] tracking-[0.18em] uppercase" style={{ color: palette.inkMuted }}>TradeCafe</span>
           </span>
           <span className="font-mono text-[8.5px] tracking-[0.14em] uppercase px-2 py-1 rounded-md" style={{ background: palette.accentSoft, color: palette.accent, border: `1px solid ${palette.accentBorder}` }}>
