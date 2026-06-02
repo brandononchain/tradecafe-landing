@@ -323,22 +323,89 @@ export const VITRIOL = {
 // ===== Affiliate =====
 export const AFFILIATE = {
   rankIndex: 2,
-  ranks: ["Member", "Bronze", "Silver", "Gold", "Platinum", "Diamond", "Elite"],
-  referralCode: "BRANDON8",
-  referralUrl: "https://tradecafe.ai/join?ref=BRANDON8",
+  ranks: [
+    { name: "Member", min: 0, perks: "Base 5% commission" },
+    { name: "Bronze", min: 500, perks: "+ Bonus on first 10 referrals" },
+    { name: "Silver", min: 2500, perks: "+ Tier-2 commission unlocked" },
+    { name: "Gold", min: 10000, perks: "+ Custom referral page" },
+    { name: "Platinum", min: 25000, perks: "+ Quarterly cash bonus" },
+    { name: "Diamond", min: 75000, perks: "+ Co-marketing partnership" },
+    { name: "Elite", min: 200000, perks: "+ Annual revenue share" },
+  ],
+  turnover: 3120,           // your network's total turnover so far (USD)
+  earnedTotal: 0,            // your total earned (placeholder for empty state)
+  unpaid: 284,
+  referralCode: "8J8RH8DA",
+  referralUrl: "https://tradecafe.ai/join?ref=8J8RH8DA",
+  commissionLevels: [
+    { level: 1, label: "Direct", pct: 10 },
+    { level: 2, label: "Tier 2", pct: 7 },
+    { level: 3, label: "Tier 3", pct: 5 },
+    { level: 4, label: "Tier 4", pct: 3 },
+    { level: 5, label: "Tier 5", pct: 2 },
+  ],
   stats: [
-    { k: "Direct Referrals", v: "24" },
-    { k: "Network Size", v: "1,284" },
+    { k: "Direct Referrals", v: "8" },
+    { k: "Network Size", v: "72" },
     { k: "Total Earned", v: "$3,120" },
     { k: "Unpaid", v: "$284" },
   ],
-  recent: [
-    { user: "alex***", tier: "Direct", joined: "2d ago", earned: "+$42.00" },
-    { user: "mira***", tier: "Direct", joined: "4d ago", earned: "+$28.50" },
-    { user: "jun***", tier: "Tier 2", joined: "6d ago", earned: "+$12.10" },
-    { user: "kofi***", tier: "Tier 2", joined: "9d ago", earned: "+$9.80" },
-  ],
 };
+
+// Hierarchical referral tree (root + 3 tiers) used by the 3D graph and the
+// referral list. Each node carries display + payout metadata.
+function genReferralTree() {
+  const COUNTRIES = ["US", "UK", "JP", "DE", "BR", "AE", "SG", "GH", "CA", "FR", "ES", "IN", "MX", "AU"];
+  const FIRST = ["alex", "mira", "jun", "kofi", "sara", "leo", "anya", "wei", "sam", "luca", "noor", "yuki", "kai", "rin", "felix", "tom", "ivy", "raj", "olga", "max", "ben", "zoe", "amir", "nia", "owen", "mia"];
+  const LAST = ["nakamoto", "chen", "kovac", "ahmed", "silva", "khan", "vega", "park", "ito", "ng", "muller", "okafor", "patel", "rossi", "ali", "kim", "wong", "garcia"];
+  let id = 1;
+  const out = [{ id: "u0", name: "You", parentId: null, depth: 0, tier: "You", earned: 0, joined: "—", country: "—" }];
+  const mkName = (i) => `${FIRST[i % FIRST.length]}.${LAST[(i * 3) % LAST.length].slice(0, 4)}`;
+  const direct = 8;
+  const t2PerT1 = [4, 3, 2, 5, 3, 2, 4, 3];
+  const t3PerT2 = (i) => (i % 3 === 0 ? 3 : i % 4 === 0 ? 2 : 1);
+  // Tier 1
+  const tier1Ids = [];
+  for (let i = 0; i < direct; i++) {
+    const nid = `u${id++}`;
+    tier1Ids.push(nid);
+    out.push({
+      id: nid, name: mkName(id), parentId: "u0", depth: 1, tier: "Direct",
+      earned: 80 + (i * 53) % 220, joined: `${(i + 1) * 2}d ago`,
+      country: COUNTRIES[i % COUNTRIES.length],
+    });
+  }
+  // Tier 2
+  const tier2Ids = [];
+  for (let i = 0; i < tier1Ids.length; i++) {
+    const parent = tier1Ids[i];
+    for (let j = 0; j < t2PerT1[i]; j++) {
+      const nid = `u${id++}`;
+      tier2Ids.push({ id: nid, parent });
+      out.push({
+        id: nid, name: mkName(id + 7), parentId: parent, depth: 2, tier: "Tier 2",
+        earned: 18 + (id * 11) % 90, joined: `${5 + j * 2}d ago`,
+        country: COUNTRIES[(i + j) % COUNTRIES.length],
+      });
+    }
+  }
+  // Tier 3
+  for (let k = 0; k < tier2Ids.length; k++) {
+    const { id: parent } = tier2Ids[k];
+    const count = t3PerT2(k);
+    for (let j = 0; j < count; j++) {
+      const nid = `u${id++}`;
+      out.push({
+        id: nid, name: mkName(id + 13), parentId: parent, depth: 3, tier: "Tier 3",
+        earned: 4 + (id * 7) % 32, joined: `${10 + j * 2}d ago`,
+        country: COUNTRIES[(k + j) % COUNTRIES.length],
+      });
+    }
+  }
+  return out;
+}
+
+export const AFFILIATE_TREE = genReferralTree();
 
 // ===== Subscriptions =====
 export const PLANS = [
