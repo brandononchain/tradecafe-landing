@@ -159,6 +159,39 @@ export default function TradingChart({
       sigLine(signal.entry, "#5FE0CF", "Entry", LineStyle.Dashed);
       sigLine(signal.target, "#1FB8A6", "TP");
       sigLine(signal.stop, "#F23645", "SL");
+      // Open / projected-close timeline markers on the candle series.
+      if (signal.openedAt && candles?.length) {
+        const lastT = candles[candles.length - 1].time;
+        const firstT = candles[0].time;
+        // Snap signal timestamps to candle boundaries we actually have.
+        const snap = (t) => {
+          let best = lastT, bestD = Infinity;
+          for (const c of candles) { const d = Math.abs(c.time - t); if (d < bestD) { bestD = d; best = c.time; } }
+          return best;
+        };
+        const openT = snap(Math.max(firstT, signal.openedAt));
+        const closeT = signal.projectedCloseAt ? snap(Math.min(lastT, signal.projectedCloseAt)) : null;
+        const isLong = signal.dir === "LONG";
+        const sigMarkers = [
+          {
+            time: openT,
+            position: isLong ? "belowBar" : "aboveBar",
+            color: isLong ? "#1FB8A6" : "#F23645",
+            shape: isLong ? "arrowUp" : "arrowDown",
+            text: `${signal.dir} · ${signal.entry}`,
+          },
+        ];
+        if (closeT && closeT !== openT) {
+          sigMarkers.push({
+            time: closeT,
+            position: "inBar",
+            color: "rgba(95,224,207,0.95)",
+            shape: "circle",
+            text: `TARGET ${signal.target}`,
+          });
+        }
+        markers = [...markers, ...sigMarkers];
+      }
     }
     if (markers.length && series.setMarkers) series.setMarkers(markers);
 

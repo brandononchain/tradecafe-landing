@@ -4,7 +4,7 @@ import {
   TrendingUp, TrendingDown, Search, Minus, X, ChevronDown, Check,
   CandlestickChart, LineChart as LineIcon, AreaChart as AreaIcon, BarChart3,
   Brain, Sparkles, MousePointer2, MoveUpRight, Type, Square, Magnet, Lock, Eraser, Ruler,
-  Settings2, Keyboard, Star, Plug, Pencil, Share2, Wallet, Loader2, Bell, BellPlus, LayoutGrid, Columns2, SquareSplitHorizontal, ArrowRight,
+  Settings2, Keyboard, Star, Plug, Pencil, Share2, Wallet, Loader2, Bell, BellPlus, LayoutGrid, Columns2, SquareSplitHorizontal, ArrowRight, Zap,
 } from "lucide-react";
 import TradingChart from "../components/TradingChart";
 import Modal from "../components/Modal";
@@ -126,10 +126,33 @@ export default function Terminal() {
     setSymbol(s.sym);
     addTab(s.sym);
     setTf(mapTf(s.tf));
-    setRightTab("signals");
+    // Surface the ticket the moment a signal is charted so the
+    // "Trade Signal" CTA is one tap away.
+    setRightTab("order");
     setSide(s.dir === "LONG" ? "buy" : "sell");
     setAi((a) => ({ ...a, sr: true, pivots: true }));
-    setActiveSignal({ sym: s.sym, dir: s.dir, entry: num(s.price), target: num(s.target), stop: num(s.stop) });
+    // openedAt: now - signal age (signal.time like "12s" / "3m" / "1h")
+    const ageSec = (() => {
+      const m = String(s.time || "").match(/(\d+)\s*([smhd])/i);
+      if (!m) return 60;
+      const [, n, u] = m; const map = { s: 1, m: 60, h: 3600, d: 86400 };
+      return parseInt(n, 10) * (map[u.toLowerCase()] || 60);
+    })();
+    // Projected close: ~20 candles forward at the signal timeframe.
+    const tfSec = { "1m": 60, "5m": 300, "15m": 900, "30m": 1800, "1h": 3600, "4h": 14400, "1d": 86400 }[String(s.tf || "1h").toLowerCase()] || 3600;
+    const now = Math.floor(Date.now() / 1000);
+    setActiveSignal({
+      sym: s.sym,
+      dir: s.dir,
+      entry: num(s.price),
+      target: num(s.target),
+      stop: num(s.stop),
+      strat: s.strat,
+      tf: s.tf,
+      conf: s.conf,
+      openedAt: now - ageSec,
+      projectedCloseAt: now - ageSec + tfSec * 20,
+    });
   };
 
   // Keyboard shortcuts: 1–6 switch timeframe.
@@ -698,21 +721,30 @@ function OrderPanel({ active, side, setSide, marginMode, setMarginMode, leverage
     <div className={`flex flex-col gap-4 ${bare ? "" : "tc-panel"} ${fill ? "flex-1 min-h-0 overflow-y-auto" : ""}`}>
 
       {signal && (
-        <button onClick={() => setSide(signal.dir === "LONG" ? "buy" : "sell")}
-          className="flex flex-col gap-1.5 px-3 py-2.5 rounded-lg bg-tradeTeal/[0.08] border border-tradeTeal/25 text-left transition-colors hover:bg-tradeTeal/[0.12]"
-          data-testid="order-signal-banner">
-          <span className="flex items-center gap-1.5">
-            <Sparkles className="w-3 h-3 text-tradeTeal" strokeWidth={2} />
-            <span className="font-mono text-[9px] tracking-[0.12em] uppercase text-tradeTeal">AI signal</span>
-            <span className={signal.dir === "LONG" ? "tc-tag-long" : "tc-tag-short"} style={{ fontSize: 9, padding: "1px 6px" }}>{signal.dir}</span>
-            <span className="ml-auto font-mono text-[10px] text-white/40">tap to load</span>
-          </span>
-          <span className="grid grid-cols-3 gap-1 font-mono text-[10.5px]">
-            <span className="text-white/60">@ {Number(signal.entry).toLocaleString()}</span>
-            <span className="text-tradeTeal text-center">T {Number(signal.target).toLocaleString()}</span>
-            <span className="text-[#FF8A82] text-right">S {Number(signal.stop).toLocaleString()}</span>
-          </span>
-        </button>
+        <SignalCard
+          signal={signal}
+          side={side}
+          setSide={setSide}
+          setOrderType={setOrderType}
+          setLimitPrice={setLimitPrice}
+          onOneClick={() => {
+            // Load + submit in a single action: side, limit @ entry, default size.
+            setSide(signal.dir === "LONG" ? "buy" : "sell");
+            setOrderType("limit");
+            setLimitPrice(String(signal.entry));
+            // Defer submit so state updates flush before notify reads them.
+            setTimeout(() => {
+              setPlaced(true);
+              const sz = marginMode === "percent" ? `${sizeValue}%` : `${usdAmount} USDT`;
+              notify({
+                type: "trade",
+                title: `Signal traded · ${signal.dir} ${active.sym}`,
+                body: `${sz} · ${leverage}× · entry ${signal.entry} · TP ${signal.target} · SL ${signal.stop}`,
+              });
+              setTimeout(() => setPlaced(false), 2400);
+            }, 0);
+          }}
+        />
       )}
 
       {/* Long / Short — taller for the bento layout */}
@@ -1129,6 +1161,72 @@ function Mini({ label, value, teal }) {
       <span className="text-[9px] tracking-[0.14em] uppercase text-white/40">{label}</span>
       <span className={`text-[12px] ${teal ? "text-tradeTeal" : "text-white/80"}`}>{value}</span>
     </span>
+  );
+}
+
+function SignalCard({ signal, side, setSide, setOrderType, setLimitPrice, onOneClick }) {
+  const isLong = signal.dir === "LONG";
+  const matchesDir = (isLong && side === "buy") || (!isLong && side === "sell");
+  // Risk / reward ratio from entry / target / stop
+  const e = Number(signal.entry), t = Number(signal.target), s = Number(signal.stop);
+  const reward = Math.abs(t - e);
+  const risk = Math.abs(e - s);
+  const rr = risk > 0 ? (reward / risk).toFixed(2) : "—";
+
+  const loadIntoTicket = () => {
+    setSide(isLong ? "buy" : "sell");
+    setOrderType("limit");
+    setLimitPrice(String(signal.entry));
+  };
+
+  return (
+    <div
+      className="flex flex-col gap-2 px-3 py-2.5 rounded-lg bg-tradeTeal/[0.08] border border-tradeTeal/30"
+      data-testid="order-signal-banner"
+    >
+      <div className="flex items-center gap-1.5">
+        <Sparkles className="w-3 h-3 text-tradeTeal" strokeWidth={2} />
+        <span className="font-mono text-[9px] tracking-[0.12em] uppercase text-tradeTeal">AI signal</span>
+        <span className={isLong ? "tc-tag-long" : "tc-tag-short"} style={{ fontSize: 9, padding: "1px 6px" }}>{signal.dir}</span>
+        {signal.strat && <span className="font-mono text-[9px] tracking-[0.08em] uppercase text-white/45">· {signal.strat} {signal.tf}</span>}
+        {typeof signal.conf === "number" && (
+          <span className="ml-auto font-mono text-[10px] text-tradeTeal">{signal.conf}%</span>
+        )}
+      </div>
+
+      <div className="grid grid-cols-3 gap-1 font-mono text-[10.5px]">
+        <span className="text-white/60">@ {Number(signal.entry).toLocaleString()}</span>
+        <span className="text-tradeTeal text-center">T {Number(signal.target).toLocaleString()}</span>
+        <span className="text-[#FF8A82] text-right">S {Number(signal.stop).toLocaleString()}</span>
+      </div>
+
+      <div className="flex items-center justify-between gap-2 pt-1.5 border-t border-tradeTeal/15">
+        <span className="font-mono text-[9.5px] tracking-[0.08em] uppercase text-white/45">R/R · <span className="text-tradeTeal">{rr}</span></span>
+        <div className="flex items-center gap-1.5">
+          <button
+            onClick={loadIntoTicket}
+            className="font-mono text-[10px] tracking-[0.08em] uppercase text-white/65 hover:text-white px-2 py-1 rounded border border-white/[0.08] hover:border-white/[0.18] transition-colors"
+            data-testid="signal-load-ticket"
+            title="Load entry / TP / SL into the ticket without submitting"
+          >
+            Load
+          </button>
+          <button
+            onClick={onOneClick}
+            className={`tc-btn flex items-center gap-1.5 font-mono text-[11px] tracking-[0.08em] uppercase ${matchesDir ? "tc-btn-primary" : ""}`}
+            style={{
+              padding: "7px 12px",
+              ...(matchesDir ? {} : { color: "#042024", background: "linear-gradient(135deg,#FF9B91,#F23645)" }),
+            }}
+            data-testid="signal-one-click"
+            title={`One-click trade: ${signal.dir} at ${signal.entry}`}
+          >
+            <Zap className="w-3.5 h-3.5" strokeWidth={2.4} />
+            Trade Signal
+          </button>
+        </div>
+      </div>
+    </div>
   );
 }
 
