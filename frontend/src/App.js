@@ -13,6 +13,7 @@ import "@/App.css";
 import Nav from "./components/Nav";
 import Footer from "./components/Footer";
 import HomeBody from "./sections/Home";
+import { BrandLogo } from "./dashboard/lib/brandLogos";
 import { TRUST_METRICS, EXTERNAL } from "./lib/brand";
 import Terminal from "./pages/Terminal";
 import Signals from "./pages/Signals";
@@ -257,9 +258,10 @@ function HomePage() {
   }, [mounted]);
 
   return (
+    <div className="bg-black p-2 sm:p-3" data-testid="tradecafe-hero">
+    <div className="relative">
     <div
-      className="relative min-h-screen bg-black text-tradeWhite font-body overflow-hidden"
-      data-testid="tradecafe-hero"
+      className="relative min-h-[calc(100vh-16px)] sm:min-h-[calc(100vh-24px)] rounded-[22px] sm:rounded-[30px] bg-[#020809] text-tradeWhite font-body overflow-hidden"
     >
       {/* ===== Cinematic hero frame ===== */}
       <section className="hero-frame" data-testid="hero-frame">
@@ -308,8 +310,8 @@ function HomePage() {
         }}
       />
 
-      {/* ===== NAV (shared component) ===== */}
-      <Nav />
+      {/* ===== NAV ===== */}
+      {/* Home swaps the top Nav for a notch-tab logo that morphs into the nav on hover */}
 
       {/* ===== HERO LAYOUT: mobile-first stacked, desktop bottom-left absolute ===== */}
       <main
@@ -446,12 +448,120 @@ function HomePage() {
       </main>
       </section>
       {/* ===== /hero-frame ===== */}
+    </div>
+    <HeroTopTab />
+    <HeroBottomTab />
+    </div>
 
       <HomeBody />
     </div>
   );
 }
 
+
+/* =========================================================
+   Hero notch tabs — a rounded frame with a logo→nav pill on
+   top center and a partner-logo ribbon on the bottom center.
+   ========================================================= */
+function HeroTopTab() {
+  // Split evenly so the spiral logo stays optically centered while the nav
+  // unfurls symmetrically on either side. Order matters: leftLinks are
+  // rendered right-aligned in the left slot, rightLinks left-aligned in the
+  // right slot.
+  const leftLinks = [
+    { to: "/terminal", label: "Terminal" },
+    { to: "/signals", label: "Signals" },
+  ];
+  const rightLinks = [
+    { to: "/pool", label: "Pool" },
+    { to: "/insights/docs", label: "Docs" },
+  ];
+  return (
+    <div
+      className="absolute top-0 left-1/2 -translate-x-1/2 z-40 flex items-start group"
+      data-testid="hero-top-tab"
+    >
+      <span className="tc-notch-shoulder tc-notch-shoulder--l" aria-hidden />
+      <div className="tc-tab-pill tc-tab-pill--top relative bg-black border-x border-b border-white/[0.07] rounded-b-[24px] h-[52px] flex items-stretch">
+        {/* Left side: nav slot expands from 0 -> 200px on hover */}
+        <div className="tc-tab-side tc-tab-side--l overflow-hidden flex items-center justify-end">
+          <nav
+            className="flex items-center gap-1 pl-3 pr-2 whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-200 delay-200"
+            aria-label="Primary"
+          >
+            {leftLinks.map((l) => (
+              <Link
+                key={l.to}
+                to={l.to}
+                className="px-2.5 py-1.5 rounded-full font-mono text-[10.5px] tracking-[0.16em] uppercase text-white/70 hover:text-tradeTeal hover:bg-tradeTeal/10 transition-colors"
+              >
+                {l.label}
+              </Link>
+            ))}
+          </nav>
+        </div>
+
+        {/* Center: the spiral logo. Fixed width, never shifts. */}
+        <Link
+          to="/"
+          aria-label="TradeCafe"
+          className="w-[64px] h-[52px] flex items-center justify-center shrink-0 relative z-10"
+          data-testid="hero-top-tab-logo"
+        >
+          <span
+            className="relative flex items-center justify-center w-9 h-9 rounded-full bg-tradeTeal/12 border border-tradeTeal/35"
+            style={{ boxShadow: "0 0 22px rgba(34,211,180,0.22)" }}
+          >
+            <img src="/tradecafe-logo.svg" alt="" aria-hidden className="w-5 h-5" />
+          </span>
+        </Link>
+
+        {/* Right side: mirror of left */}
+        <div className="tc-tab-side tc-tab-side--r overflow-hidden flex items-center justify-start">
+          <nav
+            className="flex items-center gap-1 pr-3 pl-2 whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-200 delay-200"
+          >
+            {rightLinks.map((l) => (
+              <Link
+                key={l.to}
+                to={l.to}
+                className="px-2.5 py-1.5 rounded-full font-mono text-[10.5px] tracking-[0.16em] uppercase text-white/70 hover:text-tradeTeal hover:bg-tradeTeal/10 transition-colors"
+              >
+                {l.label}
+              </Link>
+            ))}
+          </nav>
+        </div>
+      </div>
+      <span className="tc-notch-shoulder tc-notch-shoulder--r" aria-hidden />
+    </div>
+  );
+}
+
+function HeroBottomTab() {
+  // Real venues TradeCafe routes to. Doubled for a seamless marquee loop.
+  const venues = ["binance", "bybit", "bitget", "kucoin", "okx", "weex", "bingx"];
+  const seq = [...venues, ...venues];
+  return (
+    <div
+      className="absolute bottom-0 left-1/2 -translate-x-1/2 z-40 flex items-end"
+      data-testid="hero-bottom-tab"
+    >
+      <span className="tc-notch-shoulder tc-notch-shoulder--l tc-notch-shoulder--bottom" aria-hidden />
+      <div className="tc-tab-pill tc-tab-pill--bottom relative overflow-hidden bg-black border-x border-t border-white/[0.07] rounded-t-[24px] h-[52px] w-[min(360px,80vw)] flex items-center px-4">
+        <div className="flex items-center gap-9 whitespace-nowrap tc-marquee" style={{ animationDuration: "26s" }}>
+          {seq.map((v, i) => (
+            <span key={`${v}-${i}`} className="inline-flex items-center gap-2 shrink-0">
+              <BrandLogo id={v} size={18} />
+              <span className="font-mono text-[10.5px] tracking-[0.16em] uppercase text-white/75">{v}</span>
+            </span>
+          ))}
+        </div>
+      </div>
+      <span className="tc-notch-shoulder tc-notch-shoulder--r tc-notch-shoulder--bottom" aria-hidden />
+    </div>
+  );
+}
 
 function MetricIcon({ i }) {
   const cls = "stat-icon";
