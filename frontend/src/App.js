@@ -65,6 +65,95 @@ function AppLoader() {
 
 const VIDEO_SRC = "/tradecafebackground.mp4";
 
+/* =========================================================
+   useHeroClip — measures the hero element and builds a clip-path
+   string that carves a top and bottom notch into the rounded
+   frame. The notch shape: concave shoulders flowing into a
+   rounded-bottom pill cutout. Returns a ref + inline style.
+   ========================================================= */
+const HERO_NOTCH = {
+  corner: 30,        // outer corner radius
+  topW: 420,         // top notch width (fits nav + logo)
+  topH: 54,          // top notch depth
+  topPillR: 24,      // pill bottom corner radius
+  topShoulder: 28,   // concave shoulder radius (top)
+  botW: 440,         // bottom notch width
+  botH: 54,
+  botPillR: 24,
+  botShoulder: 28,
+};
+
+function buildHeroPath(w, h, c) {
+  const r = c.corner;
+  const { topW, topH, topPillR, topShoulder, botW, botH, botPillR, botShoulder } = c;
+  const cx = w / 2;
+  const tL = cx - topW / 2, tR = cx + topW / 2;
+  const bL = cx - botW / 2, bR = cx + botW / 2;
+  // Path traverses the outline clockwise. Each notch:
+  //   flat edge -> concave shoulder in -> notch wall down -> pill rounded
+  //   corner -> pill flat bottom -> pill rounded corner -> notch wall up ->
+  //   concave shoulder out -> flat edge.
+  return [
+    `M ${r},0`,
+    // top edge to left shoulder of top notch
+    `L ${tL - topShoulder},0`,
+    `A ${topShoulder},${topShoulder} 0 0 0 ${tL},${topShoulder}`,
+    `L ${tL},${topH - topPillR}`,
+    `A ${topPillR},${topPillR} 0 0 0 ${tL + topPillR},${topH}`,
+    `L ${tR - topPillR},${topH}`,
+    `A ${topPillR},${topPillR} 0 0 0 ${tR},${topH - topPillR}`,
+    `L ${tR},${topShoulder}`,
+    `A ${topShoulder},${topShoulder} 0 0 0 ${tR + topShoulder},0`,
+    `L ${w - r},0`,
+    // top-right corner
+    `A ${r},${r} 0 0 1 ${w},${r}`,
+    `L ${w},${h - r}`,
+    // bottom-right corner
+    `A ${r},${r} 0 0 1 ${w - r},${h}`,
+    // bottom edge to right shoulder of bottom notch
+    `L ${bR + botShoulder},${h}`,
+    `A ${botShoulder},${botShoulder} 0 0 0 ${bR},${h - botShoulder}`,
+    `L ${bR},${h - botH + botPillR}`,
+    `A ${botPillR},${botPillR} 0 0 0 ${bR - botPillR},${h - botH}`,
+    `L ${bL + botPillR},${h - botH}`,
+    `A ${botPillR},${botPillR} 0 0 0 ${bL},${h - botH + botPillR}`,
+    `L ${bL},${h - botShoulder}`,
+    `A ${botShoulder},${botShoulder} 0 0 0 ${bL - botShoulder},${h}`,
+    `L ${r},${h}`,
+    // bottom-left corner
+    `A ${r},${r} 0 0 1 0,${h - r}`,
+    `L 0,${r}`,
+    // top-left corner
+    `A ${r},${r} 0 0 1 ${r},0`,
+    "Z",
+  ].join(" ");
+}
+
+function useHeroClip(config = HERO_NOTCH) {
+  const ref = useRef(null);
+  const [clip, setClip] = useState("");
+  useEffect(() => {
+    const update = () => {
+      const el = ref.current;
+      if (!el) return;
+      const w = el.offsetWidth;
+      const h = el.offsetHeight;
+      if (w < 1 || h < 1) return;
+      const d = buildHeroPath(w, h, config);
+      setClip(`path("${d}")`);
+    };
+    update();
+    const ro = new ResizeObserver(update);
+    if (ref.current) ro.observe(ref.current);
+    window.addEventListener("resize", update);
+    return () => {
+      ro.disconnect();
+      window.removeEventListener("resize", update);
+    };
+  }, [config]);
+  return { ref, clip };
+}
+
 function HomePage() {
   const [mounted, setMounted] = useState(false);
   const [framesReady, setFramesReady] = useState(false);
@@ -74,6 +163,7 @@ function HomePage() {
   const displayCanvasRef = useRef(null);
   const framesRef = useRef([]);
   const heroContentRef = useRef(null);
+  const { ref: heroShellRef, clip: heroClip } = useHeroClip();
 
   // Mount flag for entrance animations
   useEffect(() => {
@@ -261,7 +351,9 @@ function HomePage() {
     <div className="bg-black p-2 sm:p-3" data-testid="tradecafe-hero">
     <div className="relative">
     <div
-      className="relative min-h-[calc(100vh-16px)] sm:min-h-[calc(100vh-24px)] rounded-[22px] sm:rounded-[30px] bg-[#020809] text-tradeWhite font-body overflow-hidden"
+      ref={heroShellRef}
+      className="tc-hero-shell relative min-h-[calc(100vh-16px)] sm:min-h-[calc(100vh-24px)] bg-[#020809] text-tradeWhite font-body overflow-hidden"
+      style={{ clipPath: heroClip, WebkitClipPath: heroClip }}
     >
       {/* ===== Cinematic hero frame ===== */}
       <section className="hero-frame" data-testid="hero-frame">
@@ -464,10 +556,9 @@ function HomePage() {
    top center and a partner-logo ribbon on the bottom center.
    ========================================================= */
 function HeroTopTab() {
-  // Split evenly so the spiral logo stays optically centered while the nav
-  // unfurls symmetrically on either side. Order matters: leftLinks are
-  // rendered right-aligned in the left slot, rightLinks left-aligned in the
-  // right slot.
+  // The hero frame's clip-path carves an exact 420x54 notch at top-center.
+  // This pill fills that notch — no fake shoulders, no border (the carved
+  // edge IS the border). Just content positioned in the slot.
   const leftLinks = [
     { to: "/terminal", label: "Terminal" },
     { to: "/signals", label: "Signals" },
@@ -478,87 +569,80 @@ function HeroTopTab() {
   ];
   return (
     <div
-      className="absolute top-0 left-1/2 -translate-x-1/2 z-40 flex items-start group"
+      className="absolute top-0 left-1/2 -translate-x-1/2 z-40 flex items-center justify-center bg-transparent"
+      style={{ width: HERO_NOTCH.topW, height: HERO_NOTCH.topH }}
       data-testid="hero-top-tab"
     >
-      <span className="tc-notch-shoulder tc-notch-shoulder--l" aria-hidden />
-      <div className="tc-tab-pill tc-tab-pill--top relative bg-black border-x border-b border-white/[0.07] rounded-b-[24px] h-[52px] flex items-stretch">
-        {/* Left side: nav slot expands from 0 -> 200px on hover */}
-        <div className="tc-tab-side tc-tab-side--l overflow-hidden flex items-center justify-end">
-          <nav
-            className="flex items-center gap-1 pl-3 pr-2 whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-200 delay-200"
-            aria-label="Primary"
+      <nav className="flex items-center gap-1 pr-3 whitespace-nowrap" aria-label="Primary">
+        {leftLinks.map((l) => (
+          <Link
+            key={l.to}
+            to={l.to}
+            className="px-3 py-1.5 rounded-full font-mono text-[10.5px] tracking-[0.16em] uppercase text-white/80 hover:text-tradeTeal hover:bg-tradeTeal/10 transition-colors"
           >
-            {leftLinks.map((l) => (
-              <Link
-                key={l.to}
-                to={l.to}
-                className="px-2.5 py-1.5 rounded-full font-mono text-[10.5px] tracking-[0.16em] uppercase text-white/70 hover:text-tradeTeal hover:bg-tradeTeal/10 transition-colors"
-              >
-                {l.label}
-              </Link>
-            ))}
-          </nav>
-        </div>
+            {l.label}
+          </Link>
+        ))}
+      </nav>
 
-        {/* Center: the spiral logo. Fixed width, never shifts. */}
-        <Link
-          to="/"
-          aria-label="TradeCafe"
-          className="w-[64px] h-[52px] flex items-center justify-center shrink-0 relative z-10"
-          data-testid="hero-top-tab-logo"
+      <Link
+        to="/"
+        aria-label="TradeCafe"
+        className="flex items-center justify-center shrink-0"
+        data-testid="hero-top-tab-logo"
+      >
+        <span
+          className="relative flex items-center justify-center w-10 h-10 rounded-full bg-tradeTeal/12 border border-tradeTeal/40"
+          style={{ boxShadow: "0 0 28px rgba(34,211,180,0.32), inset 0 0 0 1px rgba(34,211,180,0.12)" }}
         >
-          <span
-            className="relative flex items-center justify-center w-9 h-9 rounded-full bg-tradeTeal/12 border border-tradeTeal/35"
-            style={{ boxShadow: "0 0 22px rgba(34,211,180,0.22)" }}
-          >
-            <img src="/tradecafe-logo.svg" alt="" aria-hidden className="w-5 h-5" />
-          </span>
-        </Link>
+          <img
+            src="/tradecafe-logo.png"
+            alt=""
+            aria-hidden
+            className="w-6 h-6"
+            style={{ filter: "drop-shadow(0 0 4px rgba(34,211,180,0.4))" }}
+          />
+        </span>
+      </Link>
 
-        {/* Right side: mirror of left */}
-        <div className="tc-tab-side tc-tab-side--r overflow-hidden flex items-center justify-start">
-          <nav
-            className="flex items-center gap-1 pr-3 pl-2 whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-200 delay-200"
+      <nav className="flex items-center gap-1 pl-3 whitespace-nowrap">
+        {rightLinks.map((l) => (
+          <Link
+            key={l.to}
+            to={l.to}
+            className="px-3 py-1.5 rounded-full font-mono text-[10.5px] tracking-[0.16em] uppercase text-white/80 hover:text-tradeTeal hover:bg-tradeTeal/10 transition-colors"
           >
-            {rightLinks.map((l) => (
-              <Link
-                key={l.to}
-                to={l.to}
-                className="px-2.5 py-1.5 rounded-full font-mono text-[10.5px] tracking-[0.16em] uppercase text-white/70 hover:text-tradeTeal hover:bg-tradeTeal/10 transition-colors"
-              >
-                {l.label}
-              </Link>
-            ))}
-          </nav>
-        </div>
-      </div>
-      <span className="tc-notch-shoulder tc-notch-shoulder--r" aria-hidden />
+            {l.label}
+          </Link>
+        ))}
+      </nav>
     </div>
   );
 }
 
 function HeroBottomTab() {
-  // Real venues TradeCafe routes to. Doubled for a seamless marquee loop.
+  // Hero frame carves a 440x54 notch at bottom-center; this fills it.
   const venues = ["binance", "bybit", "bitget", "kucoin", "okx", "weex", "bingx"];
   const seq = [...venues, ...venues];
   return (
     <div
-      className="absolute bottom-0 left-1/2 -translate-x-1/2 z-40 flex items-end"
+      className="absolute bottom-0 left-1/2 -translate-x-1/2 z-40 overflow-hidden flex items-center"
+      style={{ width: HERO_NOTCH.botW, height: HERO_NOTCH.botH }}
       data-testid="hero-bottom-tab"
     >
-      <span className="tc-notch-shoulder tc-notch-shoulder--l tc-notch-shoulder--bottom" aria-hidden />
-      <div className="tc-tab-pill tc-tab-pill--bottom relative overflow-hidden bg-black border-x border-t border-white/[0.07] rounded-t-[24px] h-[52px] w-[min(360px,80vw)] flex items-center px-4">
-        <div className="flex items-center gap-9 whitespace-nowrap tc-marquee" style={{ animationDuration: "26s" }}>
-          {seq.map((v, i) => (
-            <span key={`${v}-${i}`} className="inline-flex items-center gap-2 shrink-0">
-              <BrandLogo id={v} size={18} />
-              <span className="font-mono text-[10.5px] tracking-[0.16em] uppercase text-white/75">{v}</span>
-            </span>
-          ))}
-        </div>
+      <div
+        className="flex items-center gap-2.5 whitespace-nowrap tc-marquee pl-3"
+        style={{ animationDuration: "32s" }}
+      >
+        {seq.map((v, i) => (
+          <span key={`${v}-${i}`} className="tc-partner-chip">
+            <BrandLogo id={v} size={20} />
+            <span className="font-mono text-[10px] tracking-[0.16em] uppercase text-white/80">{v}</span>
+          </span>
+        ))}
       </div>
-      <span className="tc-notch-shoulder tc-notch-shoulder--r tc-notch-shoulder--bottom" aria-hidden />
+      <span aria-hidden className="absolute inset-y-0 left-0 w-8 bg-gradient-to-r from-[#020809] to-transparent pointer-events-none" />
+      <span aria-hidden className="absolute inset-y-0 right-0 w-8 bg-gradient-to-l from-[#020809] to-transparent pointer-events-none" />
     </div>
   );
 }

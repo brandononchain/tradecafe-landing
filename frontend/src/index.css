@@ -3099,24 +3099,24 @@ input[type="range"]:active::-moz-range-thumb { cursor: grabbing; }
    the top/bottom pills.
    ============================================================ */
 .tc-notch-shoulder {
-    width: 22px;
-    height: 22px;
+    width: 32px;
+    height: 32px;
     flex-shrink: 0;
     pointer-events: none;
 }
 /* Top tab — concave cut on the underside of the shoulder */
 .tc-notch-shoulder--l {
-    background: radial-gradient(circle 22px at 0 100%, transparent 22px, #000 22.5px);
+    background: radial-gradient(circle 32px at 0 100%, transparent 32px, #000 32.5px);
 }
 .tc-notch-shoulder--r {
-    background: radial-gradient(circle 22px at 100% 100%, transparent 22px, #000 22.5px);
+    background: radial-gradient(circle 32px at 100% 100%, transparent 32px, #000 32.5px);
 }
 /* Bottom tab — same shape, flipped vertically */
 .tc-notch-shoulder--bottom.tc-notch-shoulder--l {
-    background: radial-gradient(circle 22px at 0 0, transparent 22px, #000 22.5px);
+    background: radial-gradient(circle 32px at 0 0, transparent 32px, #000 32.5px);
 }
 .tc-notch-shoulder--bottom.tc-notch-shoulder--r {
-    background: radial-gradient(circle 22px at 100% 0, transparent 22px, #000 22.5px);
+    background: radial-gradient(circle 32px at 100% 0, transparent 32px, #000 32.5px);
 }
 
 /* Touch fallback — there's no hover on mobile, so the nav must be
@@ -3130,10 +3130,44 @@ input[type="range"]:active::-moz-range-thumb { cursor: grabbing; }
    slots grow from 0 to a max-width on group hover/focus. */
 .tc-tab-side {
     max-width: 0;
-    height: 52px;
+    height: 64px;
     transition: max-width 480ms cubic-bezier(.2, .7, .2, 1);
 }
 .group:hover .tc-tab-side,
 .group:focus-within .tc-tab-side {
-    max-width: 220px;
+    max-width: 240px;
+}
+
+/* Subtle starfield grain over the hero so the rounded frame reads as
+   its own surface (knotch-style depth haze). Layered as a pseudo on
+   the inset hero shell. */
+.tc-hero-shell::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background:
+        radial-gradient(1200px 600px at 8% 12%, rgba(34, 211, 180, 0.05), transparent 60%),
+        radial-gradient(900px 500px at 96% 92%, rgba(123, 229, 204, 0.04), transparent 60%);
+    mix-blend-mode: screen;
+    opacity: 0.9;
+    border-radius: inherit;
+}
+
+/* Carded partner chip used in the bottom hero ribbon */
+.tc-partner-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    height: 36px;
+    padding: 0 12px 0 8px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.035);
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    flex-shrink: 0;
+    transition: background 200ms ease-out, border-color 200ms ease-out;
+}
+.tc-partner-chip:hover {
+    background: rgba(34, 211, 180, 0.08);
+    border-color: rgba(34, 211, 180, 0.28);
 }
