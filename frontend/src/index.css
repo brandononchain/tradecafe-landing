@@ -3078,3 +3078,16 @@ input[type="range"]:active::-moz-range-thumb { cursor: grabbing; }
     0%, 80%, 100% { transform: translateY(0); opacity: 0.55; }
     40% { transform: translateY(-3px); opacity: 1; }
 }
+
+/* Home marquee — auto-scrolling word strip */
+@keyframes tcMarqueeScroll {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+}
+.tc-marquee {
+    animation: tcMarqueeScroll 38s linear infinite;
+    will-change: transform;
+}
+@media (prefers-reduced-motion: reduce) {
+    .tc-marquee { animation: none; }
+}
