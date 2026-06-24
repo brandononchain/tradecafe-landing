@@ -3125,3 +3125,15 @@ input[type="range"]:active::-moz-range-thumb { cursor: grabbing; }
 @media (hover: none) {
     .tc-tab-pill--top { width: 64px; }
 }
+
+/* Hero top tab — symmetric expansion. Logo stays centered; left & right
+   slots grow from 0 to a max-width on group hover/focus. */
+.tc-tab-side {
+    max-width: 0;
+    height: 52px;
+    transition: max-width 480ms cubic-bezier(.2, .7, .2, 1);
+}
+.group:hover .tc-tab-side,
+.group:focus-within .tc-tab-side {
+    max-width: 220px;
+}

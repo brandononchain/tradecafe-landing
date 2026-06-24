@@ -464,10 +464,15 @@ function HomePage() {
    top center and a partner-logo ribbon on the bottom center.
    ========================================================= */
 function HeroTopTab() {
-  const links = [
+  // Split evenly so the spiral logo stays optically centered while the nav
+  // unfurls symmetrically on either side. Order matters: leftLinks are
+  // rendered right-aligned in the left slot, rightLinks left-aligned in the
+  // right slot.
+  const leftLinks = [
     { to: "/terminal", label: "Terminal" },
     { to: "/signals", label: "Signals" },
-    { to: "/automation", label: "Automation" },
+  ];
+  const rightLinks = [
     { to: "/pool", label: "Pool" },
     { to: "/insights/docs", label: "Docs" },
   ];
@@ -477,7 +482,26 @@ function HeroTopTab() {
       data-testid="hero-top-tab"
     >
       <span className="tc-notch-shoulder tc-notch-shoulder--l" aria-hidden />
-      <div className="tc-tab-pill tc-tab-pill--top relative bg-black border-x border-b border-white/[0.07] rounded-b-[24px] h-[52px] w-[64px] group-hover:w-[520px] transition-[width] duration-[480ms] ease-[cubic-bezier(.2,.7,.2,1)] overflow-hidden flex items-center">
+      <div className="tc-tab-pill tc-tab-pill--top relative bg-black border-x border-b border-white/[0.07] rounded-b-[24px] h-[52px] flex items-stretch">
+        {/* Left side: nav slot expands from 0 -> 200px on hover */}
+        <div className="tc-tab-side tc-tab-side--l overflow-hidden flex items-center justify-end">
+          <nav
+            className="flex items-center gap-1 pl-3 pr-2 whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-200 delay-200"
+            aria-label="Primary"
+          >
+            {leftLinks.map((l) => (
+              <Link
+                key={l.to}
+                to={l.to}
+                className="px-2.5 py-1.5 rounded-full font-mono text-[10.5px] tracking-[0.16em] uppercase text-white/70 hover:text-tradeTeal hover:bg-tradeTeal/10 transition-colors"
+              >
+                {l.label}
+              </Link>
+            ))}
+          </nav>
+        </div>
+
+        {/* Center: the spiral logo. Fixed width, never shifts. */}
         <Link
           to="/"
           aria-label="TradeCafe"
@@ -485,29 +509,29 @@ function HeroTopTab() {
           data-testid="hero-top-tab-logo"
         >
           <span
-            className="relative flex items-center justify-center w-9 h-9 rounded-full bg-tradeTeal/10 border border-tradeTeal/30"
-            style={{ boxShadow: "0 0 18px rgba(34,211,180,0.18)" }}
+            className="relative flex items-center justify-center w-9 h-9 rounded-full bg-tradeTeal/12 border border-tradeTeal/35"
+            style={{ boxShadow: "0 0 22px rgba(34,211,180,0.22)" }}
           >
             <img src="/tradecafe-logo.svg" alt="" aria-hidden className="w-5 h-5" />
           </span>
         </Link>
-        <nav className="flex items-center gap-1 pr-3 whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-300 delay-150">
-          {links.map((l) => (
-            <Link
-              key={l.to}
-              to={l.to}
-              className="px-2.5 py-1.5 rounded-full font-mono text-[10.5px] tracking-[0.16em] uppercase text-white/65 hover:text-tradeTeal hover:bg-tradeTeal/10 transition-colors"
-            >
-              {l.label}
-            </Link>
-          ))}
-          <Link
-            to="/app/terminal"
-            className="ml-1 px-3 py-1.5 rounded-full font-mono text-[10.5px] tracking-[0.16em] uppercase text-[#042024] bg-tradeTeal hover:bg-tradeTeal/90 transition-colors"
+
+        {/* Right side: mirror of left */}
+        <div className="tc-tab-side tc-tab-side--r overflow-hidden flex items-center justify-start">
+          <nav
+            className="flex items-center gap-1 pr-3 pl-2 whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-200 delay-200"
           >
-            Launch
-          </Link>
-        </nav>
+            {rightLinks.map((l) => (
+              <Link
+                key={l.to}
+                to={l.to}
+                className="px-2.5 py-1.5 rounded-full font-mono text-[10.5px] tracking-[0.16em] uppercase text-white/70 hover:text-tradeTeal hover:bg-tradeTeal/10 transition-colors"
+              >
+                {l.label}
+              </Link>
+            ))}
+          </nav>
+        </div>
       </div>
       <span className="tc-notch-shoulder tc-notch-shoulder--r" aria-hidden />
     </div>
@@ -515,32 +539,23 @@ function HeroTopTab() {
 }
 
 function HeroBottomTab() {
-  // Real venues TradeCafe routes to. Strip is doubled for seamless marquee.
+  // Real venues TradeCafe routes to. Doubled for a seamless marquee loop.
   const venues = ["binance", "bybit", "bitget", "kucoin", "okx", "weex", "bingx"];
-  const seq = [...venues, ...venues, ...venues];
+  const seq = [...venues, ...venues];
   return (
     <div
       className="absolute bottom-0 left-1/2 -translate-x-1/2 z-40 flex items-end"
       data-testid="hero-bottom-tab"
     >
       <span className="tc-notch-shoulder tc-notch-shoulder--l tc-notch-shoulder--bottom" aria-hidden />
-      <div className="tc-tab-pill tc-tab-pill--bottom relative overflow-hidden bg-black border-x border-t border-white/[0.07] rounded-t-[24px] h-[58px] w-[min(640px,86vw)] flex items-center">
-        <span className="hidden md:flex items-center gap-1.5 shrink-0 pl-5 pr-4 font-mono text-[9.5px] tracking-[0.22em] uppercase text-tradeTeal/85 border-r border-white/[0.05] h-full">
-          <span className="trade-pulse-dot w-1.5 h-1.5 rounded-full bg-tradeTeal inline-block" />
-          Live
-        </span>
-        <div className="relative flex-1 overflow-hidden">
-          <div className="flex items-center gap-10 whitespace-nowrap tc-marquee" style={{ animationDuration: "32s" }}>
-            {seq.map((v, i) => (
-              <span key={`${v}-${i}`} className="inline-flex items-center gap-2 shrink-0 opacity-85 hover:opacity-100 transition-opacity">
-                <BrandLogo id={v} size={20} />
-                <span className="font-mono text-[10.5px] tracking-[0.16em] uppercase text-white/70">{v}</span>
-              </span>
-            ))}
-          </div>
-          {/* Edge fades so the ribbon feels infinite */}
-          <span aria-hidden className="absolute inset-y-0 left-0 w-10 bg-gradient-to-r from-black to-transparent pointer-events-none" />
-          <span aria-hidden className="absolute inset-y-0 right-0 w-10 bg-gradient-to-l from-black to-transparent pointer-events-none" />
+      <div className="tc-tab-pill tc-tab-pill--bottom relative overflow-hidden bg-black border-x border-t border-white/[0.07] rounded-t-[24px] h-[52px] w-[min(360px,80vw)] flex items-center px-4">
+        <div className="flex items-center gap-9 whitespace-nowrap tc-marquee" style={{ animationDuration: "26s" }}>
+          {seq.map((v, i) => (
+            <span key={`${v}-${i}`} className="inline-flex items-center gap-2 shrink-0">
+              <BrandLogo id={v} size={18} />
+              <span className="font-mono text-[10.5px] tracking-[0.16em] uppercase text-white/75">{v}</span>
+            </span>
+          ))}
         </div>
       </div>
       <span className="tc-notch-shoulder tc-notch-shoulder--r tc-notch-shoulder--bottom" aria-hidden />
