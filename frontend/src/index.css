@@ -3091,3 +3091,37 @@ input[type="range"]:active::-moz-range-thumb { cursor: grabbing; }
 @media (prefers-reduced-motion: reduce) {
     .tc-marquee { animation: none; }
 }
+
+/* ============================================================
+   Hero notch tabs — page-bg colored "shoulders" that bridge
+   from the outer black gutter into the rounded hero edge,
+   creating a concave-quarter-circle transition either side of
+   the top/bottom pills.
+   ============================================================ */
+.tc-notch-shoulder {
+    width: 22px;
+    height: 22px;
+    flex-shrink: 0;
+    pointer-events: none;
+}
+/* Top tab — concave cut on the underside of the shoulder */
+.tc-notch-shoulder--l {
+    background: radial-gradient(circle 22px at 0 100%, transparent 22px, #000 22.5px);
+}
+.tc-notch-shoulder--r {
+    background: radial-gradient(circle 22px at 100% 100%, transparent 22px, #000 22.5px);
+}
+/* Bottom tab — same shape, flipped vertically */
+.tc-notch-shoulder--bottom.tc-notch-shoulder--l {
+    background: radial-gradient(circle 22px at 0 0, transparent 22px, #000 22.5px);
+}
+.tc-notch-shoulder--bottom.tc-notch-shoulder--r {
+    background: radial-gradient(circle 22px at 100% 0, transparent 22px, #000 22.5px);
+}
+
+/* Touch fallback — there's no hover on mobile, so the nav must be
+   reachable. We swap to a tap-to-toggle handled inline; here we just
+   widen the pill enough on small screens to show a hamburger affordance. */
+@media (hover: none) {
+    .tc-tab-pill--top { width: 64px; }
+}

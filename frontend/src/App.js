@@ -13,6 +13,7 @@ import "@/App.css";
 import Nav from "./components/Nav";
 import Footer from "./components/Footer";
 import HomeBody from "./sections/Home";
+import { BrandLogo } from "./dashboard/lib/brandLogos";
 import { TRUST_METRICS, EXTERNAL } from "./lib/brand";
 import Terminal from "./pages/Terminal";
 import Signals from "./pages/Signals";
@@ -257,9 +258,10 @@ function HomePage() {
   }, [mounted]);
 
   return (
+    <div className="bg-black p-2 sm:p-3" data-testid="tradecafe-hero">
+    <div className="relative">
     <div
-      className="relative min-h-screen bg-black text-tradeWhite font-body overflow-hidden"
-      data-testid="tradecafe-hero"
+      className="relative min-h-[calc(100vh-16px)] sm:min-h-[calc(100vh-24px)] rounded-[22px] sm:rounded-[30px] bg-[#020809] text-tradeWhite font-body overflow-hidden"
     >
       {/* ===== Cinematic hero frame ===== */}
       <section className="hero-frame" data-testid="hero-frame">
@@ -308,8 +310,8 @@ function HomePage() {
         }}
       />
 
-      {/* ===== NAV (shared component) ===== */}
-      <Nav />
+      {/* ===== NAV ===== */}
+      {/* Home swaps the top Nav for a notch-tab logo that morphs into the nav on hover */}
 
       {/* ===== HERO LAYOUT: mobile-first stacked, desktop bottom-left absolute ===== */}
       <main
@@ -446,12 +448,105 @@ function HomePage() {
       </main>
       </section>
       {/* ===== /hero-frame ===== */}
+    </div>
+    <HeroTopTab />
+    <HeroBottomTab />
+    </div>
 
       <HomeBody />
     </div>
   );
 }
 
+
+/* =========================================================
+   Hero notch tabs — a rounded frame with a logo→nav pill on
+   top center and a partner-logo ribbon on the bottom center.
+   ========================================================= */
+function HeroTopTab() {
+  const links = [
+    { to: "/terminal", label: "Terminal" },
+    { to: "/signals", label: "Signals" },
+    { to: "/automation", label: "Automation" },
+    { to: "/pool", label: "Pool" },
+    { to: "/insights/docs", label: "Docs" },
+  ];
+  return (
+    <div
+      className="absolute top-0 left-1/2 -translate-x-1/2 z-40 flex items-start group"
+      data-testid="hero-top-tab"
+    >
+      <span className="tc-notch-shoulder tc-notch-shoulder--l" aria-hidden />
+      <div className="tc-tab-pill tc-tab-pill--top relative bg-black border-x border-b border-white/[0.07] rounded-b-[24px] h-[52px] w-[64px] group-hover:w-[520px] transition-[width] duration-[480ms] ease-[cubic-bezier(.2,.7,.2,1)] overflow-hidden flex items-center">
+        <Link
+          to="/"
+          aria-label="TradeCafe"
+          className="w-[64px] h-[52px] flex items-center justify-center shrink-0 relative z-10"
+          data-testid="hero-top-tab-logo"
+        >
+          <span
+            className="relative flex items-center justify-center w-9 h-9 rounded-full bg-tradeTeal/10 border border-tradeTeal/30"
+            style={{ boxShadow: "0 0 18px rgba(34,211,180,0.18)" }}
+          >
+            <img src="/tradecafe-logo.svg" alt="" aria-hidden className="w-5 h-5" />
+          </span>
+        </Link>
+        <nav className="flex items-center gap-1 pr-3 whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-300 delay-150">
+          {links.map((l) => (
+            <Link
+              key={l.to}
+              to={l.to}
+              className="px-2.5 py-1.5 rounded-full font-mono text-[10.5px] tracking-[0.16em] uppercase text-white/65 hover:text-tradeTeal hover:bg-tradeTeal/10 transition-colors"
+            >
+              {l.label}
+            </Link>
+          ))}
+          <Link
+            to="/app/terminal"
+            className="ml-1 px-3 py-1.5 rounded-full font-mono text-[10.5px] tracking-[0.16em] uppercase text-[#042024] bg-tradeTeal hover:bg-tradeTeal/90 transition-colors"
+          >
+            Launch
+          </Link>
+        </nav>
+      </div>
+      <span className="tc-notch-shoulder tc-notch-shoulder--r" aria-hidden />
+    </div>
+  );
+}
+
+function HeroBottomTab() {
+  // Real venues TradeCafe routes to. Strip is doubled for seamless marquee.
+  const venues = ["binance", "bybit", "bitget", "kucoin", "okx", "weex", "bingx"];
+  const seq = [...venues, ...venues, ...venues];
+  return (
+    <div
+      className="absolute bottom-0 left-1/2 -translate-x-1/2 z-40 flex items-end"
+      data-testid="hero-bottom-tab"
+    >
+      <span className="tc-notch-shoulder tc-notch-shoulder--l tc-notch-shoulder--bottom" aria-hidden />
+      <div className="tc-tab-pill tc-tab-pill--bottom relative overflow-hidden bg-black border-x border-t border-white/[0.07] rounded-t-[24px] h-[58px] w-[min(640px,86vw)] flex items-center">
+        <span className="hidden md:flex items-center gap-1.5 shrink-0 pl-5 pr-4 font-mono text-[9.5px] tracking-[0.22em] uppercase text-tradeTeal/85 border-r border-white/[0.05] h-full">
+          <span className="trade-pulse-dot w-1.5 h-1.5 rounded-full bg-tradeTeal inline-block" />
+          Live
+        </span>
+        <div className="relative flex-1 overflow-hidden">
+          <div className="flex items-center gap-10 whitespace-nowrap tc-marquee" style={{ animationDuration: "32s" }}>
+            {seq.map((v, i) => (
+              <span key={`${v}-${i}`} className="inline-flex items-center gap-2 shrink-0 opacity-85 hover:opacity-100 transition-opacity">
+                <BrandLogo id={v} size={20} />
+                <span className="font-mono text-[10.5px] tracking-[0.16em] uppercase text-white/70">{v}</span>
+              </span>
+            ))}
+          </div>
+          {/* Edge fades so the ribbon feels infinite */}
+          <span aria-hidden className="absolute inset-y-0 left-0 w-10 bg-gradient-to-r from-black to-transparent pointer-events-none" />
+          <span aria-hidden className="absolute inset-y-0 right-0 w-10 bg-gradient-to-l from-black to-transparent pointer-events-none" />
+        </div>
+      </div>
+      <span className="tc-notch-shoulder tc-notch-shoulder--r tc-notch-shoulder--bottom" aria-hidden />
+    </div>
+  );
+}
 
 function MetricIcon({ i }) {
   const cls = "stat-icon";
